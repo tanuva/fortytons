@@ -16,92 +16,129 @@ from math import pi, sin, cos
 SCALE = 10e-2
 
 class MyApp(ShowBase):
+    truckNps = []
+    truckColNps = []
+    maskTrucks = BitMask32.bit(1)
+    
     def __init__(self):
         ShowBase.__init__(self)
         base.enableParticles()
         
-        # Load the environment model.
-        self.env = self.loader.loadModel("models/environment")
-        # Reparent the model to render.
-        self.env.reparentTo(self.render)
-        # Apply scale and position transforms on the model.
-        self.env.setScale(0.25, 0.25, 0.25)
-        self.env.setPos(-8, 42, 0)
+        # Set up the GeoMipTerrain
+        self.terrain = GeoMipTerrain("terrain")
+        self.terrain.setHeightfield("../../data/terrain.png")
+         
+        # Set terrain properties
+        self.terrain.setBlockSize(32)
+        self.terrain.setNear(20)
+        self.terrain.setFar(100)
+        self.terrain.setFocalPoint(base.camera)
         
-        self.taskMgr.add(self.spinCameraTask, "SpinCameraTask")
+        self.terrainNp = self.terrain.getRoot()
+        self.terrainNp.reparentTo(render)
+        self.terrainNp.setSz(5)
+        self.terrainNp.setPos(-128, -128, 0)
+        self.terrainNp.setRenderModeWireframe()
+        #self.terrainNp.setCollideMask(BitMask32.allOff())
         
-        # Load and transform the panda actor.
-        self.pandaActor = Actor("models/panda-model", {"walk": "models/panda-walk4"})
-        self.pandaActor.setScale(0.005, 0.005, 0.005)
-        self.pandaActor.reparentTo(self.render)
-        self.pandaActor.setPos(-1,0,0)
-        # Loop its animation.
-        self.pandaActor.loop("walk")
+        # Add a task to keep updating the terrain
+        taskMgr.add(self.updateTask, "update")
+        
+        # Generate it.
+        self.terrain.generate()
+        
+        
+        self.taskMgr.add(self.positionCameraTask, "SpinCameraTask")
 
+        # Physics: collision handling
+        self.pusher = PhysicsCollisionHandler()
+        base.cTrav = CollisionTraverser()
+        base.cTrav.showCollisions(base.render)
         
+        #self.setupPanda("panda", "models/panda-model", Point3(-2,3,3))
+        self.setupTruck("truck", "../../data/mesh/kipper_v4.x", Point3(.7,0,1.1))
         
-        mask_floor = BitMask32.bit(1)
-        self.env.setCollideMask(mask_floor)
-        self.pandaActor.setCollideMask(mask_floor)
-        
-        # Visible truck parts
-        self.truck = loader.loadModel("../../data/mesh/kipper_v4.egg")
-        self.truck.reparentTo(self.render)
-        self.truck.setCollideMask(BitMask32.allOff())
-        self.truck.setPos(0,0,1.5)
-        self.truck.setP(-90.0)
-        self.truck.setH(-90.0)
-        
-        # Physical truck parts
-        self.phyroot = NodePath("PhysicsNode") # The physics root node
-        self.phyroot.reparentTo(self.render)
-        
-        #base.physicsMgr.attachPhysicalNode(ActorNode("../../data/mesh/kipper_v4.egg"))
-        self.truckNp = self.phyroot.attachNewNode(ActorNode("../../data/mesh/kipper_v4.egg"))
-        self.truck.reparentTo(self.truckNp)
-        self.truckNp.node().getPhysicsObject().setMass(1500*SCALE)
-        
-        # "fromObject" or collision nodepath
-        self.truckColNp = self.truckNp.attachNewNode(CollisionNode("agentCollisionNode"))
-        self.truckColNp.node().addSolid(CollisionSphere(0,0,1.5,1.5))
-        self.truckColNp.node().setFromCollideMask(mask_floor)
-        self.truckColNp.node().setIntoCollideMask(BitMask32.allOff())
-        self.truckColNp.show()
-        
-        #base.cTrav.addCollider(self.truckNp, self.pusher)
+        cube = render.attachNewNode(CollisionNode("truckCollision"))
+        cube.setPos(-.5, -.5, .5)
+        cube.node().addSolid(CollisionBox(Point3(0,0,0), .5, .5, .5))
+        cube.show()
         
         # We need some downforce
         self.gravity = ForceNode("world-forces")
         self.gravityFnp = render.attachNewNode(self.gravity)
         self.gravityForce = LinearVectorForce(0,0,-9.81*SCALE)
         self.gravity.addForce(self.gravityForce)
-        base.physicsMgr.addLinearForce(self.gravityForce)
-        
-        
-        #self.flaeche = loader.loadModel("../../data/mesh/flaeche.egg")
-        #self.flaeche.reparentTo(self.render)
-        #self.flaeche.setPos(0,0,3)
-
-        # Physics: collision handling
-        self.pusher = PhysicsCollisionHandler()
-        self.pusher.addCollider(self.truckColNp, self.truckNp)
-        
-        base.cTrav = CollisionTraverser()
-        base.cTrav.addCollider(self.truckColNp, self.pusher)
-        base.cTrav.showCollisions(base.render)
-        
-        base.physicsMgr.attachPhysicalNode(self.truckNp.node())
-        
-        # lift us up a little
-        self.truckNp.setZ(8)
+        #base.physicsMgr.addLinearForce(self.gravityForce)
  
-    # Define a procedure to move the camera.
-    def spinCameraTask(self, task):
-        angleDegrees = task.time * 2.0
-        angleRadians = angleDegrees * (pi / 180.0)
-        self.camera.setPos(20 * sin(angleRadians), -20.0 * cos(angleRadians), 3)
-        self.camera.setHpr(angleDegrees, 0, 0)
+    def positionCameraTask(self, task):
+        """ Keep the camera in position. """
+        self.camera.setPos(3, -5, 2)
+        self.camera.lookAt(self.truckNps[-1]) # Look at the most recently loaded truck
+        #self.camera.lookAt(self.truckNps[0])
         return Task.cont
+    
+    def updateTask(self, task):
+        self.terrain.update()
+        return task.cont
+    
+    def setupTruck(self, name, mesh, pos):
+        """ Loads mesh and sets it up. Very specific for now. """
+        
+        npTruck = self.render.attachNewNode(ActorNode(name))
+        npTruckMdl = npTruck.attachNewNode(loader.loadModel(mesh).node())
+        
+        if npTruckMdl.node() == None:
+            print "Could not load mesh:", mesh
+            return
+        
+        npTruck.setPos(pos)
+        npTruckMdl.setH(-90.0)
+        npTruckMdl.setScale(0.01)
+        npTruckMdl.setCollideMask(BitMask32.allOff())
+        
+        npTruck.node().getPhysicsObject().setMass(1500*SCALE)
+        
+        npTruckCol = npTruck.attachNewNode(CollisionNode(name))
+        # center-top 0,335m, center-front 0,991m, center-side 0,391m
+        npTruckCol.node().addSolid(CollisionBox(Point3(0,0,0), 0.391, 0.991, 0.335))
+        npTruckCol.node().setIntoCollideMask(BitMask32.allOff())
+        npTruckCol.node().setFromCollideMask(self.maskTrucks)
+        npTruckCol.show()
+        base.physicsMgr.attachPhysicalNode(npTruck.node())
+        
+        self.pusher.addCollider(npTruckCol, npTruck)
+        base.cTrav.addCollider(npTruckCol, self.pusher)
+        
+        self.truckNps.append(npTruck)
+        self.truckColNps.append(npTruckCol)
+    
+    def setupPanda(self, name, mesh, pos):
+        npTruck = self.render.attachNewNode(ActorNode(name))
+        npTruckMdl = npTruck.attachNewNode(loader.loadModel(mesh).node())
+        
+        if npTruckMdl.node() == None:
+            print "Could not load mesh:", mesh
+            return
+        
+        npTruck.setPos(pos)
+        #npTruckMdl.setH(-90.0)
+        npTruckMdl.setCollideMask(BitMask32.allOff())
+        
+        npTruck.node().getPhysicsObject().setMass(10*SCALE)
+        
+        npTruckCol = npTruck.attachNewNode(CollisionNode(name))
+        # center-top 0,335m, center-front 0,991m, center-seite 0,391m
+        npTruckCol.node().addSolid(CollisionSphere(0,0, 2,2))
+        npTruckCol.node().setIntoCollideMask(BitMask32.allOff())
+        npTruckCol.node().setFromCollideMask(self.maskTrucks)
+        npTruckCol.show()
+        base.physicsMgr.attachPhysicalNode(npTruck.node())
+        
+        self.pusher.addCollider(npTruckCol, npTruck)
+        base.cTrav.addCollider(npTruckCol, self.pusher)
+        
+        self.truckNps.append(npTruck)
+        self.truckColNps.append(npTruckCol)
     
 if __name__ == '__main__':
     app = MyApp()
