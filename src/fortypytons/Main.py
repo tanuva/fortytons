@@ -20,7 +20,8 @@ from pandac.PandaModules import BitMask32, CardMaker, Vec4, Quat
 
 
 #SCALE = 10e-3
-SCALE = (10e-2)*2
+#SCALE = (10e-2)*2
+SCALE = 0.5
 
 class Main(ShowBase):
     trucks = []
@@ -30,6 +31,7 @@ class Main(ShowBase):
     #self.camPos = Point3(12, 2.5, 3)
     #self.camPos = Point3(20, -30, 8) # overview
     datadir = "../../data/"
+    accel, brake, left, right = False, False, False, False
     
     def __init__(self):
         ShowBase.__init__(self)
@@ -37,7 +39,7 @@ class Main(ShowBase):
         # Initialize ODE
         # Setup our physics world
         self.world = OdeWorld()
-        self.world.setGravity(0, 0, -9.81)
+        self.world.setGravity(0, 0, -9.81*SCALE)
         # The surface table is needed for autoCollide
         self.world.initSurfaceTable(1)
         self.world.setSurfaceEntry(0, 0, 150, 0.0, 9.1, 0.9, 0.00001, 0.0, 0.002)
@@ -65,6 +67,19 @@ class Main(ShowBase):
         self.btnAccel = DirectButton(text = "Accel",        
                                       scale = .05, pos = (Point3(0, 0, -.2) + guiOffset), command = self.accel)
         
+        # keyboard hooks
+        self.accept('arrow_up', self.arrowKeys, ["arrow_up", True])
+        self.accept('arrow_down', self.arrowKeys, ["arrow_down", True])
+        self.accept('arrow_left', self.arrowKeys, ["arrow_left", True])
+        self.accept('arrow_right', self.arrowKeys, ["arrow_right", True])
+        self.accept('arrow_up-up', self.arrowKeys, ["arrow_up", False])
+        self.accept('arrow_down-up', self.arrowKeys, ["arrow_down", False])
+        self.accept('arrow_left-up', self.arrowKeys, ["arrow_left", False])
+        self.accept('arrow_right-up', self.arrowKeys, ["arrow_right", False])
+        
+        # register the render task for ODE updating
+        self.taskMgr.add(self.renderTask, "renderTask")
+        
         # Set up the GeoMipTerrain
         self.terrain = GeoMipTerrain("terrain")
         self.terrain.setHeightfield(self.datadir + "tex/terrain.png")
@@ -81,15 +96,8 @@ class Main(ShowBase):
         self.terrainNp.setPos(-128, -128, 0)
         self.terrainNp.setRenderModeWireframe()
         
-        test = render.attachNewNode(loader.loadModel(self.datadir + "mesh/rad.egg").node())
-        test.setRenderModeWireframe()
-        test.setPos(3,0,2)
-        
         # Generate it.
         self.terrain.generate()
-        
-        self.taskMgr.add(self.renderTask, "renderTask")
-        #self.taskMgr.add(self.drawLinesTask, "drawLinesTask")
         
         self.setupTruck("truck", self.datadir + "mesh/kipper.egg", Point3(0, 0, 3))
         
@@ -128,8 +136,6 @@ class Main(ShowBase):
         self.terrain.update()
         
         # Update object positions
-        if self.accel:
-            self.trucks[0][1].addForce(0,200,0)
         self.space.autoCollide() # Setup the contact joints
         self.world.step(globalClock.getDt()*SCALE)
         for np, body, wire in self.trucks:
@@ -140,9 +146,16 @@ class Main(ShowBase):
             if body == self.trucks[0][1]:
                 np.setZ(np.getZ()+0.1) # fix the geom/model offset temporarily
         self.contactgroup.empty()
+        
+        # Apply forces to the truck
+        if self.accel:
+            self.trucks[0][1].addForce(0,1400,0)
+        if self.brake:
+            self.trucks[0][1].addForce(0,-1800,0)
         return Task.cont
     
     def drawLinesTask(self, task):
+        """ Deprecated. Maybe we need this somewhere in the future """
         # Draws lines between the smiley and frowney.
         self.lines.reset()
         self.lines.drawLines([[(self.trucks[0][0].getX(), self.trucks[0][0].getY(), self.trucks[0][0].getZ()),
@@ -294,6 +307,27 @@ class Main(ShowBase):
         self.suspRl.setParamHiStop(0, 0)
         self.suspRl.setAnchor(-.85, -1.5, 1.9)
         
+    def arrowKeys(self, keyname, isPressed): # args = [keyname, isPressed]
+        """ This should go into a separate class at some point. """
+        if isPressed:
+            if keyname == "arrow_up":
+                self.accel = True
+            if keyname == "arrow_down":
+                self.brake = True
+            if keyname == "arrow_left":
+                self.left = True
+            if keyname == "arrow_right":
+                self.right = True
+        else:
+            if keyname == "arrow_up":
+                self.accel = False
+            if keyname == "arrow_down":
+                self.brake = False
+            if keyname == "arrow_left":
+                self.left = False
+            if keyname == "arrow_right":
+                self.right = False
+
     def xPlus(self):
         self.camPos.setX(self.camPos.getX()+1.0)
     def yPlus(self):
