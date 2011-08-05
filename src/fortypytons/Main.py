@@ -6,6 +6,8 @@ Created on 11.07.2011
 @author: marcel
 '''
 
+import math
+
 from fortypytons.WireGeom import WireGeom
 from direct.showbase.ShowBase import ShowBase
 from direct.task import Task
@@ -27,6 +29,7 @@ class Main(ShowBase):
     camPos = Point3(8, -7, 3) # Good for egg truck
     #self.camPos = Point3(12, 2.5, 3)
     #self.camPos = Point3(20, -30, 8) # overview
+    accel = False
     
     def __init__(self):    
         ShowBase.__init__(self)
@@ -59,6 +62,9 @@ class Main(ShowBase):
                                      scale = .05, pos = (Point3(.2, 0, 0) + guiOffset), command = self.zPlus)
         self.btnZminus = DirectButton(text = "Z-",        
                                       scale = .05, pos = (Point3(.2, 0, -.1) + guiOffset), command = self.zMinus)
+        self.btnAccel = DirectButton(text = "Accel",        
+                                      scale = .05, pos = (Point3(0, 0, -.2) + guiOffset), command = self.accel)
+        
         # Set up the GeoMipTerrain
         self.terrain = GeoMipTerrain("terrain")
         self.terrain.setHeightfield("../../data/terrain.png")
@@ -79,9 +85,9 @@ class Main(ShowBase):
         self.terrain.generate()
         
         self.taskMgr.add(self.renderTask, "renderTask")
-        self.taskMgr.add(self.drawLinesTask, "drawLinesTask")
+        #self.taskMgr.add(self.drawLinesTask, "drawLinesTask")
         
-        self.setupTruck("truck", "../../data/mesh/kipper_v4.egg", Point3(.5, 2.5, 2))
+        self.setupTruck("truck", "../../data/mesh/kipper_v4.egg", Point3(0, 0, 3))
         
         # Mesh für kollision nehmen?
         #self.das_block = render.attachNewNode(loader.loadModel("../../data/mesh/das_block.X").node())
@@ -112,16 +118,21 @@ class Main(ShowBase):
     def renderTask(self, task):
         """ Do stuff. """
         self.camera.setPos(self.camPos)
-        self.camera.lookAt(self.trucks[-1][0]) # Look at the most recently loaded truck
+        self.camera.lookAt(self.trucks[0][0]) # Look at the most recently loaded truck
         #self.camera.lookAt(self.das_block)
         
         self.terrain.update()
         
         # Update object positions
+        if self.accel:
+            self.trucks[0][1].addForce(0,200,0)
         self.space.autoCollide() # Setup the contact joints
         self.world.step(globalClock.getDt()*SCALE)
-        for np, body in self.trucks:
-            np.setPosQuat(render, body.getPosition(), Quat(body.getQuaternion()))
+        for np, body, wire in self.trucks:
+            np.setPosQuat(body.getPosition(), Quat(body.getQuaternion()))
+            wire.setPosQuat(body.getPosition(), Quat(body.getQuaternion()))
+            #wire.setPos(body.getPosition())
+            
             if body == self.trucks[0][1]:
                 np.setZ(np.getZ()+0.1) # fix the geom/model offset temporarily
         self.contactgroup.empty()
@@ -141,7 +152,6 @@ class Main(ShowBase):
         """ Loads mesh and sets it up. Very specific for now. """
         
         npTruckMdl = self.render.attachNewNode(loader.loadModel(mesh).node())
-        
         npTruckMdl.setPos(pos)
         npTruckMdl.setRenderModeWireframe()        
         # eggmesh: center-side 1m, center-front 2.5m, center-top 1.7m, height exhaust: 0.1m
@@ -161,36 +171,122 @@ class Main(ShowBase):
         tGeom.setCategoryBits(BitMask32(0x00000001))
         tGeom.setBody(tBody)
         # Make us visible
-        npTruckMdl.attachNewNode(WireGeom().generate('box', extents=(2, 5, 1.8)).node())
+        wire = render.attachNewNode(WireGeom().generate('box', extents=(2, 5, 1.8)).node())
         
-        self.trucks.append((npTruckMdl, tBody))
+        self.trucks.append((npTruckMdl, tBody, wire))
         
         #-----------------------------------
         # Let's try getting hold of a wheel
         npWheelMdl = self.render.attachNewNode(self.loader.loadModel("../../data/mesh/rad.egg").node())
-        npWheelMdl.setPos(2.5, 0, 3)
-        npWheelMdl.setRenderModeWireframe()
-        wBody = OdeBody(self.world)
-        wMass = OdeMass()
-        wMass.setCylinderTotal(25*SCALE, 2, 0.45, 0.35) # mass, direction, radius, length
-        wBody.setMass(wMass)
-        wBody.setPosition(npWheelMdl.getPos(self.render))
-        wBody.setQuaternion(npWheelMdl.getQuat(self.render))
-        
-        wGeom = OdeCylinderGeom(self.space, 0.45, 0.35)
-        wGeom.setCollideBits(self.maskWheel)
-        wGeom.setCategoryBits(BitMask32(0x00000001))
-        wGeom.setBody(wBody)
-        wire = npWheelMdl.attachNewNode(WireGeom().generate('cylinder', radius=0.45, length=0.35).node())
+        npWheelMdl.setPos(.85, 1.8, 1.9)
+        npWheelMdl.setR(90.0)
         npWheelMdl.setH(180.0)
-        wire.setR(90.0)
-        self.trucks.append((npWheelMdl, wBody))
+        npWheelMdl.setRenderModeWireframe()
+        frBody = OdeBody(self.world)
+        frMass = OdeMass()
+        frMass.setCylinderTotal(25*SCALE, 2, 0.45, 0.35) # mass, direction, radius, length
+        frBody.setMass(frMass)
+        frBody.setPosition(npWheelMdl.getPos(self.render))
+        frBody.setQuaternion(npWheelMdl.getQuat(self.render))
         
-        self.testj = OdeBallJoint(self.world)
-        self.testj.attach(wBody, tBody)
-        self.testj.setAnchor(5, 0, 5)
-        #self.suspFr = OdeHinge2Joint(self.world)
+        frGeom = OdeCylinderGeom(self.space, 0.45, 0.35)
+        frGeom.setCollideBits(self.maskTrucks)
+        frGeom.setCategoryBits(BitMask32(0x00000001))
+        frGeom.setBody(frBody)
+        wire = render.attachNewNode(WireGeom().generate('cylinder', radius=0.45, length=0.35).node())
+        self.trucks.append((npWheelMdl, frBody, wire))
         
+        self.suspFr = OdeHinge2Joint(self.world)
+        self.suspFr.attach(tBody, frBody)
+        self.suspFr.setParamLoStop(0, -math.pi/8)
+        self.suspFr.setParamHiStop(0, math.pi/8)
+        self.suspFr.setAxis1(0,0,1)
+        self.suspFr.setAxis2(1,0,0)
+        self.suspFr.setAnchor(.85, 1.8, 1.9)
+        
+        #---------------------------------
+        # And another wheel
+        npWheelMdl = self.render.attachNewNode(self.loader.loadModel("../../data/mesh/rad.egg").node())
+        npWheelMdl.setPos(-.85, 1.5, 1.9)
+        npWheelMdl.setR(90.0)
+        npWheelMdl.setRenderModeWireframe()
+        flBody = OdeBody(self.world)
+        flMass = OdeMass()
+        flMass.setCylinderTotal(25*SCALE, 2, 0.45, 0.35) # mass, direction, radius, length
+        flBody.setMass(flMass)
+        flBody.setPosition(npWheelMdl.getPos(self.render))
+        flBody.setQuaternion(npWheelMdl.getQuat(self.render))
+        
+        flGeom = OdeCylinderGeom(self.space, 0.45, 0.35)
+        flGeom.setCollideBits(self.maskTrucks)
+        flGeom.setCategoryBits(BitMask32(0x00000001))
+        flGeom.setBody(flBody)
+        wire = render.attachNewNode(WireGeom().generate('cylinder', radius=0.45, length=0.35).node())
+        self.trucks.append((npWheelMdl, flBody, wire))
+        
+        self.suspFl = OdeHinge2Joint(self.world)
+        self.suspFl.attach(tBody, flBody)
+        self.suspFl.setAxis1(0,0,1)
+        self.suspFl.setAxis2(1,0,0)
+        self.suspFl.setParamLoStop(0, -math.pi/8)
+        self.suspFl.setParamHiStop(0, math.pi/8)
+        self.suspFl.setAnchor(-.85, 1.5, 1.9)
+        
+        #---------------------------------
+        # And another wheel
+        npWheelMdl = self.render.attachNewNode(self.loader.loadModel("../../data/mesh/rad.egg").node())
+        npWheelMdl.setPos(.85, -1.5, 1.9)
+        npWheelMdl.setR(90.0)
+        npWheelMdl.setRenderModeWireframe()
+        rrBody = OdeBody(self.world)
+        rrMass = OdeMass()
+        rrMass.setCylinderTotal(25*SCALE, 2, 0.45, 0.35) # mass, direction, radius, length
+        rrBody.setMass(rrMass)
+        rrBody.setPosition(npWheelMdl.getPos(self.render))
+        rrBody.setQuaternion(npWheelMdl.getQuat(self.render))
+        
+        rrGeom = OdeCylinderGeom(self.space, 0.45, 0.35)
+        rrGeom.setCollideBits(self.maskTrucks)
+        rrGeom.setCategoryBits(BitMask32(0x00000001))
+        rrGeom.setBody(rrBody)
+        wire = render.attachNewNode(WireGeom().generate('cylinder', radius=0.45, length=0.35).node())
+        self.trucks.append((npWheelMdl, rrBody, wire))
+        
+        self.suspRr = OdeHinge2Joint(self.world)
+        self.suspRr.attach(tBody, rrBody)
+        self.suspRr.setAxis1(0,0,1)
+        self.suspRr.setAxis2(1,0,0)
+        self.suspRr.setParamLoStop(0, 0)
+        self.suspRr.setParamHiStop(0, 0)
+        self.suspRr.setAnchor(.85, -1.5, 1.9)
+        
+        #---------------------------------
+        # And another wheel
+        npWheelMdl = self.render.attachNewNode(self.loader.loadModel("../../data/mesh/rad.egg").node())
+        npWheelMdl.setPos(-.85, -1.8, 1.9)
+        npWheelMdl.setR(90.0)
+        npWheelMdl.setRenderModeWireframe()
+        rlBody = OdeBody(self.world)
+        rlMass = OdeMass()
+        rlMass.setCylinderTotal(25*SCALE, 2, 0.45, 0.35) # mass, direction, radius, length
+        rlBody.setMass(rlMass)
+        rlBody.setPosition(npWheelMdl.getPos(self.render))
+        rlBody.setQuaternion(npWheelMdl.getQuat(self.render))
+        
+        rlGeom = OdeCylinderGeom(self.space, 0.45, 0.35)
+        rlGeom.setCollideBits(self.maskTrucks)
+        rlGeom.setCategoryBits(BitMask32(0x00000001))
+        rlGeom.setBody(rlBody)
+        wire = render.attachNewNode(WireGeom().generate('cylinder', radius=0.45, length=0.35).node())
+        self.trucks.append((npWheelMdl, rlBody, wire))
+        
+        self.suspRl = OdeHinge2Joint(self.world)
+        self.suspRl.attach(tBody, rlBody)
+        self.suspRl.setAxis1(0,0,1)
+        self.suspRl.setAxis2(1,0,0)
+        self.suspRl.setParamLoStop(0, 0)
+        self.suspRl.setParamHiStop(0, 0)
+        self.suspRl.setAnchor(-.85, -1.8, 1.9)
         
     def xPlus(self):
         self.camPos.setX(self.camPos.getX()+1.0)
@@ -204,6 +300,10 @@ class Main(ShowBase):
         self.camPos.setZ(self.camPos.getZ()+1.0)
     def zMinus(self):
         self.camPos.setZ(self.camPos.getZ()-1.0)
+    def accel(self):
+        if self.accel: self.accel = False
+        else: self.accel = True
+        print self.accel
     
 if __name__ == '__main__':
     app = Main()
