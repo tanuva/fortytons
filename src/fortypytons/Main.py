@@ -67,7 +67,7 @@ class Main(ShowBase):
         
         # Set up the GeoMipTerrain
         self.terrain = GeoMipTerrain("terrain")
-        self.terrain.setHeightfield(self.datadir + "terrain.png")
+        self.terrain.setHeightfield(self.datadir + "tex/terrain.png")
          
         # Set terrain properties
         self.terrain.setBlockSize(32)
@@ -104,7 +104,7 @@ class Main(ShowBase):
         ground = render.attachNewNode(cm.generate())
         #ground.setRenderModeWireframe()
         texture = Texture("grass")
-        texture.read(Filename(self.datadir + "mesh/vegetati.png"))
+        texture.read(Filename(self.datadir + "tex/vegetati.png"))
         texture.setWrapU(Texture.WMRepeat)
         texture.setWrapV(Texture.WMRepeat)
         ground.setTexture(texture)
