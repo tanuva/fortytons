@@ -8,7 +8,7 @@ Created on 11.07.2011
 
 import math
 
-from fortypytons.WireGeom import WireGeom
+from WireGeom import WireGeom
 from direct.showbase.ShowBase import ShowBase
 from direct.task import Task
 from direct.gui.DirectGui import DirectButton
@@ -29,10 +29,9 @@ class Main(ShowBase):
     camPos = Point3(8, -7, 3) # Good for egg truck
     #self.camPos = Point3(12, 2.5, 3)
     #self.camPos = Point3(20, -30, 8) # overview
-    accel = False
     datadir = "../../data/"
     
-    def __init__(self):    
+    def __init__(self):
         ShowBase.__init__(self)
 
         # Initialize ODE
@@ -82,13 +81,17 @@ class Main(ShowBase):
         self.terrainNp.setPos(-128, -128, 0)
         self.terrainNp.setRenderModeWireframe()
         
+        test = render.attachNewNode(loader.loadModel(self.datadir + "mesh/rad.egg").node())
+        test.setRenderModeWireframe()
+        test.setPos(3,0,2)
+        
         # Generate it.
         self.terrain.generate()
         
         self.taskMgr.add(self.renderTask, "renderTask")
         #self.taskMgr.add(self.drawLinesTask, "drawLinesTask")
         
-        self.setupTruck("truck", self.datadir + "mesh/kipper_v4.egg", Point3(0, 0, 3))
+        self.setupTruck("truck", self.datadir + "mesh/kipper.egg", Point3(0, 0, 3))
         
         # Mesh für kollision nehmen?
         #self.das_block = render.attachNewNode(loader.loadModel(self.datadir + "mesh/das_block.X").node())
@@ -111,7 +114,7 @@ class Main(ShowBase):
         groundGeom.setCollideBits(self.maskTrucks | self.maskWheel)
         groundGeom.setCategoryBits(BitMask32(0x00000002))
         
-
+        self.accel = False
         
         # We are going to be drawing some lines between the anchor points and the joints
         self.lines = LineNodePath(parent = self.render, thickness = 3.0, colorVec = Vec4(1, 0, 0, 1))
@@ -181,7 +184,7 @@ class Main(ShowBase):
         npWheelMdl = self.render.attachNewNode(self.loader.loadModel(self.datadir + "mesh/rad.egg").node())
         npWheelMdl.setPos(.85, 1.8, 1.9)
         npWheelMdl.setR(90.0)
-        npWheelMdl.setH(180.0)
+        #npWheelMdl.setH(180.0)
         npWheelMdl.setRenderModeWireframe()
         frBody = OdeBody(self.world)
         frMass = OdeMass()
@@ -210,6 +213,7 @@ class Main(ShowBase):
         npWheelMdl = self.render.attachNewNode(self.loader.loadModel(self.datadir + "mesh/rad.egg").node())
         npWheelMdl.setPos(-.85, 1.5, 1.9)
         npWheelMdl.setR(90.0)
+        npWheelMdl.setH(180.0)
         npWheelMdl.setRenderModeWireframe()
         flBody = OdeBody(self.world)
         flMass = OdeMass()
@@ -264,8 +268,9 @@ class Main(ShowBase):
         #---------------------------------
         # And another wheel
         npWheelMdl = self.render.attachNewNode(self.loader.loadModel(self.datadir + "mesh/rad.egg").node())
-        npWheelMdl.setPos(-.85, -1.8, 1.9)
+        npWheelMdl.setPos(-.85, -1.5, 1.9)
         npWheelMdl.setR(90.0)
+        npWheelMdl.setH(180.0)
         npWheelMdl.setRenderModeWireframe()
         rlBody = OdeBody(self.world)
         rlMass = OdeMass()
@@ -287,7 +292,7 @@ class Main(ShowBase):
         self.suspRl.setAxis2(1,0,0)
         self.suspRl.setParamLoStop(0, 0)
         self.suspRl.setParamHiStop(0, 0)
-        self.suspRl.setAnchor(-.85, -1.8, 1.9)
+        self.suspRl.setAnchor(-.85, -1.5, 1.9)
         
     def xPlus(self):
         self.camPos.setX(self.camPos.getX()+1.0)
