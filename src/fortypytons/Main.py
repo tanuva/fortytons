@@ -30,6 +30,7 @@ class Main(ShowBase):
     #self.camPos = Point3(12, 2.5, 3)
     #self.camPos = Point3(20, -30, 8) # overview
     accel = False
+    datadir = "../../data/"
     
     def __init__(self):    
         ShowBase.__init__(self)
@@ -67,7 +68,7 @@ class Main(ShowBase):
         
         # Set up the GeoMipTerrain
         self.terrain = GeoMipTerrain("terrain")
-        self.terrain.setHeightfield("../../data/terrain.png")
+        self.terrain.setHeightfield(self.datadir + "terrain.png")
          
         # Set terrain properties
         self.terrain.setBlockSize(32)
@@ -87,10 +88,10 @@ class Main(ShowBase):
         self.taskMgr.add(self.renderTask, "renderTask")
         #self.taskMgr.add(self.drawLinesTask, "drawLinesTask")
         
-        self.setupTruck("truck", "../../data/mesh/kipper_v4.egg", Point3(0, 0, 3))
+        self.setupTruck("truck", self.datadir + "mesh/kipper_v4.egg", Point3(0, 0, 3))
         
         # Mesh für kollision nehmen?
-        #self.das_block = render.attachNewNode(loader.loadModel("../../data/mesh/das_block.X").node())
+        #self.das_block = render.attachNewNode(loader.loadModel(self.datadir + "mesh/das_block.X").node())
         #self.das_block.setScale(0.01)
         #self.das_block.setPos(.5, 2.5, 2.5)
         
@@ -100,7 +101,7 @@ class Main(ShowBase):
         ground = render.attachNewNode(cm.generate())
         #ground.setRenderModeWireframe()
         texture = Texture("grass")
-        texture.read(Filename("../../data/mesh/vegetati.png"))
+        texture.read(Filename(self.datadir + "mesh/vegetati.png"))
         texture.setWrapU(Texture.WMRepeat)
         texture.setWrapV(Texture.WMRepeat)
         ground.setTexture(texture)
@@ -177,7 +178,7 @@ class Main(ShowBase):
         
         #-----------------------------------
         # Let's try getting hold of a wheel
-        npWheelMdl = self.render.attachNewNode(self.loader.loadModel("../../data/mesh/rad.egg").node())
+        npWheelMdl = self.render.attachNewNode(self.loader.loadModel(self.datadir + "mesh/rad.egg").node())
         npWheelMdl.setPos(.85, 1.8, 1.9)
         npWheelMdl.setR(90.0)
         npWheelMdl.setH(180.0)
@@ -206,7 +207,7 @@ class Main(ShowBase):
         
         #---------------------------------
         # And another wheel
-        npWheelMdl = self.render.attachNewNode(self.loader.loadModel("../../data/mesh/rad.egg").node())
+        npWheelMdl = self.render.attachNewNode(self.loader.loadModel(self.datadir + "mesh/rad.egg").node())
         npWheelMdl.setPos(-.85, 1.5, 1.9)
         npWheelMdl.setR(90.0)
         npWheelMdl.setRenderModeWireframe()
@@ -234,7 +235,7 @@ class Main(ShowBase):
         
         #---------------------------------
         # And another wheel
-        npWheelMdl = self.render.attachNewNode(self.loader.loadModel("../../data/mesh/rad.egg").node())
+        npWheelMdl = self.render.attachNewNode(self.loader.loadModel(self.datadir + "mesh/rad.egg").node())
         npWheelMdl.setPos(.85, -1.5, 1.9)
         npWheelMdl.setR(90.0)
         npWheelMdl.setRenderModeWireframe()
@@ -262,7 +263,7 @@ class Main(ShowBase):
         
         #---------------------------------
         # And another wheel
-        npWheelMdl = self.render.attachNewNode(self.loader.loadModel("../../data/mesh/rad.egg").node())
+        npWheelMdl = self.render.attachNewNode(self.loader.loadModel(self.datadir + "mesh/rad.egg").node())
         npWheelMdl.setPos(-.85, -1.8, 1.9)
         npWheelMdl.setR(90.0)
         npWheelMdl.setRenderModeWireframe()
