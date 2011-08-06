@@ -145,6 +145,10 @@ class Main(ShowBase):
             self.trucks[0].accel()
         if self.brake:
             self.trucks[0].brake()
+        if self.right:
+            self.trucks[0].steerRight()
+        if self.left:
+            self.trucks[0].steerLeft()
         return Task.cont
     
     def drawLinesTask(self, task):

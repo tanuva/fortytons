@@ -50,4 +50,17 @@ class VWheel(VComponent):
         '''
         VComponent.__init__(self, npMesh, npWire, mass, body, geom)
         self.susp = susp
+    
+    def steer(self, direction, torque):
+        self.susp.setParamFMax(0, torque)
+        self.susp.setParamVel(0, 5 * direction)
         
+    def accel(self, force):
+        self.susp.setParamFMax(1, force)
+        self.susp.setParamVel(1, 50)
+        print "accel"
+    
+    def brake(self, force):
+        self.susp.setParamFMax(1, force)
+        self.susp.setParamVel(1, 0)
+        print "brake"

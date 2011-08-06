@@ -23,6 +23,9 @@ class Truck:
         Loads the chassismesh, sets the truck up and ignites the engine.
         '''
         
+        self._steer = 0
+        self._accel = False
+        self._brake = False
         self.world = world
         self.space = space
         
@@ -99,6 +102,8 @@ class Truck:
             suspFr.setAxis1(0,0,1)
             suspFr.setAxis2(1,0,0)
             suspFr.setAnchor(pos)
+            #suspFr.setParamSuspensionERP(0, 0.999)
+            #suspFr.setParamSuspensionCFM(0, 1000)
             
             if i < 2:
                 suspFr.setParamLoStop(0, -math.pi/6) # Only the front wheels are able to turn
@@ -113,13 +118,37 @@ class Truck:
         self.chassis.update()
         for wheel in self.wheels:
             wheel.update()
+        
+        if self._accel:
+            self.wheels[2].accel(500.0)
+            self.wheels[3].accel(500.0)
+        
+        if self._brake:
+            self.wheels[2].brake(800.0)
+            self.wheels[3].brake(800.0)
+        
+        if self._steer != 0:
+            self.wheels[0].steer(self._steer, 500.0) # steer == -1 for left
+            self.wheels[1].steer(self._steer, 500.0) # steer ==  1 for right
+        else:
+            pass # steer straight
+        
+        self._accel = False
+        self._brake = False
+        self._steer = 0
     
     def accel(self):
-        self.chassis.addForce(0,1400,1550)
+        self._accel = True
     
     def brake(self):
-        self.chassis.addForce(0,-1800,1550)
+        self._brake = True
     
+    def steerLeft(self):
+        self._steer = -1
+    
+    def steerRight(self):
+        self._steer = 1
+        
     def getChassisNp(self):
         return self.chassis.getNp()
     def getChassis(self):
