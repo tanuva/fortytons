@@ -20,7 +20,7 @@ import math
 
 #SCALE = 10e-3
 #SCALE = (10e-2)*2
-SCALE = 0.4
+SCALE = 1.0
 
 class Main(ShowBase):
     trucks = []
@@ -77,7 +77,7 @@ class Main(ShowBase):
         self.accept('arrow_right-up', self.arrowKeys, ["arrow_right", False])
         
         # register the render task for ODE updating
-        self.taskMgr.add(self.renderTask, "renderTask")
+        self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask")
         
         # Set up the GeoMipTerrain
         self.terrain = GeoMipTerrain("terrain")
