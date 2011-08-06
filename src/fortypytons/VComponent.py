@@ -58,9 +58,7 @@ class VWheel(VComponent):
     def accel(self, force):
         self.susp.setParamFMax(1, force)
         self.susp.setParamVel(1, 50)
-        print "accel"
     
     def brake(self, force):
         self.susp.setParamFMax(1, force)
         self.susp.setParamVel(1, 0)
-        print "brake"
