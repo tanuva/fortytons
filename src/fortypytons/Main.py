@@ -41,6 +41,7 @@ class Main(ShowBase):
         self.world.setGravity(0, 0, -9.81*SCALE)
         # The surface table is needed for autoCollide
         self.world.initSurfaceTable(1)
+        # setSurfaceEntry(pos1, pos2, mu, bounce, bounce_vel, soft_erp, soft_cfm, slip, dampen)
         self.world.setSurfaceEntry(0, 0, 150, 0.0, 9.1, 0.9, 0.00001, 0.0, 0.002)
          
         # Create a space and add a contactgroup to it to add the contact joints
