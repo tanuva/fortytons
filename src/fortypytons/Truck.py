@@ -98,11 +98,17 @@ class Truck:
             
             
             # Setup the suspension
+            anchor = pos
+            if i % 2 == 0:
+                anchor = pos + (0.175, 0, 0) # We want the anchor at the inside of the wheel, not in the center
+            else:
+                anchor = pos - (0.175, 0, 0)
+            
             suspFr = OdeHinge2Joint(self.world)
             suspFr.attach(self.chassis.getBody(), frBody)
             suspFr.setAxis1(0,0,1)
             suspFr.setAxis2(1,0,0)
-            suspFr.setAnchor(pos)
+            suspFr.setAnchor(anchor)
             #suspFr.setParamSuspensionERP(0, 0.999)
             #suspFr.setParamSuspensionCFM(0, 1000)
             
@@ -124,8 +130,8 @@ class Truck:
             wheel.update()
         
         if self._accel:
-            self.wheels[2].accel(500.0)
-            self.wheels[3].accel(500.0)
+            self.wheels[2].accel(300.0)
+            self.wheels[3].accel(300.0)
         
         if self._brake:
             self.wheels[2].brake(800.0)
