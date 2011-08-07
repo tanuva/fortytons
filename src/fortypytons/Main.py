@@ -125,6 +125,11 @@ class Main(ShowBase):
         groundGeom = OdePlaneGeom(self.space, Vec4(0, 0, 1, 0))
         groundGeom.setCollideBits(self.maskTrucks | self.maskWheel)
         groundGeom.setCategoryBits(BitMask32(0x00000002))
+        
+        # for testing
+        stand = OdeBoxGeom(self.space, Vec3(1,1,2))
+        stand.setCollideBits(self.maskTrucks | self.maskWheel)
+        stand.setCategoryBits(BitMask32(0x00000002))
  
     def renderTask(self, task):
         """ Do stuff. """
