@@ -53,7 +53,17 @@ class VWheel(VComponent):
     
     def steer(self, direction, torque):
         self.susp.setParamFMax(0, torque)
-        self.susp.setParamVel(0, 5 * direction)
+        self.susp.setParamVel(0, 10 * direction)
+    
+    def center(self):
+        angle = self.susp.getAngle1()
+        
+        if angle < 0.01 and angle > -0.01:
+            self.steer(1, 0.0)
+        if angle > 0.01:
+            self.steer(-1, 10.0)
+        if angle < -0.01:
+            self.steer(1, 10.0)
         
     def accel(self, force):
         self.susp.setParamFMax(1, force)

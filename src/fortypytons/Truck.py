@@ -141,7 +141,9 @@ class Truck:
             self.wheels[0].steer(self._steer, 500.0) # steer == -1 for left
             self.wheels[1].steer(self._steer, 500.0) # steer ==  1 for right
         else:
-            pass # steer straight
+            # steer straight
+            self.wheels[0].center()
+            self.wheels[1].center()
         
         self._accel = False
         self._brake = False
