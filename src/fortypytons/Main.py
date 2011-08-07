@@ -95,6 +95,7 @@ class Main(ShowBase):
         self.terrainNp.setSz(5)
         self.terrainNp.setPos(-128, -128, 0)
         self.terrainNp.setRenderModeWireframe()
+        self.terrainNp.hide()
         
         # Generate it.
         self.terrain.generate()
