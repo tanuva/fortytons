@@ -10,33 +10,32 @@ class VComponent:
     '''
     classdocs
     '''
-    def __init__(self, npMesh, npWire, mass, body, geom):
+    def __init__(self, npMesh, npBody):
         '''
         Constructor
         '''
         self.npTruckMdl = npMesh
-        self.npWire = npWire
-        self.mass = mass
-        self.body = body
-        self.geom = geom
+        self.body = npBody
         
     def update(self):
-        self.npTruckMdl.setPosQuat(self.body.getPosition(), Quat(self.body.getQuaternion()))
-        self.npWire.setPosQuat(self.body.getPosition(), Quat(self.body.getQuaternion()))
+        print "shouldn't call update anymore"
+        pass
         
     def addForce(self, x, y, z):
-        self.body.addForce(x, y, z)
+        print "addForce: NYI"
     
     def getBody(self):
         return self.body
     def getNp(self):
         return self.npTruckMdl
+    def getPos(self):
+        return self.body.getPos()
     
 #==============================================================
 class VChassis(VComponent):
     def update(self):
         VComponent.update(self)
-        self.npTruckMdl.setZ(self.npTruckMdl.getZ()+0.1) # fix the geom/model offset temporarily
+        #self.npTruckMdl.setZ(self.npTruckMdl.getZ()+0.1) # fix the geom/model offset temporarily
 
 #==============================================================
 class VWheel(VComponent):
@@ -44,19 +43,19 @@ class VWheel(VComponent):
     classdocs
     '''
 
-    def __init__(self, npMesh, npWire, mass, body, geom, susp):
+    def __init__(self, npMesh, npBody):
         '''
         Constructor
         '''
-        VComponent.__init__(self, npMesh, npWire, mass, body, geom)
-        self.susp = susp
+        VComponent.__init__(self, npMesh, npBody)
+        pass
     
     def steer(self, direction, torque):
-        self.susp.setParamFMax(0, torque)
-        self.susp.setParamVel(0, 10 * direction)
+        print "steer: NYI"
     
     def center(self):
-        angle = self.susp.getAngle1()
+        angle = 0.0
+        print "center: NYI"
         
         if angle < 0.01 and angle > -0.01:
             self.steer(1, 0.0)
@@ -66,9 +65,7 @@ class VWheel(VComponent):
             self.steer(1, 10.0)
         
     def accel(self, force):
-        self.susp.setParamFMax(1, force)
-        self.susp.setParamVel(1, 50)
+        print "accel: NYI"
     
     def brake(self, force):
-        self.susp.setParamFMax(1, force)
-        self.susp.setParamVel(1, 0)
+        print "brake: NYI"

@@ -12,15 +12,11 @@ from direct.task import Task
 from direct.gui.DirectGui import DirectButton
 from direct.directtools.DirectGeometry import LineNodePath
 from panda3d.core import *
-from pandac.PandaModules import OdeWorld, OdeSimpleSpace, OdeJointGroup, OdeBallJoint, OdeHinge2Joint
-from pandac.PandaModules import OdeBody, OdeMass, OdeBoxGeom, OdePlaneGeom, OdeCylinderGeom
-from pandac.PandaModules import BitMask32, CardMaker, Vec4, Quat
-import math
-
+from panda3d.bullet import BulletWorld, BulletPlaneShape, BulletRigidBodyNode, BulletBoxShape, BulletDebugNode
 
 #SCALE = 10e-3
-#SCALE = (10e-2)*2
-SCALE = 1.0
+SCALE = (10e-2)*2
+#SCALE = 1.0
 
 class Main(ShowBase):
     trucks = []
@@ -34,21 +30,10 @@ class Main(ShowBase):
     
     def __init__(self):
         ShowBase.__init__(self)
-
-        # Initialize ODE
-        # Setup our physics world
-        self.world = OdeWorld()
-        self.world.setGravity(0, 0, -9.81*SCALE)
-        # The surface table is needed for autoCollide
-        self.world.initSurfaceTable(1)
-        # setSurfaceEntry(pos1, pos2, mu, bounce, bounce_vel, soft_erp, soft_cfm, slip, dampen)
-        self.world.setSurfaceEntry(0, 0, 150, 0.0, 9.1, 0.9, 0.00001, 0.0, 0.002)
-         
-        # Create a space and add a contactgroup to it to add the contact joints
-        self.space = OdeSimpleSpace()
-        self.space.setAutoCollideWorld(self.world)
-        self.contactgroup = OdeJointGroup()
-        self.space.setAutoCollideJointGroup(self.contactgroup)
+        
+        # Set up our physics world
+        self.world = BulletWorld()
+        self.world.setGravity(Vec3(0, 0, -9.81))
         
         # We need some gui
         guiOffset = Point3(.8, 0, .8)
@@ -83,8 +68,6 @@ class Main(ShowBase):
         # Set up the GeoMipTerrain
         self.terrain = GeoMipTerrain("terrain")
         self.terrain.setHeightfield(self.datadir + "tex/terrain.png")
-         
-        # Set terrain properties
         self.terrain.setBlockSize(32)
         self.terrain.setNear(20)
         self.terrain.setFar(100)
@@ -96,14 +79,13 @@ class Main(ShowBase):
         self.terrainNp.setPos(-128, -128, 0)
         self.terrainNp.setRenderModeWireframe()
         self.terrainNp.hide()
-        
         # Generate it.
         self.terrain.generate()
         
         self.trucks.append(Truck(self.datadir + "mesh/kipper.egg",
                                  self.datadir + "mesh/rad.egg",
-                                 Point3(0, 0, 3), SCALE, self.maskTrucks,
-                                 self.world, self.space))
+                                 Vec3(0, 0, 3), SCALE, self.maskTrucks,
+                                 self.world))
         
         # Mesh für kollision nehmen?
         #self.das_block = render.attachNewNode(loader.loadModel(self.datadir + "chassismesh/das_block.X").node())
@@ -122,40 +104,49 @@ class Main(ShowBase):
         ground.setTexture(texture)
         ground.setPos(0, 0, 0)
         ground.lookAt(0, 0, -1)
-        groundGeom = OdePlaneGeom(self.space, Vec4(0, 0, 1, 0))
-        groundGeom.setCollideBits(self.maskTrucks | self.maskWheel)
-        groundGeom.setCategoryBits(BitMask32(0x00000002))
+        
+        shpGround = BulletPlaneShape(Vec3(0, 0, 1), 0)
+        npGround = BulletRigidBodyNode('Ground')
+        npGround.addShape(shpGround)
+        npGround = render.attachNewNode(npGround)
+        npGround.setPos(0, 0, 0)
+        self.world.attachRigidBody(npGround.node())
         
         # for testing
-        stand = OdeBoxGeom(self.space, Vec3(1,1,2))
-        stand.setCollideBits(self.maskTrucks | self.maskWheel)
-        stand.setCategoryBits(BitMask32(0x00000002))
+        shpStand = BulletBoxShape(Vec3(0.5, 0.5, 0.5))
+        stand = BulletRigidBodyNode('Box')
+        stand.addShape(shpStand)
+        npStand = render.attachNewNode(stand)
+        npStand.setPos(0, 0, 0.5)
+        self.world.attachRigidBody(npStand.node())
+        dbgStand = BulletDebugNode('Debug')
+        dbgStand.setVerbose(False)
+        npDbgStand = render.attachNewNode(dbgStand)
+        npDbgStand.show()
+        self.world.setDebugNode(dbgStand)
  
     def renderTask(self, task):
         """ Do stuff. """
         self.camera.setPos(self.camPos)
-        self.camera.lookAt(self.trucks[0].getChassisNp()) # Look at the most recently loaded truck
+        self.camera.lookAt(0,0,0)
+        #self.camera.lookAt(self.trucks[0].getChassisNp()) # Look at the most recently loaded truck
         #self.camera.lookAt(self.das_block)
         
         self.terrain.update()
         
         # Update object positions
-        self.space.autoCollide() # Setup the contact joints
-        self.world.step(globalClock.getDt()*SCALE)
-        self.contactgroup.empty()
-        
-        for truck in self.trucks:
-            truck.update()
+        self.world.doPhysics(globalClock.getDt()*SCALE)
         
         # Apply forces to the truck
-        if self.accel:
-            self.trucks[0].accel()
-        if self.brake:
-            self.trucks[0].brake()
-        if self.right:
-            self.trucks[0].steerRight()
-        if self.left:
-            self.trucks[0].steerLeft()
+        if len(self.trucks) > 0:
+            if self.accel:
+                self.trucks[0].accel()
+            if self.brake:
+                self.trucks[0].brake()
+            if self.right:
+                self.trucks[0].steerRight()
+            if self.left:
+                self.trucks[0].steerLeft()
         return Task.cont
         
     def arrowKeys(self, keyname, isPressed): # args = [keyname, isPressed]

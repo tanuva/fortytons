@@ -10,16 +10,15 @@ import math
 from WireGeom import WireGeom
 from VComponent import *
 from direct.directtools.DirectGeometry import LineNodePath
-from pandac.PandaModules import OdeWorld, OdeSimpleSpace, OdeJointGroup, OdeBallJoint, OdeHinge2Joint
-from pandac.PandaModules import OdeBody, OdeMass, OdeBoxGeom, OdePlaneGeom, OdeCylinderGeom
-from pandac.PandaModules import BitMask32, CardMaker, Vec4, Quat
+from panda3d.core import *
+from panda3d.bullet import *
 
 class Truck:
     '''
     The player truck.
     '''
 
-    def __init__(self, chassismesh, wheelmesh, pos, SCALE, maskTrucks, world, space):
+    def __init__(self, chassismesh, wheelmesh, pos, SCALE, maskTrucks, world):
         '''
         Loads the chassismesh, sets the truck up and ignites the engine.
         '''
@@ -28,40 +27,33 @@ class Truck:
         self._accel = False
         self._brake = False
         self.world = world
-        self.space = space
         
         # eggmesh: center-side 1m, center-front 2.5m, center-top 1.7m, height exhaust: 0.1m
-        #npTruckCol.node().addSolid(CollisionBox(Point3(0,0,0), 1, 2.5, 1.7/2))
+        #npTruckCol.node().addSolid(CollisionBox(Vec3(0,0,0), 1, 2.5, 1.7/2))
         #npTruckCol.setZ(-.1) # Compensate for exhausts sticking out
         
         # Load the chassismesh
-        npTruckMdl = render.attachNewNode(loader.loadModel(chassismesh).node())
-        npTruckMdl.setPos(pos)
+        
+        npBody = render.attachNewNode(BulletRigidBodyNode('truckBox')) 
+        npBody.node().addShape(BulletBoxShape(Vec3(1, 2.5, 1.8/2.0)))
+        npBody.node().setMass(1500.0)
+        npBody.setPos(pos)
+        self.world.attachRigidBody(npBody.node())
+        debug = BulletDebugNode('truckDebug')
+        debug.setVerbose(True)
+        render.attachNewNode(debug).show()
+        self.world.setDebugNode(debug)
+        
+        npTruckMdl = npBody.attachNewNode(loader.loadModel(chassismesh).node())
         npTruckMdl.setRenderModeWireframe()
         
-        # Make us visible
-        wire = render.attachNewNode(WireGeom().generate('box', extents=(2, 5, 1.8)).node())
-                
-        # Create the body and set the mass
-        body = OdeBody(self.world)
-        mass = OdeMass()
-        mass.setBoxTotal(1500*SCALE, 2, 5, 1.8)
-        body.setMass(mass)
-        body.setPosition(npTruckMdl.getPos(render))
-        body.setQuaternion(npTruckMdl.getQuat(render))
-
-        # Create a BoxGeom
-        geom = OdeBoxGeom(self.space, 2, 5, 1.8)
-        geom.setCollideBits(maskTrucks)
-        geom.setCategoryBits(BitMask32(0x00000001))
-        geom.setBody(body)
-        
-        self.chassis = VComponent(npTruckMdl, wire, mass, body, geom)
+        self.chassis = VComponent(npTruckMdl, npBody)
         
         self.wheels = []
         
         for i in range(0, 4):
-            pos = self.chassis.getNp().getPos()
+            pos = self.chassis.getPos()
+            print pos
             
             if i == 0:
                 pos += (-.85, 1.8, -1.2)
@@ -73,29 +65,27 @@ class Truck:
                 pos += (.85, -1.5, -1.2)
             
             # Make the chassismesh ready for showtime
-            npWheelMdl = render.attachNewNode(loader.loadModel(wheelmesh).node())
-            npWheelMdl.setPos(pos)
+            
+            
+            
+            
+            # Prepare bullet nodes
+            npBody = render.attachNewNode(BulletRigidBodyNode('wheelBox')) 
+            npBody.node().addShape(BulletCylinderShape(.45, .35, XUp))
+            npBody.node().setMass(25.0)
+            npBody.setPos(pos)
+            self.world.attachRigidBody(npBody.node())
+            debug = BulletDebugNode('wheelDebug')
+            debug.setVerbose(True)
+            render.attachNewNode(debug).show()
+            self.world.setDebugNode(debug)
+            
+            npWheelMdl = npBody.attachNewNode(loader.loadModel(wheelmesh).node())
             npWheelMdl.setRenderModeWireframe()
             npWheelMdl.setR(90.0)
             
             if i % 2 == 0:
                 npWheelMdl.setH(180.0) # We need to turn around the meshes of wheel 0 and 2, the left ones
-            
-            # Add a helper object to be able to see the physics happening
-            wire = render.attachNewNode(WireGeom().generate('cylinder', radius=0.45, length=0.35).node())
-            
-            # Prepare ODE body, mass and geom
-            frBody = OdeBody(self.world)
-            frMass = OdeMass()
-            frMass.setCylinderTotal(25*SCALE, 2, 0.45, 0.35) # mass, direction, radius, length
-            frBody.setMass(frMass)
-            frBody.setPosition(npWheelMdl.getPos(render))
-            frBody.setQuaternion(npWheelMdl.getQuat(render))
-            frGeom = OdeCylinderGeom(self.space, 0.45, 0.35)
-            frGeom.setCollideBits(maskTrucks)
-            frGeom.setCategoryBits(BitMask32(0x00000001))
-            frGeom.setBody(frBody)
-            
             
             # Setup the suspension
             anchor = pos
@@ -104,22 +94,9 @@ class Truck:
             else:
                 anchor = pos - (0.175, 0, 0)
             
-            suspFr = OdeHinge2Joint(self.world)
-            suspFr.attach(self.chassis.getBody(), frBody)
-            suspFr.setAxis1(0,0,1)
-            suspFr.setAxis2(1,0,0)
-            suspFr.setAnchor(anchor)
-            #suspFr.setParamSuspensionERP(0, 0.999)
-            #suspFr.setParamSuspensionCFM(0, 1000)
             
-            if i < 2:
-                suspFr.setParamLoStop(0, -math.pi/6) # Only the front wheels are able to turn
-                suspFr.setParamHiStop(0, math.pi/6)
-            else:
-                suspFr.setParamLoStop(0, 0)
-                suspFr.setParamHiStop(0, 0)
             
-            self.wheels.append(VWheel(npWheelMdl, wire, frMass, frBody, frGeom, suspFr))
+            self.wheels.append(VWheel(npWheelMdl, npBody))
         
         # We are going to be drawing some lines between the anchor points and the joints
         self.lines = LineNodePath(parent = render, thickness = 3.0, colorVec = Vec4(1, 0, 0, 1))
