@@ -9,6 +9,7 @@ import math
 
 from WireGeom import WireGeom
 from VComponent import *
+from direct.directtools.DirectGeometry import LineNodePath
 from pandac.PandaModules import OdeWorld, OdeSimpleSpace, OdeJointGroup, OdeBallJoint, OdeHinge2Joint
 from pandac.PandaModules import OdeBody, OdeMass, OdeBoxGeom, OdePlaneGeom, OdeCylinderGeom
 from pandac.PandaModules import BitMask32, CardMaker, Vec4, Quat
@@ -113,6 +114,9 @@ class Truck:
                 suspFr.setParamHiStop(0, 0)
             
             self.wheels.append(VWheel(npWheelMdl, wire, frMass, frBody, frGeom, suspFr))
+        
+        # We are going to be drawing some lines between the anchor points and the joints
+        self.lines = LineNodePath(parent = render, thickness = 3.0, colorVec = Vec4(1, 0, 0, 1))
     
     def update(self):
         self.chassis.update()
@@ -136,6 +140,13 @@ class Truck:
         self._accel = False
         self._brake = False
         self._steer = 0
+        
+        #self.lines.reset()
+        #self.lines.drawLines([[(self.trucks[0][0].getX(), self.trucks[0][0].getY(), self.trucks[0][0].getZ()),
+        #                      (5, 0, 5)],
+        #                      [(5, 0, 5),
+        #                      (self.trucks[1][0].getX(), self.trucks[1][0].getY(), self.trucks[1][0].getZ())]])
+        #self.lines.create()
     
     def accel(self):
         self._accel = True

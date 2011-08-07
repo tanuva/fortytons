@@ -157,17 +157,6 @@ class Main(ShowBase):
         if self.left:
             self.trucks[0].steerLeft()
         return Task.cont
-    
-    def drawLinesTask(self, task):
-        """ Deprecated. Maybe we need this somewhere in the future """
-        # Draws lines between the smiley and frowney.
-        self.lines.reset()
-        self.lines.drawLines([[(self.trucks[0][0].getX(), self.trucks[0][0].getY(), self.trucks[0][0].getZ()),
-                              (5, 0, 5)],
-                              [(5, 0, 5),
-                              (self.trucks[1][0].getX(), self.trucks[1][0].getY(), self.trucks[1][0].getZ())]])
-        self.lines.create()
-        return Task.cont
         
     def arrowKeys(self, keyname, isPressed): # args = [keyname, isPressed]
         """ This should go into a separate class at some point. """
