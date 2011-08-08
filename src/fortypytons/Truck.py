@@ -82,7 +82,6 @@ class Truck:
             
             npWheelMdl = npBody.attachNewNode(loader.loadModel(wheelmesh).node())
             npWheelMdl.setRenderModeWireframe()
-            npWheelMdl.setR(90.0)
             
             if i % 2 == 0:
                 npWheelMdl.setH(180.0) # We need to turn around the meshes of wheel 0 and 2, the left ones
