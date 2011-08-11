@@ -151,7 +151,6 @@ class Main(ShowBase):
         self.camera.setPos(self.camPos)
         #self.camera.lookAt(0,0,0)
         self.camera.lookAt(self.trucks[0].getChassisNp()) # Look at first loaded truck
-        #self.camera.lookAt(self.das_block)
         
         self.terrain.update()
         
