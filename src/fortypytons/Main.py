@@ -149,8 +149,8 @@ class Main(ShowBase):
     def renderTask(self, task):
         """ Do stuff. """
         self.camera.setPos(self.camPos)
-        self.camera.lookAt(0,0,0)
-        #self.camera.lookAt(self.trucks[0].getChassisNp()) # Look at the most recently loaded truck
+        #self.camera.lookAt(0,0,0)
+        self.camera.lookAt(self.trucks[0].getChassisNp()) # Look at first loaded truck
         #self.camera.lookAt(self.das_block)
         
         self.terrain.update()
