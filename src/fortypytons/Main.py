@@ -104,9 +104,9 @@ class Main(ShowBase):
         
         self.trucks.append(Truck(self.datadir + "mesh/kipper.egg",
                                  self.datadir + "mesh/rad.egg",
-                                 Vec3(0, 0, 3), SCALE, self.maskTrucks,
+                                 Vec3(0, 0, 2.), SCALE, self.maskTrucks,
                                  self.world))
-        
+
         # TESTING
         """boxS = BulletBoxShape(Vec3(.5, .5, .5))
         box = BulletRigidBodyNode('Box2')
