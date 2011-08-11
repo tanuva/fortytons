@@ -49,8 +49,8 @@ class Main(ShowBase):
                                      scale = .05, pos = (Point3(.2, 0, 0) + guiOffset), command = self.zPlus)
         self.btnZminus = DirectButton(text = "Z-",        
                                       scale = .05, pos = (Point3(.2, 0, -.1) + guiOffset), command = self.zMinus)
-        self.btnAccel = DirectButton(text = "Accel",        
-                                      scale = .05, pos = (Point3(0, 0, -.2) + guiOffset), command = self.zMinus)
+        self.btnAccel = DirectButton(text = "Debug", 
+                                      scale = .05, pos = (Point3(0, 0, -.2) + guiOffset), command = self.toggleDebug)
         
         # keyboard hooks
         self.accept('arrow_up', self.arrowKeys, ["arrow_up", True])
@@ -202,6 +202,11 @@ class Main(ShowBase):
         self.camPos.setZ(self.camPos.getZ()+1.0)
     def zMinus(self):
         self.camPos.setZ(self.camPos.getZ()-1.0)
+    def toggleDebug(self):
+        if self.debug.isHidden():
+            self.debug.show()
+        else:
+            self.debug.hide()
     
 if __name__ == '__main__':
     app = Main()
