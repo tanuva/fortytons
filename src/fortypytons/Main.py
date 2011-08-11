@@ -124,12 +124,7 @@ class Main(ShowBase):
         
         #npbox2.setPos(2, 0, 1)
         npbox2.setPos(-11, 11, 8)
-        self.world.attachRigidBody(npbox2.node())
-        
-        dbgbox2 = BulletDebugNode('Debug')
-        self.world.setDebugNode(dbgbox2)
-        t = npbox2.attachNewNode(dbgbox2)
-        #t.show()"""
+        self.world.attachRigidBody(npbox2.node())"""
         
         """t1 = TransformState.makePos(npBox.getPos() - (0, 0, .5))
         t2 = TransformState.makePos(npbox2.getPos() + (0, 0, .5))
