@@ -12,7 +12,7 @@ from direct.task import Task
 from direct.gui.DirectGui import DirectButton
 from direct.directtools.DirectGeometry import LineNodePath
 from panda3d.core import *
-from panda3d.bullet import BulletWorld, BulletPlaneShape, BulletRigidBodyNode, BulletBoxShape, BulletDebugNode
+from panda3d.bullet import *
 
 #SCALE = 10e-3
 SCALE = (10e-2)*2
