@@ -42,6 +42,10 @@ class Truck:
         
         npTruckMdl = npBody.attachNewNode(loader.loadModel(chassismesh).node())
         npTruckMdl.setRenderModeWireframe()
+
+        vehicle = BulletVehicle(self.world, npBody.node())
+        vehicle.setCoordinateSystem(ZUp)
+        self.world.attachVehicle(vehicle)
         
         self.chassis = VComponent(npTruckMdl, npBody)
         
@@ -49,53 +53,60 @@ class Truck:
         
         for i in range(0, 4):
             pos = self.chassis.getPos()
+            rideHeight = -2.8
             
             if i == 0:
-                pos += (-.85, 1.8, -1.2)
+                pos += (-.85, 1.8, rideHeight)
+                #anchor = pos - (0.175, 0, 0)
             if i == 1:
-                pos += (.85, 1.8, -1.2)
+                pos += (.85, 1.8, rideHeight)
+                #anchor = pos + (0.175, 0, 0) # We want the anchor at the inside of the wheel, not in the center
             if i == 2:
-                pos += (-.85, -1.5, -1.2)
+                pos += (-.85, -1.5, rideHeight)
+                #anchor = pos - (0.175, 0, 0)
             if i == 3:
-                pos += (.85, -1.5, -1.2)
-            
+                pos += (.85, -1.5, rideHeight)
+                #anchor = pos + (0.175, 0, 0) # We want the anchor at the inside of the wheel, not in the center
+
+            anchor = pos
+
             # Prepare bullet nodes
             npBody = render.attachNewNode(BulletRigidBodyNode('wheelBox')) 
-            npBody.node().addShape(BulletCylinderShape(.45, .35, XUp))
+            #npBody.node().addShape(BulletCylinderShape(.45, .35, XUp))
             npBody.node().setMass(25.0)
             npBody.setPos(pos)
             self.world.attachRigidBody(npBody.node())
-            debug = BulletDebugNode('wheelDebug')
-            debug.setVerbose(True)
-            npBody.attachNewNode(debug).show()
-            self.world.setDebugNode(debug)
             
             npWheelMdl = npBody.attachNewNode(loader.loadModel(wheelmesh).node())
             npWheelMdl.setRenderModeWireframe()
-            
             if i % 2 == 0:
                 npWheelMdl.setH(180.0) # We need to turn around the meshes of wheel 0 and 2, the left ones
             
-            # Setup the suspension
-            anchor = pos
-            if i % 2 == 0:
-                anchor = pos + (0.175, 0, 0) # We want the anchor at the inside of the wheel, not in the center
-            else:
-                anchor = pos - (0.175, 0, 0)
+            wheel = vehicle.createWheel()
+            wheel.setNode(npBody.node())
+            wheel.setChassisConnectionPointCs(Point3(anchor))
+            if i < 2:
+                wheel.setFrontWheel(True)
+
+            wheel.setWheelDirectionCs(Vec3(0, 0, -1))
+            wheel.setWheelAxleCs(Vec3(1, 0, 0))
+            wheel.setWheelRadius(.45)
+            wheel.setMaxSuspensionTravelCm(40.0)
+
+            wheel.setSuspensionStiffness(40.0)
+            wheel.setWheelsDampingRelaxation(2.3)
+            wheel.setWheelsDampingCompression(4.4)
+            wheel.setFrictionSlip(100.0)
+            wheel.setRollInfluence(0.1)
             
-            self.wheels.append(VWheel(npWheelMdl, npBody))
+            self.wheels.append(VWheel(npWheelMdl, npBody, wheel))
         
         # Construct the front axle
-        npAx1 = render.attachNewNode(BulletRigidBodyNode("axle1"))
-        npAx1.node().addShape(BulletBoxShape(Vec3(0.5, 0.1, 0.1)))
-        npAx1.node().setMass(30.0*SCALE)
-        npAx1.setPos(pos + (0, 1.9, -1.1))
-        self.world.attachRigidBody(npAx1.node())
-        
-        dbgAx1 = BulletDebugNode("axle1")
-        dbgAx1.setVerbose(True)
-        npAx1.attachNewNode(dbgAx1).show()
-        self.world.setDebugNode(dbgAx1)
+        #npAx1 = render.attachNewNode(BulletRigidBodyNode("axle1"))
+        #npAx1.node().addShape(BulletBoxShape(Vec3(0.5, 0.1, 0.1)))
+        #npAx1.node().setMass(30.0*SCALE)
+        #npAx1.setPos(pos + (0, 1.9, -1.1))
+        #self.world.attachRigidBody(npAx1.node())
         
         # Left spring
         #t1 = TransformState.makePosHpr(pos + (-0.5, 1.9, -1.0), Vec3(0,-90, 0))
