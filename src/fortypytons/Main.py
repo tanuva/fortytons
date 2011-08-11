@@ -22,8 +22,8 @@ class Main(ShowBase):
     trucks = []
     maskTrucks = BitMask32.bit(1)
     maskWheel = BitMask32.bit(2)
-    camPos = Point3(8, -7, 3) # Good for egg truck
-    #self.camPos = Point3(12, 2.5, 3)
+    #camPos = Point3(8, -7, 3) # Good for egg truck
+    camPos = Point3(13, -12, 3)
     #self.camPos = Point3(20, -30, 8) # overview
     datadir = "../../data/"
     accel, brake, left, right = False, False, False, False
