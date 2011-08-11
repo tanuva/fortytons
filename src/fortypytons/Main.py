@@ -114,10 +114,7 @@ class Main(ShowBase):
         #npBox.setPos(2, 0, 3)
         
         box.addShape(boxS)
-        self.world.attachRigidBody(npBox.node())
-        dbgBox = BulletDebugNode('Debug')
-        self.world.setDebugNode(dbgBox)
-        render.attachNewNode(dbgBox).show()"""
+        self.world.attachRigidBody(npBox.node())"""
         
         """box2S = BulletBoxShape(Vec3(.5, .5, .5))
         box2 = BulletRigidBodyNode('box22')
