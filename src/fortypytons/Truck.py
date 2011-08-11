@@ -34,7 +34,8 @@ class Truck:
         
         # Load the chassismesh
         npBody = render.attachNewNode(BulletRigidBodyNode('truckBox')) 
-        npBody.node().addShape(BulletBoxShape(Vec3(1, 2.5, 1.8/2.0)))
+        # TransformState: compensate for the exhausts sticking out of the top
+        npBody.node().addShape(BulletBoxShape(Vec3(1, 2.5, 1.8/2.0)), TransformState.makePos(Vec3(0, 0, -.1)))
         npBody.node().setMass(1500.0*SCALE)
         npBody.setPos(pos)
         self.world.attachRigidBody(npBody.node())
