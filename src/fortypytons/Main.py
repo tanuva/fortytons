@@ -95,11 +95,12 @@ class Main(ShowBase):
         stand.addShape(shpStand)
         npStand = render.attachNewNode(stand)
         npStand.setPos(0, 0, 1.0)
-        self.world.attachRigidBody(npStand.node())
-        dbgStand = BulletDebugNode('standDebug')
-        dbgStand.setVerbose(False)
-        self.world.setDebugNode(dbgStand)
-        npStand.attachNewNode(dbgStand).show()
+        self.world.attachRigidBody(npStand.node()) """
+
+        self.debug = render.attachNewNode(BulletDebugNode('debug'))
+        self.debug.node().setVerbose(True)
+        self.world.setDebugNode(self.debug.node())
+        self.debug.hide()
         
         self.trucks.append(Truck(self.datadir + "mesh/kipper.egg",
                                  self.datadir + "mesh/rad.egg",
