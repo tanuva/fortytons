@@ -4,8 +4,6 @@ Created on 06.08.2011
 @author: marcel
 '''
 
-from pandac.PandaModules import Quat
-
 class VComponent:
     '''
     classdocs
