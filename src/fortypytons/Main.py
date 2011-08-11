@@ -90,7 +90,7 @@ class Main(ShowBase):
         self.terrain.generate()
         
         # for testing
-        shpStand = BulletBoxShape(Vec3(0.5, 0.5, 1.0))
+        """shpStand = BulletBoxShape(Vec3(0.5, 0.5, 1.0))
         stand = BulletRigidBodyNode('Box')
         stand.addShape(shpStand)
         npStand = render.attachNewNode(stand)
