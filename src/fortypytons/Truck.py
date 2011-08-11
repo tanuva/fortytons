@@ -86,12 +86,44 @@ class Truck:
             else:
                 anchor = pos - (0.175, 0, 0)
             
-            
-            
             self.wheels.append(VWheel(npWheelMdl, npBody))
         
+        # Construct the front axle
+        npAx1 = render.attachNewNode(BulletRigidBodyNode("axle1"))
+        npAx1.node().addShape(BulletBoxShape(Vec3(0.5, 0.1, 0.1)))
+        npAx1.node().setMass(30.0*SCALE)
+        npAx1.setPos(pos + (0, 1.9, -1.1))
+        self.world.attachRigidBody(npAx1.node())
+        
+        dbgAx1 = BulletDebugNode("axle1")
+        dbgAx1.setVerbose(True)
+        npAx1.attachNewNode(dbgAx1).show()
+        self.world.setDebugNode(dbgAx1)
+        
+        # Left spring
+        #t1 = TransformState.makePosHpr(pos + (-0.5, 1.9, -1.0), Vec3(0,-90, 0))
+        #t2 = TransformState.makePosHpr(pos + (-0.5, 1.9, -1.1), Vec3(0, 90, 0))
+        """t1 = TransformState.makePos(pos + (-0.5, 1.9, -1.0))
+        t2 = TransformState.makePos(pos + (-0.5, 1.9, -1.1))
+        cAx1 = BulletSliderConstraint(npBody.node(), npAx1.node(),
+                                      t1, t2,
+                                      True)
+        cAx1.setLowerLinearLimit(0.05)
+        cAx1.setUpperLinearLimit(0.2)
+        cAx1.setLowerAngularLimit(0)
+        cAx1.setUpperAngularLimit(0)
+        cAx1.setDebugDrawSize(2.0)
+        #cAx1.enableFeedback(True)
+        self.world.attachConstraint(cAx1)"""
+        """npAx1.ls()
+        c = BulletHingeConstraint(npAx1.node(), self.wheels[1].getNp().node(),
+                                  Point3(-.5, 1.9, -1.0),
+                                  Point3(-.35/2.0, 0, 0),
+                                  Vec3(0,0,1), Vec3(0,0,1))
+        self.world.attachConstraint(c)"""
+        
         # We are going to be drawing some lines between the anchor points and the joints
-        self.lines = LineNodePath(parent = render, thickness = 3.0, colorVec = Vec4(1, 0, 0, 1))
+        #self.lines = LineNodePath(parent = render, thickness = 3.0, colorVec = Vec4(1, 0, 0, 1))
     
     def update(self):
         self.chassis.update()
