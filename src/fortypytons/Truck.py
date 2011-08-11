@@ -39,10 +39,6 @@ class Truck:
         npBody.node().setMass(1500.0*SCALE)
         npBody.setPos(pos)
         self.world.attachRigidBody(npBody.node())
-        debug = BulletDebugNode('truckDebug')
-        debug.setVerbose(True)
-        npBody.attachNewNode(debug).show()
-        self.world.setDebugNode(debug)
         
         npTruckMdl = npBody.attachNewNode(loader.loadModel(chassismesh).node())
         npTruckMdl.setRenderModeWireframe()
