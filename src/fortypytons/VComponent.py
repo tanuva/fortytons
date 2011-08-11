@@ -41,12 +41,12 @@ class VWheel(VComponent):
     classdocs
     '''
 
-    def __init__(self, npMesh, npBody):
+    def __init__(self, npMesh, npBody, wheel):
         '''
         Constructor
         '''
         VComponent.__init__(self, npMesh, npBody)
-        pass
+        self.wheel = wheel
     
     def steer(self, direction, torque):
         print "steer: NYI"
