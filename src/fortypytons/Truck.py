@@ -36,7 +36,7 @@ class Truck:
         
         npBody = render.attachNewNode(BulletRigidBodyNode('truckBox')) 
         npBody.node().addShape(BulletBoxShape(Vec3(1, 2.5, 1.8/2.0)))
-        npBody.node().setMass(1500.0)
+        npBody.node().setMass(1500.0*SCALE)
         npBody.setPos(pos)
         self.world.attachRigidBody(npBody.node())
         debug = BulletDebugNode('truckDebug')
