@@ -65,20 +65,27 @@ class Main(ShowBase):
         # register the render task for ODE updating
         self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask")
         
+        self.terBodyNp = render.attachNewNode(BulletRigidBodyNode("terrainBody"))
+        img = PNMImage(Filename(self.datadir + "tex/terrain.png"))
+        offset = img.getXSize() / 2.0 - 0.5 # Used for the GeoMipTerrain
+        height = 10.0
+        self.terBodyNp.node().addShape(BulletHeightfieldShape(img, height, ZUp))
+        self.terBodyNp.setPos(0,0, height / 2.0)
+        self.world.attachRigidBody(self.terBodyNp.node())
+        
         # Set up the GeoMipTerrain
-        self.terrain = GeoMipTerrain("terrain")
+        self.terrain = GeoMipTerrain("terrainNode")
         self.terrain.setHeightfield(self.datadir + "tex/terrain.png")
         self.terrain.setBlockSize(32)
         self.terrain.setNear(20)
         self.terrain.setFar(100)
         self.terrain.setFocalPoint(base.camera)
+        self.terrain.getRoot().reparentTo(self.terBodyNp)
         
         self.terrainNp = self.terrain.getRoot()
-        self.terrainNp.reparentTo(render)
-        self.terrainNp.setSz(5)
-        self.terrainNp.setPos(-128, -128, 0)
+        self.terrainNp.setSz(height)
+        self.terrainNp.setPos(-offset, -offset, -height / 2.0)
         self.terrainNp.setRenderModeWireframe()
-        self.terrainNp.hide()
         # Generate it.
         self.terrain.generate()
         
