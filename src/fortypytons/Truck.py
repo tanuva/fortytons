@@ -33,7 +33,6 @@ class Truck:
         #npTruckCol.setZ(-.1) # Compensate for exhausts sticking out
         
         # Load the chassismesh
-        
         npBody = render.attachNewNode(BulletRigidBodyNode('truckBox')) 
         npBody.node().addShape(BulletBoxShape(Vec3(1, 2.5, 1.8/2.0)))
         npBody.node().setMass(1500.0*SCALE)
@@ -41,7 +40,7 @@ class Truck:
         self.world.attachRigidBody(npBody.node())
         debug = BulletDebugNode('truckDebug')
         debug.setVerbose(True)
-        render.attachNewNode(debug).show()
+        npBody.attachNewNode(debug).show()
         self.world.setDebugNode(debug)
         
         npTruckMdl = npBody.attachNewNode(loader.loadModel(chassismesh).node())
@@ -53,7 +52,6 @@ class Truck:
         
         for i in range(0, 4):
             pos = self.chassis.getPos()
-            print pos
             
             if i == 0:
                 pos += (-.85, 1.8, -1.2)
@@ -64,11 +62,6 @@ class Truck:
             if i == 3:
                 pos += (.85, -1.5, -1.2)
             
-            # Make the chassismesh ready for showtime
-            
-            
-            
-            
             # Prepare bullet nodes
             npBody = render.attachNewNode(BulletRigidBodyNode('wheelBox')) 
             npBody.node().addShape(BulletCylinderShape(.45, .35, XUp))
@@ -77,7 +70,7 @@ class Truck:
             self.world.attachRigidBody(npBody.node())
             debug = BulletDebugNode('wheelDebug')
             debug.setVerbose(True)
-            render.attachNewNode(debug).show()
+            npBody.attachNewNode(debug).show()
             self.world.setDebugNode(debug)
             
             npWheelMdl = npBody.attachNewNode(loader.loadModel(wheelmesh).node())
