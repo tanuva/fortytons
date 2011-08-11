@@ -89,48 +89,62 @@ class Main(ShowBase):
         # Generate it.
         self.terrain.generate()
         
+        # for testing
+        shpStand = BulletBoxShape(Vec3(0.5, 0.5, 1.0))
+        stand = BulletRigidBodyNode('Box')
+        stand.addShape(shpStand)
+        npStand = render.attachNewNode(stand)
+        npStand.setPos(0, 0, 1.0)
+        self.world.attachRigidBody(npStand.node())
+        dbgStand = BulletDebugNode('standDebug')
+        dbgStand.setVerbose(False)
+        self.world.setDebugNode(dbgStand)
+        npStand.attachNewNode(dbgStand).show()
+        
         self.trucks.append(Truck(self.datadir + "mesh/kipper.egg",
                                  self.datadir + "mesh/rad.egg",
                                  Vec3(0, 0, 3), SCALE, self.maskTrucks,
                                  self.world))
         
-        # Mesh für kollision nehmen?
-        #self.das_block = render.attachNewNode(loader.loadModel(self.datadir + "chassismesh/das_block.X").node())
-        #self.das_block.setScale(0.01)
-        #self.das_block.setPos(.5, 2.5, 2.5)
+        # TESTING
+        """boxS = BulletBoxShape(Vec3(.5, .5, .5))
+        box = BulletRigidBodyNode('Box2')
+        npBox = render.attachNewNode(box)
+        #npBox.setPos(2, 0, 3)
         
-        # We need something to stop us from falling off into -infinity!
-        cm = CardMaker("ground")
-        cm.setFrame(-20, 20, -20, 20)
-        ground = render.attachNewNode(cm.generate())
-        #ground.setRenderModeWireframe()
-        texture = Texture("grass")
-        texture.read(Filename(self.datadir + "tex/vegetati.png"))
-        texture.setWrapU(Texture.WMRepeat)
-        texture.setWrapV(Texture.WMRepeat)
-        ground.setTexture(texture)
-        ground.setPos(0, 0, 0)
-        ground.lookAt(0, 0, -1)
+        box.addShape(boxS)
+        self.world.attachRigidBody(npBox.node())
+        dbgBox = BulletDebugNode('Debug')
+        self.world.setDebugNode(dbgBox)
+        render.attachNewNode(dbgBox).show()"""
         
-        shpGround = BulletPlaneShape(Vec3(0, 0, 1), 0)
-        npGround = BulletRigidBodyNode('Ground')
-        npGround.addShape(shpGround)
-        npGround = render.attachNewNode(npGround)
-        npGround.setPos(0, 0, 0)
-        self.world.attachRigidBody(npGround.node())
+        """box2S = BulletBoxShape(Vec3(.5, .5, .5))
+        box2 = BulletRigidBodyNode('box22')
+        npbox2 = render.attachNewNode(box2)
+        npbox2.node().addShape(box2S)
+        npbox2.node().setMass(5)
         
-        # for testing
-        shpStand = BulletBoxShape(Vec3(0.5, 0.5, 0.5))
-        stand = BulletRigidBodyNode('Box')
-        stand.addShape(shpStand)
-        npStand = render.attachNewNode(stand)
-        npStand.setPos(0, 0, 0.5)
-        self.world.attachRigidBody(npStand.node())
-        dbgStand = BulletDebugNode('Debug')
-        dbgStand.setVerbose(False)
-        npDbgStand = render.attachNewNode(dbgStand)
-        npDbgStand.show()
-        self.world.setDebugNode(dbgStand)
+        #npbox2.setPos(2, 0, 1)
+        npbox2.setPos(-11, 11, 8)
+        self.world.attachRigidBody(npbox2.node())
+        
+        dbgbox2 = BulletDebugNode('Debug')
+        self.world.setDebugNode(dbgbox2)
+        t = npbox2.attachNewNode(dbgbox2)
+        #t.show()"""
+        
+        """t1 = TransformState.makePos(npBox.getPos() - (0, 0, .5))
+        t2 = TransformState.makePos(npbox2.getPos() + (0, 0, .5))
+        con = BulletSliderConstraint(npBox.node(), npbox2.node(),
+                                      t1, t2,
+                                      True)
+        con.setLowerLinearLimit(0.05)
+        con.setUpperLinearLimit(1.5)
+        con.setLowerAngularLimit(0)
+        con.setUpperAngularLimit(0)
+        con.setDebugDrawSize(2.0)
+        #con.enableFeedback(True)
+        self.world.attachConstraint(con)"""
  
     def renderTask(self, task):
         """ Do stuff. """
