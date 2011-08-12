@@ -43,9 +43,9 @@ class Truck:
         npTruckMdl = npBody.attachNewNode(loader.loadModel(chassismesh).node())
         npTruckMdl.setRenderModeWireframe()
 
-        vehicle = BulletVehicle(self.world, npBody.node())
-        vehicle.setCoordinateSystem(ZUp)
-        self.world.attachVehicle(vehicle)
+        self.vehicle = BulletVehicle(self.world, npBody.node())
+        self.vehicle.setCoordinateSystem(ZUp)
+        self.world.attachVehicle(self.vehicle)
         
         self.chassis = VComponent(npTruckMdl, npBody)
         
@@ -82,7 +82,7 @@ class Truck:
             if i % 2 == 0:
                 npWheelMdl.setH(180.0) # We need to turn around the meshes of wheel 0 and 2, the left ones
             
-            wheel = vehicle.createWheel()
+            wheel = self.vehicle.createWheel()
             wheel.setNode(npBody.node())
             wheel.setChassisConnectionPointCs(Point3(anchor))
             if i < 2:
@@ -134,25 +134,10 @@ class Truck:
         #self.lines = LineNodePath(parent = render, thickness = 3.0, colorVec = Vec4(1, 0, 0, 1))
     
     def update(self):
-        self.chassis.update()
-        for wheel in self.wheels:
-            wheel.update()
-        
         if self._accel:
-            self.wheels[2].accel(300.0)
-            self.wheels[3].accel(300.0)
-        
+            pass
         if self._brake:
-            self.wheels[2].brake(800.0)
-            self.wheels[3].brake(800.0)
-        
-        if self._steer != 0:
-            self.wheels[0].steer(self._steer, 500.0) # steer == -1 for left
-            self.wheels[1].steer(self._steer, 500.0) # steer ==  1 for right
-        else:
-            # steer straight
-            self.wheels[0].center()
-            self.wheels[1].center()
+            pass
         
         self._accel = False
         self._brake = False
@@ -167,15 +152,42 @@ class Truck:
     
     def accel(self):
         self._accel = True
+        self.vehicle.applyEngineForce(600.0, 2)
+        self.vehicle.applyEngineForce(600.0, 3)
     
     def brake(self):
         self._brake = True
+        if (self.vehicle.getCurrentSpeedKmHour() > 1):
+            self.vehicle.applyEngineForce(0, 2)
+            self.vehicle.applyEngineForce(0, 3)
+            self.vehicle.setBrake(600.0, 2)
+            self.vehicle.setBrake(600.0, 3)
+        else:
+            self.vehicle.applyEngineForce(-400.0, 2)
+            self.vehicle.applyEngineForce(-400.0, 3)
     
     def steerLeft(self):
-        self._steer = -1
+        #self._steer = -1
+        self.steer(1)
     
     def steerRight(self):
-        self._steer = 1
+        #self._steer = 1
+        self.steer(-1)
+    def steerStraight(self):
+        self.steer(0)
+
+    def steer(self, direction):
+        if direction != 0:
+            #self.wheels[0].steer(self._steer, 500.0) # steer == -1 for left
+            #self.wheels[1].steer(self._steer, 500.0) # steer ==  1 for right
+            self.vehicle.setSteeringValue(direction * 45.0, 0)
+            self.vehicle.setSteeringValue(direction * 45.0, 1)
+        else:
+            # steer straight
+            #self.wheels[0].center()
+            #self.wheels[1].center()
+            self.vehicle.setSteeringValue(0, 0)
+            self.vehicle.setSteeringValue(0, 1)
         
     def getChassisNp(self):
         return self.chassis.getNp()

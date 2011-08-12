@@ -146,7 +146,7 @@ class Main(ShowBase):
         self.camera.lookAt(self.trucks[0].getChassisNp()) # Look at first loaded truck
         
         self.terrain.update()
-        
+
         # Update object positions
         self.world.doPhysics(globalClock.getDt()*SCALE)
         
@@ -180,8 +180,10 @@ class Main(ShowBase):
                 self.brake = False
             if keyname == "arrow_left":
                 self.left = False
+                self.trucks[0].steerStraight()
             if keyname == "arrow_right":
                 self.right = False
+                self.trucks[0].steerStraight()
 
     def xPlus(self):
         self.camPos.setX(self.camPos.getX()+1.0)
