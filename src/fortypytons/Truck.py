@@ -158,7 +158,7 @@ class Truck:
     
     def brake(self):
         self._brake = True
-        if (self.vehicle.getCurrentSpeedKmHour() > 1):
+        if self.vehicle.getCurrentSpeedKmHour() > 1:
             self.vehicle.applyEngineForce(0, 2)
             self.vehicle.applyEngineForce(0, 3)
             self.vehicle.setBrake(600.0, 2)
@@ -190,7 +190,6 @@ class Truck:
             self.vehicle.setSteeringValue(0, 0)
             self.vehicle.setSteeringValue(0, 1)
         
-
     def reset(self):
         self.chassis.setPos(self.chassis.getPos() + (0,0,3), )
         self.chassis.setR(0)
