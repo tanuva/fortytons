@@ -152,8 +152,8 @@ class Truck:
     
     def accel(self):
         self._accel = True
-        self.vehicle.applyEngineForce(600.0, 2)
-        self.vehicle.applyEngineForce(600.0, 3)
+        self.vehicle.applyEngineForce(800.0, 2)
+        self.vehicle.applyEngineForce(800.0, 3)
     
     def brake(self):
         self._brake = True
