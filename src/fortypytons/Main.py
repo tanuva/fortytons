@@ -70,6 +70,7 @@ class Main(ShowBase):
         offset = img.getXSize() / 2.0 - 0.5 # Used for the GeoMipTerrain
         height = 10.0
         self.terBodyNp.node().addShape(BulletHeightfieldShape(img, height, ZUp))
+        self.terBodyNp.node().setDebugEnabled(False)
         self.terBodyNp.setPos(0,0, height / 2.0)
         self.world.attachRigidBody(self.terBodyNp.node())
         
