@@ -51,6 +51,8 @@ class Main(ShowBase):
                                       scale = .05, pos = (Point3(.2, 0, -.1) + guiOffset), command = self.zMinus)
         self.btnAccel = DirectButton(text = "Debug", 
                                       scale = .05, pos = (Point3(0, 0, -.2) + guiOffset), command = self.toggleDebug)
+        self.btnAccel = DirectButton(text = "Reset", 
+                                      scale = .05, pos = (Point3(.2, 0, -.2) + guiOffset), command = self.resetTruck)
         
         # keyboard hooks
         self.accept('arrow_up', self.arrowKeys, ["arrow_up", True])
@@ -203,6 +205,8 @@ class Main(ShowBase):
             self.debug.show()
         else:
             self.debug.hide()
+    def resetTruck(self):
+        self.trucks[0].reset()
     
 if __name__ == '__main__':
     app = Main()

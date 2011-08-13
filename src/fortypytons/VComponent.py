@@ -28,6 +28,10 @@ class VComponent:
         return self.npTruckMdl
     def getPos(self):
         return self.body.getPos()
+    def setPos(self, pos):
+        self.body.setPos(pos)
+    def setR(self, rot):
+        self.body.setR(rot)
     
 #==============================================================
 class VChassis(VComponent):
