@@ -155,6 +155,8 @@ class Main(ShowBase):
         
         # Apply forces to the truck
         if len(self.trucks) > 0:
+            self.trucks[0].update(globalClock.getDt())
+
             if self.accel:
                 self.trucks[0].accel()
             if self.brake:

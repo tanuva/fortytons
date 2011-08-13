@@ -18,6 +18,11 @@ class Truck:
     The player truck.
     '''
 
+    # steering
+    curAngle = 0.0
+    maxAngle = 45.0
+    rate = .7
+
     def __init__(self, chassismesh, wheelmesh, pos, SCALE, maskTrucks, world):
         '''
         Loads the chassismesh, sets the truck up and ignites the engine.
@@ -168,30 +173,38 @@ class Truck:
             self.vehicle.applyEngineForce(-400.0, 3)
     
     def steerLeft(self):
-        #self._steer = -1
-        self.steer(1)
-    
+        self._steer = 1
     def steerRight(self):
-        #self._steer = 1
-        self.steer(-1)
+        self._steer = -1
     def steerStraight(self):
-        self.steer(0)
+        self._steer = 0
 
-    def steer(self, direction):
-        if direction != 0:
-            #self.wheels[0].steer(self._steer, 500.0) # steer == -1 for left
-            #self.wheels[1].steer(self._steer, 500.0) # steer ==  1 for right
-            self.vehicle.setSteeringValue(direction * 45.0, 0)
-            self.vehicle.setSteeringValue(direction * 45.0, 1)
-        else:
+    def steer(self):
+        if self._steer == 1 and self.curAngle < self.maxAngle:
+            if self.curAngle < 0:
+                self.curAngle += 2.0 * self.rate
+            else:
+                self.curAngle += self.rate
+        if self._steer == -1 and self.curAngle > self.maxAngle * -1:
+            if self.curAngle > 0:
+                self.curAngle -= 2.0 * self.rate
+            else:
+                self.curAngle -= self.rate
+        if self._steer == 0:
             # steer straight
-            #self.wheels[0].center()
-            #self.wheels[1].center()
-            self.vehicle.setSteeringValue(0, 0)
-            self.vehicle.setSteeringValue(0, 1)
+            if self.curAngle > 0:
+                self.curAngle -= 2.0 * self.rate
+            if self.curAngle < 0:
+                self.curAngle += 2.0 * self.rate
+
+        self.vehicle.setSteeringValue(self.curAngle, 0)
+        self.vehicle.setSteeringValue(self.curAngle, 1)
         
+    def update(self, dt):
+        self.steer()
+
     def reset(self):
-        self.chassis.setPos(self.chassis.getPos() + (0,0,3), )
+        self.chassis.setPos(self.chassis.getPos() + (0,0,3))
         self.chassis.setR(0)
     def getChassisNp(self):
         return self.chassis.getNp()
