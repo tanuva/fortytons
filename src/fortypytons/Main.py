@@ -15,8 +15,8 @@ from panda3d.core import *
 from panda3d.bullet import *
 
 #SCALE = 10e-3
-SCALE = (10e-2)*2
-#SCALE = 1.0
+#SCALE = (10e-2)*2
+SCALE = 1.0
 
 class Main(ShowBase):
     trucks = []
@@ -66,7 +66,7 @@ class Main(ShowBase):
         self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask")
         
         self.terBodyNp = render.attachNewNode(BulletRigidBodyNode("terrainBody"))
-        img = PNMImage(Filename(self.datadir + "tex/terrain.png"))
+        img = PNMImage(Filename(self.datadir + "tex/inclined.png"))
         offset = img.getXSize() / 2.0 - 0.5 # Used for the GeoMipTerrain
         height = 10.0
         self.terBodyNp.node().addShape(BulletHeightfieldShape(img, height, ZUp))
@@ -75,7 +75,7 @@ class Main(ShowBase):
         
         # Set up the GeoMipTerrain
         self.terrain = GeoMipTerrain("terrainNode")
-        self.terrain.setHeightfield(self.datadir + "tex/terrain.png")
+        self.terrain.setHeightfield(self.datadir + "tex/inclined.png")
         self.terrain.setBlockSize(32)
         self.terrain.setNear(20)
         self.terrain.setFar(100)
