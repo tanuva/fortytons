@@ -30,6 +30,7 @@ class Main(ShowBase):
     
     def __init__(self):
         ShowBase.__init__(self)
+        base.setFrameRateMeter(True)
         
         # Set up our physics world
         self.world = BulletWorld()
