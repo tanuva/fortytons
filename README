@@ -5,5 +5,6 @@ by Tanuva & Lowjack
 
 ================================
 
-A devel snapshot of Panda3D >= 2011-08-12 is required.
-Older builds lack parts of the Bullet integration code.
+A devel snapshot of Panda3D >= 2011-08-22 is required.
+Older builds lack parts of the Bullet integration code
+and have different DebugNode API.
