@@ -102,9 +102,10 @@ class Main(ShowBase):
         self.world.attachRigidBody(npStand.node()) """
 
         self.debug = render.attachNewNode(BulletDebugNode('debug'))
-        self.debug.node().setVerbose(True)
+        self.debug.node().showWireframe(True)
+        self.debug.node().showConstraints(True)
         self.world.setDebugNode(self.debug.node())
-        self.debug.hide()
+        self.debug.show()
         
         self.trucks.append(Truck(self.datadir + "mesh/kipper.egg",
                                  self.datadir + "mesh/rad.egg",
