@@ -7,7 +7,8 @@ Created on 05.08.2011
 
 import math
 
-from WireGeom import WireGeom
+#from WireGeom import WireGeom
+from TuningGui import TuningGui
 from VComponent import *
 from direct.directtools.DirectGeometry import LineNodePath
 from panda3d.core import *
@@ -52,6 +53,7 @@ class Truck:
         self.vehicle = BulletVehicle(self.world, npBody.node())
         self.vehicle.setCoordinateSystem(ZUp)
         self.world.attachVehicle(self.vehicle)
+        self.tuningGui = TuningGui(self.vehicle.getTuning())
         
         self.chassis = VComponent(npTruckMdl, npBody)
         
@@ -97,8 +99,8 @@ class Truck:
             wheel.setWheelDirectionCs(Vec3(0, 0, -1))
             wheel.setWheelAxleCs(Vec3(1, 0, 0))
             wheel.setWheelRadius(.45)
-            wheel.setMaxSuspensionTravelCm(40.0)
 
+            wheel.setMaxSuspensionTravelCm(40.0)
             wheel.setSuspensionStiffness(40.0)
             wheel.setWheelsDampingRelaxation(2.3)
             wheel.setWheelsDampingCompression(4.4)
@@ -206,6 +208,7 @@ class Truck:
     def reset(self):
         self.chassis.setPos(self.chassis.getPos() + (0,0,3))
         self.chassis.setR(0)
+
     def getChassisNp(self):
         return self.chassis.getNp()
     def getChassis(self):
