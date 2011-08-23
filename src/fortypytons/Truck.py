@@ -55,6 +55,14 @@ class Truck:
         self.vehicle.setCoordinateSystem(ZUp)
         self.world.attachVehicle(self.vehicle)
         self.tuningGui = TuningGui(self.vehicle.getTuning())
+
+        tuning = self.vehicle.getTuning()
+        tuning.setMaxSuspensionTravelCm(35.0)
+        tuning.setMaxSuspensionForce(40000.0) # 1500 kg * 10 N/kg + a little extra
+        tuning.setSuspensionStiffness(100.0)
+        tuning.setSuspensionDamping(3.0)
+        tuning.setSuspensionCompression(5.0)
+        tuning.setFrictionSlip(1.0)
         
         self.wheels = []
         
@@ -98,12 +106,6 @@ class Truck:
             wheel.setWheelDirectionCs(Vec3(0, 0, -1))
             wheel.setWheelAxleCs(Vec3(1, 0, 0))
             wheel.setWheelRadius(.45)
-
-            wheel.setMaxSuspensionTravelCm(40.0)
-            wheel.setSuspensionStiffness(40.0)
-            wheel.setWheelsDampingRelaxation(2.3)
-            wheel.setWheelsDampingCompression(4.4)
-            wheel.setFrictionSlip(100.0)
             wheel.setRollInfluence(0.1)
             
             self.wheels.append(VWheel(npWheelMdl, npBody, wheel))
