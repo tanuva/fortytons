@@ -57,18 +57,18 @@ class Truck:
         self.tuningGui = TuningGui(self.vehicle.getTuning())
 
         tuning = self.vehicle.getTuning()
-        tuning.setMaxSuspensionTravelCm(35.0)
+        tuning.setMaxSuspensionTravelCm(40.0)
         tuning.setMaxSuspensionForce(40000.0) # 1500 kg * 10 N/kg + a little extra
-        tuning.setSuspensionStiffness(100.0)
+        tuning.setSuspensionStiffness(20.0)
         tuning.setSuspensionDamping(3.0)
         tuning.setSuspensionCompression(5.0)
-        tuning.setFrictionSlip(1.0)
+        tuning.setFrictionSlip(1.5)
         
         self.wheels = []
         
         for i in range(0, 4):
             pos = self.chassis.getPos()
-            rideHeight = -2.6
+            rideHeight = -2.7
             
             if i == 0:
                 pos += (-.85, 1.8, rideHeight)
@@ -106,7 +106,7 @@ class Truck:
             wheel.setWheelDirectionCs(Vec3(0, 0, -1))
             wheel.setWheelAxleCs(Vec3(1, 0, 0))
             wheel.setWheelRadius(.45)
-            wheel.setRollInfluence(0.1)
+            wheel.setRollInfluence(0.5)
             
             self.wheels.append(VWheel(npWheelMdl, npBody, wheel))
         
@@ -161,19 +161,19 @@ class Truck:
     
     def accel(self):
         self._accel = True
-        self.vehicle.applyEngineForce(800.0, 2)
-        self.vehicle.applyEngineForce(800.0, 3)
+        self.vehicle.applyEngineForce(1600.0, 2)
+        self.vehicle.applyEngineForce(1600.0, 3)
     
     def brake(self):
         self._brake = True
         if self.vehicle.getCurrentSpeedKmHour() > 1:
             self.vehicle.applyEngineForce(0, 2)
             self.vehicle.applyEngineForce(0, 3)
-            self.vehicle.setBrake(600.0, 2)
-            self.vehicle.setBrake(600.0, 3)
+            self.vehicle.setBrake(200.0, 2)
+            self.vehicle.setBrake(200.0, 3)
         else:
-            self.vehicle.applyEngineForce(-400.0, 2)
-            self.vehicle.applyEngineForce(-400.0, 3)
+            self.vehicle.applyEngineForce(-1000.0, 2)
+            self.vehicle.applyEngineForce(-1000.0, 3)
     
     def steerLeft(self):
         self._steer = 1
