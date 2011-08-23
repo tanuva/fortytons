@@ -166,3 +166,5 @@ class Truck:
         return self.chassis.getNp()
     def getChassis(self):
         return self.chassis
+    def getSpeed(self):
+        return self.vehicle.getCurrentSpeedKmHour()

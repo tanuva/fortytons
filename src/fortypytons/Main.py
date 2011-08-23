@@ -9,7 +9,7 @@ Created on 11.07.2011
 from Truck import Truck
 from direct.showbase.ShowBase import ShowBase
 from direct.task import Task
-from direct.gui.DirectGui import DirectButton
+from direct.gui.DirectGui import DirectButton, DirectLabel
 from panda3d.core import *
 from panda3d.bullet import *
 
@@ -53,6 +53,7 @@ class Main(ShowBase):
                                       scale = .05, pos = (Point3(0, 0, -.2) + guiOffset), command = self.toggleDebug)
         self.btnAccel = DirectButton(text = "Reset", 
                                       scale = .05, pos = (Point3(.2, 0, -.2) + guiOffset), command = self.resetTruck)
+        self.lblSpeedo = DirectLabel(text = "xxx", scale = .1, pos = Point3(1.2, 0, -.9))
         
         # keyboard hooks
         self.accept('arrow_up', self.arrowKeys, ["arrow_up", True])
@@ -150,6 +151,8 @@ class Main(ShowBase):
 
         # Update object positions
         self.world.doPhysics(globalClock.getDt()*SCALE)
+        # Update the truck's speedometer
+        self.lblSpeedo["text"] = "%i" % self.trucks[0].getSpeed()
         
         # Apply forces to the truck
         if len(self.trucks) > 0:
