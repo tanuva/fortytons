@@ -104,6 +104,8 @@ class Main(ShowBase):
         self.debug = render.attachNewNode(BulletDebugNode('debug'))
         self.debug.node().showWireframe(True)
         self.debug.node().showConstraints(True)
+        self.debug.node().showBoundingBoxes(False)
+        self.debug.node().showNormals(False)
         self.world.setDebugNode(self.debug.node())
         self.debug.show()
         
