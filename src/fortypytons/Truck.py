@@ -49,13 +49,12 @@ class Truck:
         
         npTruckMdl = npBody.attachNewNode(loader.loadModel(chassismesh).node())
         npTruckMdl.setRenderModeWireframe()
+        self.chassis = VComponent(npTruckMdl, npBody)
 
         self.vehicle = BulletVehicle(self.world, npBody.node())
         self.vehicle.setCoordinateSystem(ZUp)
         self.world.attachVehicle(self.vehicle)
         self.tuningGui = TuningGui(self.vehicle.getTuning())
-        
-        self.chassis = VComponent(npTruckMdl, npBody)
         
         self.wheels = []
         
