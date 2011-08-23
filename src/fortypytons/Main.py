@@ -37,22 +37,22 @@ class Main(ShowBase):
         
         # We need some gui
         guiOffset = Point3(.8, 0, .8)
-        self.btnXplus = DirectButton(text = "X+",
-                                     scale = .05, pos = (Point3(0, 0, 0) + guiOffset), command = self.xPlus)
-        self.btnXminus = DirectButton(text = "X-",
-                                      scale = .05, pos = (Point3(0, 0, -.1) + guiOffset), command = self.xMinus)
-        self.btnYplus = DirectButton(text = "Y+",
-                                     scale = .05, pos = (Point3(.1, 0, 0) + guiOffset), command = self.yPlus)
-        self.btnYminus = DirectButton(text = "Y-",
-                                      scale = .05, pos = (Point3(.1, 0, -.1) + guiOffset), command = self.yMinus)
-        self.btnZplus = DirectButton(text = "Z+",
-                                     scale = .05, pos = (Point3(.2, 0, 0) + guiOffset), command = self.zPlus)
-        self.btnZminus = DirectButton(text = "Z-",        
-                                      scale = .05, pos = (Point3(.2, 0, -.1) + guiOffset), command = self.zMinus)
-        self.btnAccel = DirectButton(text = "Debug", 
-                                      scale = .05, pos = (Point3(0, 0, -.2) + guiOffset), command = self.toggleDebug)
-        self.btnAccel = DirectButton(text = "Reset", 
-                                      scale = .05, pos = (Point3(.2, 0, -.2) + guiOffset), command = self.resetTruck)
+        self.btnXplus = DirectButton(text = "X+", scale = .05, pos = (Point3(0, 0, 0) + guiOffset),
+                                     command = self.xPlus)
+        self.btnXminus = DirectButton(text = "X-", scale = .05, pos = (Point3(0, 0, -.1) + guiOffset),
+                                      command = self.xMinus)
+        self.btnYplus = DirectButton(text = "Y+", scale = .05, pos = (Point3(.1, 0, 0) + guiOffset),
+                                     command = self.yPlus)
+        self.btnYminus = DirectButton(text = "Y-", scale = .05, pos = (Point3(.1, 0, -.1) + guiOffset),
+                                      command = self.yMinus)
+        self.btnZplus = DirectButton(text = "Z+", scale = .05, pos = (Point3(.2, 0, 0) + guiOffset),
+                                     command = self.zPlus)
+        self.btnZminus = DirectButton(text = "Z-", scale = .05, pos = (Point3(.2, 0, -.1) + guiOffset),
+                                      command = self.zMinus)
+        self.btnDebug = DirectButton(text = "Debug", scale = .05, pos = (Point3(0, 0, -.2) + guiOffset),
+                                     command = self.toggleDebug)
+        self.btnReset = DirectButton(text = "Reset", scale = .05, pos = (Point3(.2, 0, -.2) + guiOffset),
+                                     command = self.resetTruck)
         self.lblSpeedo = DirectLabel(text = "xxx", scale = .1, pos = Point3(1.2, 0, -.9))
         
         # keyboard hooks
