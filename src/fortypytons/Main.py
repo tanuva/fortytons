@@ -10,7 +10,6 @@ from Truck import Truck
 from direct.showbase.ShowBase import ShowBase
 from direct.task import Task
 from direct.gui.DirectGui import DirectButton
-from direct.directtools.DirectGeometry import LineNodePath
 from panda3d.core import *
 from panda3d.bullet import *
 
