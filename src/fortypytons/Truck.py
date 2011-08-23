@@ -102,14 +102,7 @@ class Truck:
             self.wheels.append(VWheel(npWheelMdl, npBody, wheel))
         
     def update(self):
-        if self._accel:
-            pass
-        if self._brake:
-            pass
-        
-        self._accel = False
-        self._brake = False
-        self._steer = 0
+        self.steer()
         
     def accel(self):
         self._accel = True
@@ -126,6 +119,11 @@ class Truck:
         else:
             self.vehicle.applyEngineForce(-1000.0, 2)
             self.vehicle.applyEngineForce(-1000.0, 3)
+
+    def neutral(self):
+        for i in range(0,4):
+            self.vehicle.applyEngineForce(0, i)
+            self.vehicle.setBrake(0, i)
     
     def steerLeft(self):
         self._steer = 1

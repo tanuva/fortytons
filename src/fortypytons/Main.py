@@ -158,37 +158,27 @@ class Main(ShowBase):
         if len(self.trucks) > 0:
             self.trucks[0].update(globalClock.getDt())
 
-            if self.accel:
-                self.trucks[0].accel()
-            if self.brake:
-                self.trucks[0].brake()
-            if self.right:
-                self.trucks[0].steerRight()
-            if self.left:
-                self.trucks[0].steerLeft()
         return Task.cont
         
     def arrowKeys(self, keyname, isPressed): # args = [keyname, isPressed]
         """ This should go into a separate class at some point. """
         if isPressed:
             if keyname == "arrow_up":
-                self.accel = True
+                self.trucks[0].accel()
             if keyname == "arrow_down":
-                self.brake = True
+                self.trucks[0].brake()
             if keyname == "arrow_left":
-                self.left = True
+                self.trucks[0].steerLeft()
             if keyname == "arrow_right":
-                self.right = True
+                self.trucks[0].steerRight()
         else:
             if keyname == "arrow_up":
-                self.accel = False
+                self.trucks[0].neutral()
             if keyname == "arrow_down":
-                self.brake = False
+                self.trucks[0].neutral()
             if keyname == "arrow_left":
-                self.left = False
                 self.trucks[0].steerStraight()
             if keyname == "arrow_right":
-                self.right = False
                 self.trucks[0].steerStraight()
 
     def xPlus(self):
