@@ -10,10 +10,10 @@ Older builds lack parts of the Bullet integration code
 and have different DebugNode API.
 
 Todo:
-- speedometer
 - "only accelerate while arrow_up is pressed", same for braking
 - basic speed sensitive steering
 - reintegrate the dumping device
+- speedometer (done!)
 
 Ideas:
 - make it dump! (at least pretend doing so)
