@@ -145,10 +145,12 @@ class Truck:
                 self.curAngle -= self.rate
         if self._steer == 0:
             # steer straight
-            if self.curAngle > 0:
+            if self.curAngle > self.rate:
                 self.curAngle -= 2.0 * self.rate
-            if self.curAngle < 0:
+            elif self.curAngle < self.rate * -1.0:
                 self.curAngle += 2.0 * self.rate
+            else:
+                self.curAngle = 0.0
 
         self.vehicle.setSteeringValue(self.curAngle, 0)
         self.vehicle.setSteeringValue(self.curAngle, 1)
