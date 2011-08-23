@@ -201,11 +201,13 @@ class Main(ShowBase):
         self.camPos.setZ(self.camPos.getZ()+1.0)
     def zMinus(self):
         self.camPos.setZ(self.camPos.getZ()-1.0)
+
     def toggleDebug(self):
         if self.debug.isHidden():
             self.debug.show()
         else:
             self.debug.hide()
+
     def resetTruck(self):
         self.trucks[0].reset()
     
