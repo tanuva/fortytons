@@ -22,7 +22,7 @@ class Truck:
     # steering
     curAngle = 0.0
     maxAngle = 45.0
-    rate = .7
+    rate = 1.1
 
     def __init__(self, chassismesh, wheelmesh, pos, SCALE, maskTrucks, world):
         '''
