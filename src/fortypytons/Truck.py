@@ -207,7 +207,7 @@ class Truck:
         self.steer()
 
     def reset(self):
-        self.chassis.setPos(self.chassis.getPos() + (0,0,3))
+        self.chassis.setPos(self.chassis.getPos() + (0,0,1.5))
         self.chassis.setR(0)
 
     def getChassisNp(self):
