@@ -12,6 +12,7 @@ and have different DebugNode API.
 Todo:
 - basic speed sensitive steering
 - reintegrate the dumping device
+- implement basic shifting (R,N,D)
 - speedometer (done!)
 - "only accelerate while arrow_up is pressed", same for braking (done!)
 
