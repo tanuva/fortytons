@@ -60,7 +60,7 @@ class Truck:
         
         for i in range(0, 4):
             pos = self.chassis.getPos()
-            rideHeight = -2.8
+            rideHeight = -2.6
             
             if i == 0:
                 pos += (-.85, 1.8, rideHeight)
