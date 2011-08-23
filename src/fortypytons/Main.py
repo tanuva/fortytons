@@ -115,31 +115,26 @@ class Main(ShowBase):
                                  self.world))
 
         # TESTING
-        """boxS = BulletBoxShape(Vec3(.5, .5, .5))
-        box = BulletRigidBodyNode('Box2')
-        npBox = render.attachNewNode(box)
-        #npBox.setPos(2, 0, 3)
+        """npBox = render.attachNewNode(BulletRigidBodyNode('Box'))
+        boxS = BulletBoxShape(Vec3(.5, .5, .5))
+        npBox.node().addShape(boxS)
+        npBox.node().setDeactivationEnabled(False)
+        npBox.setPos(2, -4, 3)
+        self.world.attachRigidBody(npBox.node())
         
-        box.addShape(boxS)
-        self.world.attachRigidBody(npBox.node())"""
-        
-        """box2S = BulletBoxShape(Vec3(.5, .5, .5))
-        box2 = BulletRigidBodyNode('box22')
-        npbox2 = render.attachNewNode(box2)
+        npbox2 = render.attachNewNode(BulletRigidBodyNode('Box2'))
+        box2S = BulletBoxShape(Vec3(.5, .5, .5))
         npbox2.node().addShape(box2S)
+        npbox2.node().setDeactivationEnabled(False)
         npbox2.node().setMass(5)
+        npbox2.setPos(2, -4, 1)
+        self.world.attachRigidBody(npbox2.node())
         
-        #npbox2.setPos(2, 0, 1)
-        npbox2.setPos(-11, 11, 8)
-        self.world.attachRigidBody(npbox2.node())"""
-        
-        """t1 = TransformState.makePos(npBox.getPos() - (0, 0, .5))
-        t2 = TransformState.makePos(npbox2.getPos() + (0, 0, .5))
-        con = BulletSliderConstraint(npBox.node(), npbox2.node(),
-                                      t1, t2,
-                                      True)
+        t1 = TransformState.makePosHpr(Point3(0,0,0), Vec3(0,0,90))
+        t2 = TransformState.makePosHpr(Point3(0,0,0), Vec3(0,0,0))
+        con = BulletSliderConstraint(npBox.node(), npbox2.node(), t1, t2, True)
         con.setLowerLinearLimit(0.05)
-        con.setUpperLinearLimit(1.5)
+        con.setUpperLinearLimit(3)
         con.setLowerAngularLimit(0)
         con.setUpperAngularLimit(0)
         con.setDebugDrawSize(2.0)
