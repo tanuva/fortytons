@@ -35,9 +35,7 @@ class Truck:
         self.world = world
         
         # eggmesh: center-side 1m, center-front 2.5m, center-top 1.7m, height exhaust: 0.1m
-        #npTruckCol.node().addSolid(CollisionBox(Vec3(0,0,0), 1, 2.5, 1.7/2))
-        #npTruckCol.setZ(-.1) # Compensate for exhausts sticking out
-        
+
         # Load the chassismesh
         npBody = render.attachNewNode(BulletRigidBodyNode('truckBox')) 
         # TransformState: compensate for the exhausts sticking out of the top
@@ -72,22 +70,15 @@ class Truck:
             
             if i == 0:
                 pos += (-.85, 1.8, rideHeight)
-                #anchor = pos - (0.175, 0, 0)
             if i == 1:
                 pos += (.85, 1.8, rideHeight)
-                #anchor = pos + (0.175, 0, 0) # We want the anchor at the inside of the wheel, not in the center
             if i == 2:
                 pos += (-.85, -1.5, rideHeight)
-                #anchor = pos - (0.175, 0, 0)
             if i == 3:
                 pos += (.85, -1.5, rideHeight)
-                #anchor = pos + (0.175, 0, 0) # We want the anchor at the inside of the wheel, not in the center
-
-            anchor = pos
 
             # Prepare bullet nodes
-            npBody = render.attachNewNode(BulletRigidBodyNode('wheelBox')) 
-            #npBody.node().addShape(BulletCylinderShape(.45, .35, XUp))
+            npBody = render.attachNewNode(BulletRigidBodyNode('wheelBox'))
             npBody.node().setMass(25.0)
             npBody.setPos(pos)
             self.world.attachRigidBody(npBody.node())
@@ -99,7 +90,7 @@ class Truck:
             
             wheel = self.vehicle.createWheel()
             wheel.setNode(npBody.node())
-            wheel.setChassisConnectionPointCs(Point3(anchor))
+            wheel.setChassisConnectionPointCs(pos)
             if i < 2:
                 wheel.setFrontWheel(True)
 
@@ -110,38 +101,6 @@ class Truck:
             
             self.wheels.append(VWheel(npWheelMdl, npBody, wheel))
         
-        # Construct the front axle
-        #npAx1 = render.attachNewNode(BulletRigidBodyNode("axle1"))
-        #npAx1.node().addShape(BulletBoxShape(Vec3(0.5, 0.1, 0.1)))
-        #npAx1.node().setMass(30.0*SCALE)
-        #npAx1.setPos(pos + (0, 1.9, -1.1))
-        #self.world.attachRigidBody(npAx1.node())
-        
-        # Left spring
-        #t1 = TransformState.makePosHpr(pos + (-0.5, 1.9, -1.0), Vec3(0,-90, 0))
-        #t2 = TransformState.makePosHpr(pos + (-0.5, 1.9, -1.1), Vec3(0, 90, 0))
-        """t1 = TransformState.makePos(pos + (-0.5, 1.9, -1.0))
-        t2 = TransformState.makePos(pos + (-0.5, 1.9, -1.1))
-        cAx1 = BulletSliderConstraint(npBody.node(), npAx1.node(),
-                                      t1, t2,
-                                      True)
-        cAx1.setLowerLinearLimit(0.05)
-        cAx1.setUpperLinearLimit(0.2)
-        cAx1.setLowerAngularLimit(0)
-        cAx1.setUpperAngularLimit(0)
-        cAx1.setDebugDrawSize(2.0)
-        #cAx1.enableFeedback(True)
-        self.world.attachConstraint(cAx1)"""
-        """npAx1.ls()
-        c = BulletHingeConstraint(npAx1.node(), self.wheels[1].getNp().node(),
-                                  Point3(-.5, 1.9, -1.0),
-                                  Point3(-.35/2.0, 0, 0),
-                                  Vec3(0,0,1), Vec3(0,0,1))
-        self.world.attachConstraint(c)"""
-        
-        # We are going to be drawing some lines between the anchor points and the joints
-        #self.lines = LineNodePath(parent = render, thickness = 3.0, colorVec = Vec4(1, 0, 0, 1))
-    
     def update(self):
         if self._accel:
             pass
@@ -152,13 +111,6 @@ class Truck:
         self._brake = False
         self._steer = 0
         
-        #self.lines.reset()
-        #self.lines.drawLines([[(self.trucks[0][0].getX(), self.trucks[0][0].getY(), self.trucks[0][0].getZ()),
-        #                      (5, 0, 5)],
-        #                      [(5, 0, 5),
-        #                      (self.trucks[1][0].getX(), self.trucks[1][0].getY(), self.trucks[1][0].getZ())]])
-        #self.lines.create()
-    
     def accel(self):
         self._accel = True
         self.vehicle.applyEngineForce(1600.0, 2)
