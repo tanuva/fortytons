@@ -24,12 +24,11 @@ class TuningGui:
     wheel.setRollInfluence(0.1)
 
      	setMaxSuspensionTravelCm (float value)
+ 	setMaxSuspensionForce (float value)
         setSuspensionStiffness (float value)
  	setSuspensionDamping (float value)
  	setSuspensionCompression (float value)
  	setFrictionSlip (float value)
-
- 	setMaxSuspensionForce (float value)
     """
 
     guiElms = []
