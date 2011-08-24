@@ -138,12 +138,12 @@ class Truck:
                 self.curAngle += 2.0 * self.rate
             else:
                 self.curAngle += self.rate
-        if self._steer == -1 and self.curAngle > self.maxAngle * -1:
+        elif self._steer == -1 and self.curAngle > self.maxAngle * -1:
             if self.curAngle > 0:
                 self.curAngle -= 2.0 * self.rate
             else:
                 self.curAngle -= self.rate
-        if self._steer == 0:
+        else: # self._steer == 0
             # steer straight
             if self.curAngle > self.rate:
                 self.curAngle -= 2.0 * self.rate
