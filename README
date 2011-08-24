@@ -10,11 +10,11 @@ Older builds lack parts of the Bullet integration code
 and have different DebugNode API.
 
 Todo:
-- basic speed sensitive steering
 - reintegrate the dumping device
 - implement basic shifting (R,N,D)
 - speedometer (done!)
 - "only accelerate while arrow_up is pressed", same for braking (done!)
+- basic speed sensitive steering (done)
 
 Ideas:
 - make it dump! (at least pretend doing so)
