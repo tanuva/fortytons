@@ -36,11 +36,13 @@ class Truck:
         self.world = world
         
         # eggmesh: center-side 1m, center-front 2.5m, center-top 1.7m, height exhaust: 0.1m
+        # chassis box: .51m high, cabin box 1.18m high (without exhaust tips)
 
         # Load the chassismesh
         npBody = render.attachNewNode(BulletRigidBodyNode('truckBox')) 
         # TransformState: compensate for the exhausts sticking out of the top
-        npBody.node().addShape(BulletBoxShape(Vec3(1, 2.5, 1.8/2.0)), TransformState.makePos(Vec3(0, 0, -.1)))
+        npBody.node().addShape(BulletBoxShape(Vec3(1, 2.5, .51/2.0)), TransformState.makePos(Vec3(0, 0, -.65)))
+        npBody.node().addShape(BulletBoxShape(Vec3(1, .75, 1.18/2.0)), TransformState.makePos(Vec3(0, 1.75, .2)))
         npBody.node().setMass(1500.0*SCALE)
         npBody.node().setDeactivationEnabled(False)
         npBody.setPos(pos)
