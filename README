@@ -10,6 +10,7 @@ Older builds lack parts of the Bullet integration code
 and have different DebugNode API.
 
 Todo:
+- first: make the physics shape more precise: chassis+cabin
 - reintegrate the dumping device
 - implement basic shifting (R,N,D)
 - speedometer (done!)
@@ -20,4 +21,5 @@ Ideas:
 - make it dump! (at least pretend doing so)
 - follower camera
 - Implement more stuff as keyboard shortcuts
+- truck configuration files to allow multi-trucking
 - real shifting. torque function, gear ratios, rev limits
