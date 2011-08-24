@@ -21,7 +21,8 @@ class Truck:
 
     # steering
     curAngle = 0.0
-    maxAngle = 45.0
+    maxAngle = 45.0 # The maximum steering angle at the current speed (speed-sensitive)
+    physMaxAngle = 45.0 # The absolute maximum angle
     rate = 1.1
 
     def __init__(self, chassismesh, wheelmesh, pos, SCALE, maskTrucks, world):
@@ -97,7 +98,7 @@ class Truck:
             wheel.setWheelDirectionCs(Vec3(0, 0, -1))
             wheel.setWheelAxleCs(Vec3(1, 0, 0))
             wheel.setWheelRadius(.45)
-            wheel.setRollInfluence(0.5)
+            wheel.setRollInfluence(0.3)
             
             self.wheels.append(VWheel(npWheelMdl, npBody, wheel))
         
@@ -133,6 +134,13 @@ class Truck:
         self._steer = 0
 
     def steer(self):
+        # We are speed sensitive
+        speed = self.vehicle.getCurrentSpeedKmHour()
+        if speed > 0 and speed < 90:
+            self.maxAngle = (-.5) * speed + 45 # Graph this on WolframAlpha to make it obvious :)
+        elif speed > 90:
+            self.maxAngle = 1.0
+        
         if self._steer == 1 and self.curAngle < self.maxAngle:
             if self.curAngle < 0:
                 self.curAngle += 2.0 * self.rate
