@@ -37,13 +37,14 @@ class Truck:
         
         # eggmesh: center-side 1m, center-front 2.5m, center-top 1.7m, height exhaust: 0.1m
         # chassis box: .51m high, cabin box 1.18m high (without exhaust tips)
+        # platform: 3.15m x 2m x 0.6m (l,w,h)
 
-        # Load the chassismesh
+        # === Chassis ===
         npBody = render.attachNewNode(BulletRigidBodyNode('truckBox')) 
         # TransformState: compensate for the exhausts sticking out of the top
         npBody.node().addShape(BulletBoxShape(Vec3(1, 2.5, .51/2.0)), TransformState.makePos(Vec3(0, 0, -.65)))
         npBody.node().addShape(BulletBoxShape(Vec3(1, .75, 1.18/2.0)), TransformState.makePos(Vec3(0, 1.75, .2)))
-        npBody.node().setMass(1500.0*SCALE)
+        npBody.node().setMass(1200.0)
         npBody.node().setDeactivationEnabled(False)
         npBody.setPos(pos)
         self.world.attachRigidBody(npBody.node())
@@ -52,6 +53,33 @@ class Truck:
         npTruckMdl.setRenderModeWireframe()
         self.chassis = VComponent(npTruckMdl, npBody)
 
+        # === Platform / Dumper ===
+        npDump = npBody.attachNewNode(BulletRigidBodyNode("dumpBox"))
+        npDump.node().addShape(BulletBoxShape(Vec3(1., 3.15/2., 0.6/2.)))
+        npDump.node().setMass(300.0)
+        npDump.node().setDeactivationEnabled(False)
+        npDump.setPos(pos + (0, -.925, -2.1))
+        self.world.attachRigidBody(npDump.node())
+
+        npDumpMdl = npDump.attachNewNode(loader.loadModel("../../data/mesh/mulde.egg").node())
+        npDumpMdl.setRenderModeWireframe()
+        self.dump = VComponent(npDumpMdl, npDump)
+
+        # === Connect Chassis and Dumper ===
+	#BulletHingeConstraint (BulletRigidBodyNode const node_a, BulletRigidBodyNode const node_b,
+        #                       Point3 const pivot_a, Point3 const pivot_b,
+        #                       Vec3 const axis_a, Vec3 const axis_b,
+        #                       bool use_frame_a)
+        con = BulletHingeConstraint(npBody.node(), npDump.node(),
+                                    Point3(0, -2.5, -.4), Point3(0, -3.15/2., -.4),
+                                    Vec3(1,0,0), Vec3(1,0,0), True)
+        con.setAxis(Vec3(1,0,0))
+        con.setLimit(0, 50)
+        con.setDebugDrawSize(2.0)
+        self.world.attachConstraint(con)
+        self.dumperCon = con
+
+        # === BulletVehicle setup ===
         self.vehicle = BulletVehicle(self.world, npBody.node())
         self.vehicle.setCoordinateSystem(ZUp)
         self.world.attachVehicle(self.vehicle)
@@ -64,7 +92,8 @@ class Truck:
         tuning.setSuspensionDamping(3.0)
         tuning.setSuspensionCompression(5.0)
         tuning.setFrictionSlip(1.5)
-        
+
+        # === We need rolling devices! ===
         self.wheels = []
         
         for i in range(0, 4):
@@ -171,6 +200,16 @@ class Truck:
     def reset(self):
         self.chassis.setPos(self.chassis.getPos() + (0,0,1.5))
         self.chassis.setR(0)
+
+    def dumperUp(self):
+        self.dumperCon.setMotorTarget(50., 1.)
+        self.dumperCon.enableAngularMotor(True, .5, 300.)
+
+    def dumperStop(self):
+        self.dumperCon.enableMotor(False)
+
+    def dumperDown(self):
+        self.dumperCon.enableAngularMotor(True, -.5, 300.)
 
     def getChassisNp(self):
         return self.chassis.getNp()

@@ -64,6 +64,10 @@ class Main(ShowBase):
         self.accept('arrow_down-up', self.arrowKeys, ["arrow_down", False])
         self.accept('arrow_left-up', self.arrowKeys, ["arrow_left", False])
         self.accept('arrow_right-up', self.arrowKeys, ["arrow_right", False])
+        self.accept('q', self.vehicleActions, ["q", True])
+        self.accept('q-up', self.vehicleActions, ["q", False])
+        self.accept('a', self.vehicleActions, ["a", True])
+        self.accept('a-up', self.vehicleActions, ["a", False])
         
         # register the render task for ODE updating
         self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask")
@@ -180,6 +184,18 @@ class Main(ShowBase):
                 self.trucks[0].steerStraight()
             if keyname == "arrow_right":
                 self.trucks[0].steerStraight()
+
+    def vehicleActions(self, keyname, isPressed):
+        if isPressed:
+            if keyname == "q":
+                self.trucks[0].dumperUp()
+            elif keyname == "a":
+                self.trucks[0].dumperDown()
+        else:
+            if keyname == "q":
+                self.trucks[0].dumperStop()
+            elif keyname == "a":
+                self.trucks[0].dumperStop()
 
     def xPlus(self):
         self.camPos.setX(self.camPos.getX()+1.0)
