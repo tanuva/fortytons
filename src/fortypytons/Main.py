@@ -86,7 +86,7 @@ class Main(ShowBase):
         self.terrain.setHeightfield(self.datadir + "tex/inclined.png")
         self.terrain.setBlockSize(32)
         self.terrain.setNear(20)
-        self.terrain.setFar(100)
+        self.terrain.setFar(200)
         self.terrain.setFocalPoint(base.camera)
         self.terrain.getRoot().reparentTo(self.terBodyNp)
         
