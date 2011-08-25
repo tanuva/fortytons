@@ -8,16 +8,3 @@ by Tanuva & Lowjack
 A devel snapshot of Panda3D >= 2011-08-22 is required.
 Older builds lack parts of the Bullet integration code
 and have different DebugNode API.
-
-Todo:
-- implement basic shifting (R,N,D)
-- speedometer (done!)
-- "only accelerate while arrow_up is pressed", same for braking (done!)
-- basic speed sensitive steering (done)
-
-Ideas:
-- follower camera
-- Implement more stuff as keyboard shortcuts
-- truck configuration files to allow multi-trucking
-- real shifting. torque function, gear ratios, rev limits
-- build a bridge!
