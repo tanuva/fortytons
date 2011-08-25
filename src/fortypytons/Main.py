@@ -96,6 +96,18 @@ class Main(ShowBase):
         self.terrainNp.setRenderModeWireframe()
         # Generate it.
         self.terrain.generate()
+
+        # Build our bridge
+        p0 = Point3(-11, -6.5, 3.5 - height/2.)
+        p2 = Point3(-8.5,  -6.5, 3.5 - height/2.)
+        p1 = Point3(-10.5,7.5, 3.5 - height/2.)
+        p3 = Point3(-7,   7.5, 3.5 - height/2.)
+        mesh = BulletTriangleMesh()
+        mesh.addTriangle(p0, p1, p2)
+        mesh.addTriangle(p1, p2, p3)
+        self.bridgeNp = self.terBodyNp.attachNewNode(BulletRigidBodyNode("bridgeBody"))
+        self.bridgeNp.node().addShape(BulletTriangleMeshShape(mesh, dynamic=False))
+        self.world.attachRigidBody(self.bridgeNp.node())
         
         # for testing
         """shpStand = BulletBoxShape(Vec3(0.5, 0.5, 1.0))
