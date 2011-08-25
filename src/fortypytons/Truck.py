@@ -78,6 +78,8 @@ class Truck:
         con.setDebugDrawSize(2.0)
         self.world.attachConstraint(con)
         self.dumperCon = con
+        # Keep the dumper down
+        self.dumperCon.enableAngularMotor(True, -5., 300.)
 
         # === BulletVehicle setup ===
         self.vehicle = BulletVehicle(self.world, npBody.node())
@@ -202,14 +204,13 @@ class Truck:
         self.chassis.setR(0)
 
     def dumperUp(self):
-        self.dumperCon.setMotorTarget(50., 1.)
-        self.dumperCon.enableAngularMotor(True, .5, 300.)
+        self.dumperCon.enableAngularMotor(True, .2, 300.)
 
     def dumperStop(self):
-        self.dumperCon.enableMotor(False)
+        self.dumperCon.enableAngularMotor(True, .0, 300.)
 
     def dumperDown(self):
-        self.dumperCon.enableAngularMotor(True, -.5, 300.)
+        self.dumperCon.enableAngularMotor(True, -.2, 300.)
 
     def getChassisNp(self):
         return self.chassis.getNp()
