@@ -55,20 +55,6 @@ class Main(ShowBase):
                                      command = self.resetTruck)
         self.lblSpeedo = DirectLabel(text = "xxx", scale = .1, pos = Point3(1.2, 0, -.9))
         
-        # keyboard hooks
-        self.accept('arrow_up', self.arrowKeys, ["arrow_up", True])
-        self.accept('arrow_down', self.arrowKeys, ["arrow_down", True])
-        self.accept('arrow_left', self.arrowKeys, ["arrow_left", True])
-        self.accept('arrow_right', self.arrowKeys, ["arrow_right", True])
-        self.accept('arrow_up-up', self.arrowKeys, ["arrow_up", False])
-        self.accept('arrow_down-up', self.arrowKeys, ["arrow_down", False])
-        self.accept('arrow_left-up', self.arrowKeys, ["arrow_left", False])
-        self.accept('arrow_right-up', self.arrowKeys, ["arrow_right", False])
-        self.accept('q', self.vehicleActions, ["q", True])
-        self.accept('q-up', self.vehicleActions, ["q", False])
-        self.accept('a', self.vehicleActions, ["a", True])
-        self.accept('a-up', self.vehicleActions, ["a", False])
-        
         # register the render task for ODE updating
         self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask")
         
@@ -130,6 +116,20 @@ class Main(ShowBase):
                                  Vec3(0, 0, 2.), SCALE, self.maskTrucks,
                                  self.world))
 
+        # Register truck functions
+        self.accept('arrow_up', self.trucks[0].accel)
+        self.accept('arrow_down', self.trucks[0].brake)
+        self.accept('arrow_left', self.trucks[0].steerLeft)
+        self.accept('arrow_right', self.trucks[0].steerRight)
+        self.accept('arrow_up-up', self.trucks[0].neutral)
+        self.accept('arrow_down-up', self.trucks[0].neutral)
+        self.accept('arrow_left-up', self.trucks[0].steerStraight)
+        self.accept('arrow_right-up', self.trucks[0].steerStraight)
+        self.accept("q", self.trucks[0].dumperUp)
+        self.accept("q-up", self.trucks[0].dumperStop)
+        self.accept("a", self.trucks[0].dumperDown)
+        self.accept("a-up", self.trucks[0].dumperStop)
+
         # TESTING
         """npBox = render.attachNewNode(BulletRigidBodyNode('Box'))
         boxS = BulletBoxShape(Vec3(.5, .5, .5))
@@ -175,39 +175,6 @@ class Main(ShowBase):
             self.trucks[0].update(globalClock.getDt())
 
         return Task.cont
-        
-    def arrowKeys(self, keyname, isPressed): # args = [keyname, isPressed]
-        """ This should go into a separate class at some point. """
-        if isPressed:
-            if keyname == "arrow_up":
-                self.trucks[0].accel()
-            if keyname == "arrow_down":
-                self.trucks[0].brake()
-            if keyname == "arrow_left":
-                self.trucks[0].steerLeft()
-            if keyname == "arrow_right":
-                self.trucks[0].steerRight()
-        else:
-            if keyname == "arrow_up":
-                self.trucks[0].neutral()
-            if keyname == "arrow_down":
-                self.trucks[0].neutral()
-            if keyname == "arrow_left":
-                self.trucks[0].steerStraight()
-            if keyname == "arrow_right":
-                self.trucks[0].steerStraight()
-
-    def vehicleActions(self, keyname, isPressed):
-        if isPressed:
-            if keyname == "q":
-                self.trucks[0].dumperUp()
-            elif keyname == "a":
-                self.trucks[0].dumperDown()
-        else:
-            if keyname == "q":
-                self.trucks[0].dumperStop()
-            elif keyname == "a":
-                self.trucks[0].dumperStop()
 
     def xPlus(self):
         self.camPos.setX(self.camPos.getX()+1.0)
