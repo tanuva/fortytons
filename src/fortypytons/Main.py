@@ -30,6 +30,9 @@ class Main(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
         base.setFrameRateMeter(True)
+
+        # Enable anti aliasing
+        render.setAntialias(AntialiasAttrib.MAuto)
         
         # Set up our physics world
         self.world = BulletWorld()
