@@ -64,7 +64,7 @@ class Main(ShowBase):
 
         # Let there be light!
         plight = PointLight('plight')
-        plight.setColor(VBase4(0.95, 0.95, 1., 1))
+        plight.setColor(VBase4(0.95, 0.95, 1., 1.))
         plnp = render.attachNewNode(plight)
         plnp.setPos(10, -20, 100)
         render.setLight(plnp)
@@ -172,10 +172,13 @@ class Main(ShowBase):
         con.setDebugDrawSize(2.0)
         #con.enableFeedback(True)
         self.world.attachConstraint(con)"""
+
+        self.camera.reparentTo(self.trucks[0].getChassis().getNp())
  
     def renderTask(self, task):
         """ Do stuff. """
-        self.camera.setPos(self.camPos)
+        #self.camera.setPos(self.camPos)
+        self.camera.setPos(Point3(0, -15, 5))
         #self.camera.lookAt(0,0,0)
         self.camera.lookAt(self.trucks[0].getChassisNp()) # Look at first loaded truck
         
