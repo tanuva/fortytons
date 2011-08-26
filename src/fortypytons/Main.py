@@ -61,6 +61,18 @@ class Main(ShowBase):
         
         # register the render task for ODE updating
         self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask")
+
+        # Let there be light!
+        plight = PointLight('plight')
+        plight.setColor(VBase4(0.95, 0.95, 1., 1))
+        plnp = render.attachNewNode(plight)
+        plnp.setPos(10, -20, 100)
+        render.setLight(plnp)
+
+        amblight = AmbientLight('amblight')
+        amblight.setColor(VBase4(0.4, 0.4, 0.4, 1))
+        amblightNp = render.attachNewNode(amblight)
+        render.setLight(amblightNp)
         
         self.terBodyNp = render.attachNewNode(BulletRigidBodyNode("terrainBody"))
         img = PNMImage(Filename(self.datadir + "tex/inclined.png"))
