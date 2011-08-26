@@ -49,9 +49,9 @@ class Main(ShowBase):
                                      command = self.zPlus)
         self.btnZminus = DirectButton(text = "Z-", scale = .05, pos = (Point3(.2, 0, -.1) + guiOffset),
                                       command = self.zMinus)
-        self.btnDebug = DirectButton(text = "Debug", scale = .05, pos = (Point3(0, 0, -.2) + guiOffset),
-                                     command = self.toggleDebug)
         self.lblSpeedo = DirectLabel(text = "xxx", scale = .1, pos = Point3(1.2, 0, -.9))
+
+        self.accept("f9", self.toggleDebug)
         
         # register the render task for ODE updating
         self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask")
