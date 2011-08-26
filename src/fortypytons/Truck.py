@@ -202,6 +202,32 @@ class Truck:
         hitch = BulletConeTwistConstraint(self.chassis.getBody().node(), self.tChassis.getBody().node(), t1, t2)
         hitch.setLimit(170, 40, 30)
         self.world.attachConstraint(hitch)
+
+        # === Put a dumper onto the trailer ===
+        nptDump = npTrailer.attachNewNode(BulletRigidBodyNode("tdumpBox"))
+        nptDump.node().addShape(BulletBoxShape(Vec3(1., 3.15/2., 0.6/2.)))
+        nptDump.node().setMass(300.0)
+        nptDump.node().setDeactivationEnabled(False)
+        nptDump.setPos(Point3(0, -.5, .5))
+        self.world.attachRigidBody(nptDump.node())
+
+        nptDumpMdl = nptDump.attachNewNode(loader.loadModel("../../data/mesh/mulde.egg").node())
+        self.tdump = VComponent(nptDumpMdl, npTrailer)
+
+        # === Connect trailer and dumper ===
+	#BulletHingeConstraint (BulletRigidBodyNode const node_a, BulletRigidBodyNode const node_b,
+        #                       Point3 const pivot_a, Point3 const pivot_b,
+        #                       Vec3 const axis_a, Vec3 const axis_b,
+        #                       bool use_frame_a)
+        tcon = BulletHingeConstraint(npTrailer.node(), nptDump.node(),
+                                    Point3(0, -3.15/2, .1), Point3(0, -3.15/2., .1),
+                                    Vec3(1,0,0), Vec3(1,0,0), True)
+        tcon.setAxis(Vec3(1,0,0))
+        tcon.setLimit(0, 50)
+        tcon.setDebugDrawSize(2.0)
+        self.world.attachConstraint(tcon)
+        # Keep the dumper down
+        tcon.enableAngularMotor(True, -5., 300.)
         
     def update(self):
         self.steer()
