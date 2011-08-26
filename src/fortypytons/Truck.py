@@ -135,7 +135,7 @@ class Truck:
         # =========================
         # === Setup the trailer ===
         npTrailer = render.attachNewNode(BulletRigidBodyNode('trailerBox')) 
-        npTrailer.node().addShape(BulletBoxShape(Vec3(1, 3.15/2., .27/2.0)), TransformState.makePos(Vec3(0,-.5,0)))
+        npTrailer.node().addShape(BulletBoxShape(Vec3(1, 3.15/2., .27/2.0)), TransformState.makePos(Vec3(0,-.5, .15/2.)))
         npTrailer.node().setMass(800.0)
         npTrailer.node().setDeactivationEnabled(False)
         npTrailer.setPos(self.chassis.getPos() + (0,-5,0))
