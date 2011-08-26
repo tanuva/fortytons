@@ -51,8 +51,6 @@ class Main(ShowBase):
                                       command = self.zMinus)
         self.btnDebug = DirectButton(text = "Debug", scale = .05, pos = (Point3(0, 0, -.2) + guiOffset),
                                      command = self.toggleDebug)
-        self.btnReset = DirectButton(text = "Reset", scale = .05, pos = (Point3(.2, 0, -.2) + guiOffset),
-                                     command = self.resetTruck)
         self.lblSpeedo = DirectLabel(text = "xxx", scale = .1, pos = Point3(1.2, 0, -.9))
         
         # register the render task for ODE updating
@@ -129,6 +127,7 @@ class Main(ShowBase):
         self.accept("q-up", self.trucks[0].dumperStop)
         self.accept("a", self.trucks[0].dumperDown)
         self.accept("a-up", self.trucks[0].dumperStop)
+        self.accept("r-up", self.trucks[0].reset)
 
         # TESTING
         """npBox = render.attachNewNode(BulletRigidBodyNode('Box'))
