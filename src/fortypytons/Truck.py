@@ -132,8 +132,76 @@ class Truck:
             
             self.wheels.append(VWheel(npWheelMdl, npBody, wheel))
 
+        # =========================
         # === Setup the trailer ===
+        npTrailer = render.attachNewNode(BulletRigidBodyNode('trailerBox')) 
+        npTrailer.node().addShape(BulletBoxShape(Vec3(1, 3.15/2., .27/2.0)), TransformState.makePos(Vec3(0,-.5,0)))
+        npTrailer.node().setMass(800.0)
+        npTrailer.node().setDeactivationEnabled(False)
+        npTrailer.setPos(self.chassis.getPos() + (0,-5,0))
+        self.world.attachRigidBody(npTrailer.node())
         
+        npTrailerMdl = npTrailer.attachNewNode(loader.loadModel("../../data/mesh/trailer.egg").node())
+        self.tChassis = VComponent(npTrailerMdl, npTrailer)
+
+        self.trailer = BulletVehicle(self.world, npTrailer.node())
+        self.trailer.setCoordinateSystem(ZUp)
+        self.world.attachVehicle(self.trailer)
+
+        tuning = self.trailer.getTuning()
+        tuning.setMaxSuspensionTravelCm(40.0)
+        tuning.setMaxSuspensionForce(40000.0) # 1500 kg * 10 N/kg + a little extra
+        tuning.setSuspensionStiffness(20.0)
+        tuning.setSuspensionDamping(3.0)
+        tuning.setSuspensionCompression(5.0)
+        tuning.setFrictionSlip(1.5)
+
+        # === We need rolling devices! ===
+        self.tWheels = []
+        
+        for i in range(0, 4):
+            pos = Point3(0,0,0)
+            rideHeight = 0
+            
+            if i == 0:
+                pos += (-.85, 0, rideHeight)
+            if i == 1:
+                pos += (.85, 0, rideHeight)
+            if i == 2:
+                pos += (-.85, -1, rideHeight)
+            if i == 3:
+                pos += (.85, -1, rideHeight)
+
+            # Prepare bullet nodes
+            npBody = render.attachNewNode(BulletRigidBodyNode('tWheelBox'))
+            npBody.node().setMass(25.0)
+            npBody.setPos(pos)
+            self.world.attachRigidBody(npBody.node())
+            
+            npWheelMdl = npBody.attachNewNode(loader.loadModel(wheelmesh).node())
+            if i % 2 == 0:
+                npWheelMdl.setH(180.0) # We need to turn around the meshes of wheel 0 and 2, the left ones
+            
+            wheel = self.trailer.createWheel()
+            wheel.setNode(npBody.node())
+            wheel.setChassisConnectionPointCs(pos)
+
+            wheel.setWheelDirectionCs(Vec3(0, 0, -1))
+            wheel.setWheelAxleCs(Vec3(1, 0, 0))
+            wheel.setWheelRadius(.45)
+            wheel.setRollInfluence(0.3)
+            
+            self.tWheels.append(VWheel(npWheelMdl, npBody, wheel))
+
+        # === Connect truck and trailer ===
+        # Truck hook point: (0, -2.511, -.515)
+        # Trailer hook poi: (0, 2.086, .075)
+        #BulletConeTwistConstraint (BulletRigidBodyNode const node_a, BulletRigidBodyNode const node_b, TransformState const frame_a, TransformState const frame_b)
+        t1 = TransformState.makePosHpr(Point3(0, -2.511, -.515), Vec3(0,0,0))
+        t2 = TransformState.makePosHpr(Point3(0, 2.086, .075), Vec3(0, 0, 0))
+        hitch = BulletConeTwistConstraint(self.chassis.getBody().node(), self.tChassis.getBody().node(), t1, t2)
+        hitch.setLimit(170, 40, 30)
+        self.world.attachConstraint(hitch)
         
     def update(self):
         self.steer()
