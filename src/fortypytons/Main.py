@@ -114,8 +114,8 @@ class Main(ShowBase):
         self.world.setDebugNode(self.debug.node())
         self.debug.show()
         
-        self.trucks.append(Truck(self.datadir + "mesh/kipper.egg",
-                                 self.datadir + "mesh/rad.egg",
+        self.trucks.append(Truck(self.datadir + "mesh/truck.egg",
+                                 self.datadir + "mesh/wheel.egg",
                                  Vec3(0, 0, 2.), SCALE, self.maskTrucks,
                                  self.world))
 

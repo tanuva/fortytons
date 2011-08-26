@@ -131,6 +131,9 @@ class Truck:
             wheel.setRollInfluence(0.3)
             
             self.wheels.append(VWheel(npWheelMdl, npBody, wheel))
+
+        # === Setup the trailer ===
+        
         
     def update(self):
         self.steer()
