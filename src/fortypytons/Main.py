@@ -52,6 +52,12 @@ class Main(ShowBase):
         self.lblSpeedo = DirectLabel(text = "xxx", scale = .1, pos = Point3(1.2, 0, -.9))
 
         self.accept("f9", self.toggleDebug)
+        self.accept("f10", base.toggleWireframe)
+        self.accept("f11", base.toggleTexture)
+        self.accept("f12", base.screenshot, ["40tons"])
+
+        # render in wireframe by default for now
+        base.toggleWireframe()
         
         # register the render task for ODE updating
         self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask")
@@ -77,7 +83,6 @@ class Main(ShowBase):
         self.terrainNp = self.terrain.getRoot()
         self.terrainNp.setSz(height)
         self.terrainNp.setPos(-offset, -offset, -height / 2.0)
-        self.terrainNp.setRenderModeWireframe()
         # Generate it.
         self.terrain.generate()
 

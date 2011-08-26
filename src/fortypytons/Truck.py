@@ -50,7 +50,6 @@ class Truck:
         self.world.attachRigidBody(npBody.node())
         
         npTruckMdl = npBody.attachNewNode(loader.loadModel(chassismesh).node())
-        npTruckMdl.setRenderModeWireframe()
         self.chassis = VComponent(npTruckMdl, npBody)
 
         # === Platform / Dumper ===
@@ -62,7 +61,6 @@ class Truck:
         self.world.attachRigidBody(npDump.node())
 
         npDumpMdl = npDump.attachNewNode(loader.loadModel("../../data/mesh/mulde.egg").node())
-        npDumpMdl.setRenderModeWireframe()
         self.dump = VComponent(npDumpMdl, npDump)
 
         # === Connect Chassis and Dumper ===
@@ -118,7 +116,6 @@ class Truck:
             self.world.attachRigidBody(npBody.node())
             
             npWheelMdl = npBody.attachNewNode(loader.loadModel(wheelmesh).node())
-            npWheelMdl.setRenderModeWireframe()
             if i % 2 == 0:
                 npWheelMdl.setH(180.0) # We need to turn around the meshes of wheel 0 and 2, the left ones
             
