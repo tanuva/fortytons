@@ -13,6 +13,7 @@ from panda3d.bullet import *
 class FlyingCameraController:
     height = 4
     radius = 10
+    targetSpd = Vec3(0,0,0)
 
     def __init__(self, world, camera, target):
         self.world = world
@@ -21,6 +22,7 @@ class FlyingCameraController:
         self.bodyNp = render.attachNewNode(BulletRigidBodyNode("cameraBody"))
         self.bodyNp.node().addShape(BulletSphereShape(0.5))
         self.bodyNp.node().setMass(0.1)
+        self.bodyNp.node().setLinearDamping(.5)
         self.bodyNp.setPos(self.target.getPos() + Point3(0,0, self.height))
         self.world.attachRigidBody(self.bodyNp.node())
         self.cam.reparentTo(self.bodyNp)
@@ -53,22 +55,19 @@ class FlyingCameraController:
         targetPos = self.height + self.target.getPos()[2]
         upForce = (targetPos - futurePos) * 1.
         self.bodyNp.node().applyCentralForce(Vec3(0,0, upForce))
-        print self.bodyNp.getPos(), upForce
+        #print self.bodyNp.getPos(), upForce
 
         # Adjust the circular position
-        # radius = sqrt(x) + sqrt(y)
-        # We want to stay on a certain radius around the target. Therefore, use x = y as thruster.
-        """xpos, ypos = self.bodyNp.getPos()[0], self.bodyNp.getPos()[1]
-        xvel, yvel = self.bodyNp.node().getLinearVelocity()[0], self.bodyNp.node().getLinearVelocity()[1]
 
-        curPos = self.sqrt(xpos) + self.sqrt(ypos)
-        futurePos = curPos + self.sqrt(1. * xvel) + self.sqrt(1. * yvel)
-        targetPos = self.radius
-        corrForce = (targetPos - futurePos) * 1.
+        # BEFORE COMMIT UNSELF TARGETSPEED
 
-        component = math.pow(corrForce/2, 2)
-        corrForce = Vec3(component, component, 0)
-        print self.bodyNp.getPos(), corrForce"""
+        lastSpd = self.targetSpd
+        self.targetSpd = self.target.node().getLinearVelocity()
+        self.targetSpd[2] = 0 # Height handling is not our task.
+        self.targetSpd *= .5
+
+        self.bodyNp.node().applyCentralForce(-self.targetSpd)
+        print self.targetSpd
 
     def sqrt(self, val):
         if val < 0:
