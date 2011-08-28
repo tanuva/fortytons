@@ -65,9 +65,13 @@ class Main(ShowBase):
         # register the render task for ODE updating
         self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask")
 
+        # Enable shad(er|ow) generation
+        render.setShaderAuto()
+
         # Let there be light!
         plight = PointLight('plight')
         plight.setColor(VBase4(0.95, 0.95, 1., 1.))
+        plight.setShadowCaster(True, 512, 512)
         plnp = render.attachNewNode(plight)
         plnp.setPos(10, -20, 100)
         render.setLight(plnp)
