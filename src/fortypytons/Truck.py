@@ -29,18 +29,18 @@ class Truck:
         '''
         Loads the chassismesh, sets the truck up and ignites the engine.
         '''
-        
+
         self._steer = 0
         self._accel = False
         self._brake = False
         self.world = world
-        
+
         # eggmesh: center-side 1m, center-front 2.5m, center-top 1.7m, height exhaust: 0.1m
         # chassis box: .51m high, cabin box 1.18m high (without exhaust tips)
         # platform: 3.15m x 2m x 0.6m (l,w,h)
 
         # === Chassis ===
-        npBody = render.attachNewNode(BulletRigidBodyNode('truckBox')) 
+        npBody = render.attachNewNode(BulletRigidBodyNode('truckBox'))
         # TransformState: compensate for the exhausts sticking out of the top
         npBody.node().addShape(BulletBoxShape(Vec3(1, 2.5, .51/2.0)), TransformState.makePos(Vec3(0, 0, -.65)))
         npBody.node().addShape(BulletBoxShape(Vec3(1, .75, 1.18/2.0)), TransformState.makePos(Vec3(0, 1.75, .2)))
@@ -48,7 +48,7 @@ class Truck:
         npBody.node().setDeactivationEnabled(False)
         npBody.setPos(pos)
         self.world.attachRigidBody(npBody.node())
-        
+
         npTruckMdl = npBody.attachNewNode(loader.loadModel(chassismesh).node())
         self.chassis = VComponent(npTruckMdl, npBody)
 
@@ -95,7 +95,7 @@ class Truck:
 
         # === We need rolling devices! ===
         self.wheels = []
-        
+
         for i in range(0, 4):
             rideHeight = -0.3
             pos = Point3(0, 0, rideHeight)
@@ -114,11 +114,11 @@ class Truck:
             npBody.node().setMass(25.0)
             npBody.setPos(pos)
             self.world.attachRigidBody(npBody.node())
-            
+
             npWheelMdl = npBody.attachNewNode(loader.loadModel(wheelmesh).node())
             if i % 2 == 0:
                 npWheelMdl.setH(180.0) # We need to turn around the meshes of wheel 0 and 2, the left ones
-            
+
             wheel = self.vehicle.createWheel()
             wheel.setNode(npBody.node())
             wheel.setChassisConnectionPointCs(pos)
@@ -129,18 +129,18 @@ class Truck:
             wheel.setWheelAxleCs(Vec3(1, 0, 0))
             wheel.setWheelRadius(.45)
             wheel.setRollInfluence(0.3)
-            
+
             self.wheels.append(VWheel(npWheelMdl, npBody, wheel))
 
         # =========================
         # === Setup the trailer ===
-        npTrailer = render.attachNewNode(BulletRigidBodyNode('trailerBox')) 
+        npTrailer = render.attachNewNode(BulletRigidBodyNode('trailerBox'))
         npTrailer.node().addShape(BulletBoxShape(Vec3(1, 3.15/2., .27/2.0)), TransformState.makePos(Vec3(0,-.5, .15/2.)))
         npTrailer.node().setMass(800.0)
         npTrailer.node().setDeactivationEnabled(False)
         npTrailer.setPos(self.chassis.getPos() + (0,-5,0))
         self.world.attachRigidBody(npTrailer.node())
-        
+
         npTrailerMdl = npTrailer.attachNewNode(loader.loadModel("../../data/mesh/trailer.egg").node())
         self.tChassis = VComponent(npTrailerMdl, npTrailer)
 
@@ -158,11 +158,11 @@ class Truck:
 
         # === We need rolling devices! ===
         self.tWheels = []
-        
+
         for i in range(0, 4):
             pos = Point3(0,0,0)
             rideHeight = 0
-            
+
             if i == 0:
                 pos += (-.85, 0, rideHeight)
             if i == 1:
@@ -177,11 +177,11 @@ class Truck:
             npBody.node().setMass(25.0)
             npBody.setPos(pos)
             self.world.attachRigidBody(npBody.node())
-            
+
             npWheelMdl = npBody.attachNewNode(loader.loadModel(wheelmesh).node())
             if i % 2 == 0:
                 npWheelMdl.setH(180.0) # We need to turn around the meshes of wheel 0 and 2, the left ones
-            
+
             wheel = self.trailer.createWheel()
             wheel.setNode(npBody.node())
             wheel.setChassisConnectionPointCs(pos)
@@ -190,7 +190,7 @@ class Truck:
             wheel.setWheelAxleCs(Vec3(1, 0, 0))
             wheel.setWheelRadius(.45)
             wheel.setRollInfluence(0.3)
-            
+
             self.tWheels.append(VWheel(npWheelMdl, npBody, wheel))
 
         # === Connect truck and trailer ===
@@ -215,7 +215,7 @@ class Truck:
         self.tdump = VComponent(nptDumpMdl, npTrailer)
 
         # === Connect trailer and dumper ===
-	#BulletHingeConstraint (BulletRigidBodyNode const node_a, BulletRigidBodyNode const node_b,
+        #BulletHingeConstraint (BulletRigidBodyNode const node_a, BulletRigidBodyNode const node_b,
         #                       Point3 const pivot_a, Point3 const pivot_b,
         #                       Vec3 const axis_a, Vec3 const axis_b,
         #                       bool use_frame_a)
@@ -228,15 +228,15 @@ class Truck:
         self.world.attachConstraint(tcon)
         # Keep the dumper down
         tcon.enableAngularMotor(True, -5., 300.)
-        
+
     def update(self):
         self.steer()
-        
+
     def accel(self):
         self._accel = True
         self.vehicle.applyEngineForce(1600.0, 2)
         self.vehicle.applyEngineForce(1600.0, 3)
-    
+
     def brake(self):
         self._brake = True
         if self.vehicle.getCurrentSpeedKmHour() > 1:
@@ -252,7 +252,7 @@ class Truck:
         for i in range(0,4):
             self.vehicle.applyEngineForce(0, i)
             self.vehicle.setBrake(0, i)
-    
+
     def steerLeft(self):
         self._steer = 1
     def steerRight(self):
@@ -267,7 +267,7 @@ class Truck:
             self.maxAngle = (-.5) * speed + 45 # Graph this on WolframAlpha to make it obvious :)
         elif speed > 90:
             self.maxAngle = 1.0
-        
+
         if self._steer == 1 and self.curAngle < self.maxAngle:
             if self.curAngle < 0:
                 self.curAngle += 2.0 * self.rate
@@ -289,7 +289,7 @@ class Truck:
 
         self.vehicle.setSteeringValue(self.curAngle, 0)
         self.vehicle.setSteeringValue(self.curAngle, 1)
-        
+
     def update(self, dt):
         self.steer()
 
