@@ -97,9 +97,9 @@ class Truck:
         self.wheels = []
         
         for i in range(0, 4):
-            pos = self.chassis.getPos()
-            rideHeight = -2.7
-            
+            rideHeight = -0.3
+            pos = Point3(0, 0, rideHeight)
+
             if i == 0:
                 pos += (-.85, 1.8, rideHeight)
             if i == 1:
