@@ -14,14 +14,14 @@ class VComponent:
         '''
         self.npTruckMdl = npMesh
         self.body = npBody
-        
+
     def update(self):
         print "shouldn't call update anymore"
         pass
-        
+
     def addForce(self, x, y, z):
         print "addForce: NYI"
-    
+
     def getBody(self):
         return self.body
     def getNp(self):
@@ -32,7 +32,7 @@ class VComponent:
         self.body.setPos(pos)
     def setR(self, rot):
         self.body.setR(rot)
-    
+
 #==============================================================
 class VChassis(VComponent):
     def update(self):
@@ -51,23 +51,26 @@ class VWheel(VComponent):
         '''
         VComponent.__init__(self, npMesh, npBody)
         self.wheel = wheel
-    
+
     def steer(self, direction, torque):
         print "steer: NYI"
-    
+
     def center(self):
         angle = 0.0
         print "center: NYI"
-        
+
         if angle < 0.01 and angle > -0.01:
             self.steer(1, 0.0)
         if angle > 0.01:
             self.steer(-1, 10.0)
         if angle < -0.01:
             self.steer(1, 10.0)
-        
+
     def accel(self, force):
         print "accel: NYI"
-    
+
     def brake(self, force):
         print "brake: NYI"
+
+    def getWheel():
+        return self.wheel
