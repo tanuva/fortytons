@@ -26,7 +26,7 @@ class FlyingCameraController:
         self.cam.reparentTo(self.bodyNp)
 
         # Keep us on a sphere around the target
-        self.con = BulletSphericalConstraint(self.bodyNp.node(), self.target.node(), Point3(0,self.radius,0), Point3(0,.5,0))
+        self.con = BulletSphericalConstraint(self.bodyNp.node(), self.target.node(), Point3(0,self.radius,0), Point3(0,0,0))
         self.world.attachConstraint(self.con)
 
     def update(self):
@@ -50,7 +50,7 @@ class FlyingCameraController:
         # Get ourselves on the right height
         curPos = self.bodyNp.getPos()[2]
         futurePos = curPos + (1. * self.bodyNp.node().getLinearVelocity()[2])
-        targetPos = self.height
+        targetPos = self.height + self.target.getPos()[2]
         upForce = (targetPos - futurePos) * 1.
         self.bodyNp.node().applyCentralForce(Vec3(0,0, upForce))
         print self.bodyNp.getPos(), upForce
