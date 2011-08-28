@@ -7,6 +7,7 @@ Created on 11.07.2011
 '''
 
 from Truck import Truck
+from CameraController import *
 from direct.showbase.ShowBase import ShowBase
 from direct.task import Task
 from direct.gui.DirectGui import DirectButton, DirectLabel
@@ -21,37 +22,21 @@ class Main(ShowBase):
     trucks = []
     maskTrucks = BitMask32.bit(1)
     maskWheel = BitMask32.bit(2)
-    #camPos = Point3(8, -7, 3) # Good for egg truck
-    camPos = Point3(13, -12, 3)
-    #self.camPos = Point3(20, -30, 8) # overview
     datadir = "../../data/"
     accel, brake, left, right = False, False, False, False
-    
+
     def __init__(self):
         ShowBase.__init__(self)
         base.setFrameRateMeter(True)
 
         # Enable anti aliasing
         render.setAntialias(AntialiasAttrib.MAuto)
-        
+
         # Set up our physics world
         self.world = BulletWorld()
         self.world.setGravity(Vec3(0, 0, -9.81))
-        
+
         # We need some gui
-        guiOffset = Point3(.8, 0, .8)
-        self.btnXplus = DirectButton(text = "X+", scale = .05, pos = (Point3(0, 0, 0) + guiOffset),
-                                     command = self.xPlus)
-        self.btnXminus = DirectButton(text = "X-", scale = .05, pos = (Point3(0, 0, -.1) + guiOffset),
-                                      command = self.xMinus)
-        self.btnYplus = DirectButton(text = "Y+", scale = .05, pos = (Point3(.1, 0, 0) + guiOffset),
-                                     command = self.yPlus)
-        self.btnYminus = DirectButton(text = "Y-", scale = .05, pos = (Point3(.1, 0, -.1) + guiOffset),
-                                      command = self.yMinus)
-        self.btnZplus = DirectButton(text = "Z+", scale = .05, pos = (Point3(.2, 0, 0) + guiOffset),
-                                     command = self.zPlus)
-        self.btnZminus = DirectButton(text = "Z-", scale = .05, pos = (Point3(.2, 0, -.1) + guiOffset),
-                                      command = self.zMinus)
         self.lblSpeedo = DirectLabel(text = "xxx", scale = .1, pos = Point3(1.2, 0, -.9))
 
         self.accept("f9", self.toggleDebug)
@@ -61,7 +46,7 @@ class Main(ShowBase):
 
         # render in wireframe by default for now
         base.toggleWireframe()
-        
+
         # register the render task for ODE updating
         self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask")
 
@@ -80,7 +65,7 @@ class Main(ShowBase):
         amblight.setColor(VBase4(0.4, 0.4, 0.4, 1))
         amblightNp = render.attachNewNode(amblight)
         render.setLight(amblightNp)
-        
+
         self.terBodyNp = render.attachNewNode(BulletRigidBodyNode("terrainBody"))
         img = PNMImage(Filename(self.datadir + "tex/inclined.png"))
         offset = img.getXSize() / 2.0 - 0.5 # Used for the GeoMipTerrain
@@ -89,7 +74,7 @@ class Main(ShowBase):
         self.terBodyNp.node().setDebugEnabled(False)
         self.terBodyNp.setPos(0,0, height / 2.0)
         self.world.attachRigidBody(self.terBodyNp.node())
-        
+
         # Set up the GeoMipTerrain
         self.terrain = GeoMipTerrain("terrainNode")
         self.terrain.setHeightfield(self.datadir + "tex/inclined.png")
@@ -98,7 +83,7 @@ class Main(ShowBase):
         self.terrain.setFar(200)
         self.terrain.setFocalPoint(base.camera)
         self.terrain.getRoot().reparentTo(self.terBodyNp)
-        
+
         self.terrainNp = self.terrain.getRoot()
         self.terrainNp.setSz(height)
         self.terrainNp.setPos(-offset, -offset, -height / 2.0)
@@ -116,7 +101,7 @@ class Main(ShowBase):
         self.bridgeNp = self.terBodyNp.attachNewNode(BulletRigidBodyNode("bridgeBody"))
         self.bridgeNp.node().addShape(BulletTriangleMeshShape(mesh, dynamic=False))
         self.world.attachRigidBody(self.bridgeNp.node())
-        
+
         # for testing
         """shpStand = BulletBoxShape(Vec3(0.5, 0.5, 1.0))
         stand = BulletRigidBodyNode('Box')
@@ -132,7 +117,7 @@ class Main(ShowBase):
         self.debug.node().showNormals(False)
         self.world.setDebugNode(self.debug.node())
         self.debug.show()
-        
+
         self.trucks.append(Truck(self.datadir + "mesh/truck.egg",
                                  self.datadir + "mesh/wheel.egg",
                                  Vec3(0, 0, 2.), SCALE, self.maskTrucks,
@@ -160,7 +145,7 @@ class Main(ShowBase):
         npBox.node().setDeactivationEnabled(False)
         npBox.setPos(2, -4, 3)
         self.world.attachRigidBody(npBox.node())
-        
+
         npbox2 = render.attachNewNode(BulletRigidBodyNode('Box2'))
         box2S = BulletBoxShape(Vec3(.5, .5, .5))
         npbox2.node().addShape(box2S)
@@ -168,7 +153,7 @@ class Main(ShowBase):
         npbox2.node().setMass(5)
         npbox2.setPos(2, -4, 1)
         self.world.attachRigidBody(npbox2.node())
-        
+
         t1 = TransformState.makePosHpr(Point3(0,0,0), Vec3(0,0,90))
         t2 = TransformState.makePosHpr(Point3(0,0,0), Vec3(0,0,0))
         con = BulletSliderConstraint(npBox.node(), npbox2.node(), t1, t2, True)
@@ -180,40 +165,23 @@ class Main(ShowBase):
         #con.enableFeedback(True)
         self.world.attachConstraint(con)"""
 
-        self.camera.reparentTo(self.trucks[0].getChassis().getNp())
- 
+        self.camcon = FlyingCameraController(self.world, self.camera, self.trucks[0].getChassis().getBody())
+
     def renderTask(self, task):
         """ Do stuff. """
-        #self.camera.setPos(self.camPos)
-        self.camera.setPos(Point3(0, -15, 5))
-        #self.camera.lookAt(0,0,0)
-        self.camera.lookAt(self.trucks[0].getChassisNp()) # Look at first loaded truck
-        
+        self.camcon.update()
         self.terrain.update()
 
         # Update object positions
         self.world.doPhysics(globalClock.getDt()*SCALE)
         # Update the truck's speedometer
         self.lblSpeedo["text"] = "%i" % self.trucks[0].getSpeed()
-        
+
         # Apply forces to the truck
         if len(self.trucks) > 0:
             self.trucks[0].update(globalClock.getDt())
 
         return Task.cont
-
-    def xPlus(self):
-        self.camPos.setX(self.camPos.getX()+1.0)
-    def yPlus(self):
-        self.camPos.setY(self.camPos.getY()+1.0)
-    def xMinus(self):
-        self.camPos.setX(self.camPos.getX()-1.0)
-    def yMinus(self):
-        self.camPos.setY(self.camPos.getY()-1.0)
-    def zPlus(self):
-        self.camPos.setZ(self.camPos.getZ()+1.0)
-    def zMinus(self):
-        self.camPos.setZ(self.camPos.getZ()-1.0)
 
     def toggleDebug(self):
         if self.debug.isHidden():
@@ -223,7 +191,7 @@ class Main(ShowBase):
 
     def resetTruck(self):
         self.trucks[0].reset()
-    
+
 if __name__ == '__main__':
     app = Main()
     app.run()
