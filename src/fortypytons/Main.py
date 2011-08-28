@@ -169,7 +169,6 @@ class Main(ShowBase):
 
     def renderTask(self, task):
         """ Do stuff. """
-        self.camcon.update()
         self.terrain.update()
 
         # Update object positions
@@ -181,6 +180,7 @@ class Main(ShowBase):
         if len(self.trucks) > 0:
             self.trucks[0].update(globalClock.getDt())
 
+        self.camcon.update()
         return Task.cont
 
     def toggleDebug(self):
