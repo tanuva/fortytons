@@ -20,6 +20,7 @@ class FlyingCameraController:
         self.cam = camera
         self.target = target
         self.bodyNp = render.attachNewNode(BulletRigidBodyNode("cameraBody"))
+        self.bodyNp.node().setCollisionResponse(False)
         self.bodyNp.node().addShape(BulletSphereShape(0.5))
         self.bodyNp.node().setMass(0.1)
         self.bodyNp.node().setLinearDamping(.5)
