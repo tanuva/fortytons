@@ -24,6 +24,7 @@ class FlyingCameraController:
         self.bodyNp.node().addShape(BulletSphereShape(0.5))
         self.bodyNp.node().setMass(0.1)
         self.bodyNp.node().setLinearDamping(.5)
+        self.bodyNp.node().setGravity(Vec3(0,0,0)) # Make us weightless
         self.bodyNp.setPos(self.target.getPos() + Point3(0,0, self.height))
         self.world.attachRigidBody(self.bodyNp.node())
         self.cam.reparentTo(self.bodyNp)
@@ -46,9 +47,6 @@ class FlyingCameraController:
         clampLength( applyForce, MAX_FORCE );
         dBodyAddForce( b, applyForce );
         """
-
-        # Make us weightless
-        self.bodyNp.node().applyCentralForce(Vec3(0,0, 9.81 * self.bodyNp.node().getMass()))
 
         # Get ourselves on the right height
         curPos = self.bodyNp.getPos()[2]
