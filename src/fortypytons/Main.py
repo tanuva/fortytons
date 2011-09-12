@@ -13,6 +13,7 @@ from direct.task import Task
 from direct.gui.DirectGui import DirectButton, DirectLabel
 from panda3d.core import *
 from panda3d.bullet import *
+from pandac.PandaModules import WindowProperties
 
 #SCALE = 10e-3
 #SCALE = (10e-2)*2
@@ -28,6 +29,11 @@ class Main(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
         base.setFrameRateMeter(True)
+        base.disableMouse() # Dragging the mouse will make strange things happen otherwise
+        # Hide the cursor
+        props = WindowProperties()
+        props.setCursorHidden(True)
+        base.win.requestProperties(props)
 
         # Enable anti aliasing
         render.setAntialias(AntialiasAttrib.MAuto)
