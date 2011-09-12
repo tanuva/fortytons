@@ -10,6 +10,54 @@ import math
 from panda3d.core import *
 from panda3d.bullet import *
 
+class ManualCameraController:
+    """
+    Allows free movement of the camera around the target using the mouse.
+    """
+    distance = 10
+    rot = 180.
+    inc = math.pi/4.
+
+    def __init__(self, world, camera, target):
+        self.world = world
+        self.cam = camera
+        self.target = target
+
+    def update(self, task):
+        relPos = self.cam.getPos(self.target)
+        if base.mouseWatcherNode.hasMouse():
+            relMousePos = base.mouseWatcherNode.getMouseX(), base.mouseWatcherNode.getMouseY()
+
+            self.rot += relMousePos[0] * 10.
+            self.inc += relMousePos[1] * 10.
+
+            # MAKE MOUSE WHEEL MOVE BACK AND FORTH
+
+            # Move us around the target in spherical coordinates:
+            # distance: radius
+            # inc: angle between Z+ and the camera (roughly inclination)
+            # rot: angle between X+ and the camera (rotation)
+            x = self.distance * math.sin(self.deg2rad(self.inc)) * math.cos(self.deg2rad(self.rot))
+            y = self.distance * math.sin(self.deg2rad(self.inc)) * math.sin(self.deg2rad(self.rot))
+            z = self.distance * math.cos(self.deg2rad(self.inc))
+
+            self.cam.setPos(self.target.getPos() + Point3(x,-y,z)) # Invert y to imitate aircraft pitch control
+            base.win.movePointer(0, base.win.getXSize() / 2, base.win.getYSize() / 2) # Reset the pointer to the window's center
+
+        # Make the camera look at the target again.
+        self.cam.lookAt(self.target)
+        return task.cont
+
+    def mwheelup(self):
+        if self.distance > 8:
+            self.distance -= .5
+
+    def mwheeldown(self):
+        self.distance += .5
+
+    def deg2rad(self, deg):
+        return deg * math.pi / 180.
+
 class FlyingCameraController:
     height = 4
     radius = 10
