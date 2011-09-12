@@ -59,21 +59,24 @@ class ManualCameraController:
         return deg * math.pi / 180.
 
 class FlyingCameraController:
+    """
+    Gently keeps the camera behind the target.
+    """
+
     height = 4
-    radius = 10
-    targetSpd = Vec3(0,0,0)
+    radius = 15
+    curHDiff = 0
 
     def __init__(self, world, camera, target):
         self.world = world
         self.cam = camera
         self.target = target
-        self.bodyNp = render.attachNewNode(BulletRigidBodyNode("cameraBody"))
+        self.bodyNp = self.target.attachNewNode(BulletRigidBodyNode("cameraBody"))
         self.bodyNp.node().setCollisionResponse(False)
         self.bodyNp.node().addShape(BulletSphereShape(0.5))
         self.bodyNp.node().setMass(0.1)
-        self.bodyNp.node().setLinearDamping(.5)
-        self.bodyNp.node().setGravity(Vec3(0,0,0)) # Make us weightless
-        self.bodyNp.setPos(self.target.getPos() + Point3(0,0, self.height))
+        #self.bodyNp.node().setLinearDamping(.5) # Is this really needed?
+        self.bodyNp.setPos(self.target, Point3(0,-self.radius, self.height))
         self.world.attachRigidBody(self.bodyNp.node())
         self.cam.reparentTo(self.bodyNp)
 
@@ -81,10 +84,7 @@ class FlyingCameraController:
         self.con = BulletSphericalConstraint(self.bodyNp.node(), self.target.node(), Point3(0,self.radius,0), Point3(0,0,0))
         self.world.attachConstraint(self.con)
 
-    def update(self):
-        self.bodyNp.lookAt(self.target)
-        #self.bodyNp.setR(0)
-
+    def update(self, task):
         # adapted thrust control logic from: http://opende.sourceforge.net/wiki/index.php/HOWTO_thrust_control_logic
         """
         curVel = *(Vec3*)dBodyGetLinearVelocity( b );
@@ -96,28 +96,48 @@ class FlyingCameraController:
         dBodyAddForce( b, applyForce );
         """
 
+        # Make us weightless
+        self.bodyNp.node().applyCentralForce(Vec3(0,0, 9.81 * self.bodyNp.node().getMass()))
+
+        relCurPos = self.bodyNp.getPos(self.target)
+
+        # TODO Take target pitch into account!
+
         # Get ourselves on the right height
-        curPos = self.bodyNp.getPos()[2]
-        futurePos = curPos + (1. * self.bodyNp.node().getLinearVelocity()[2])
-        targetPos = self.height + self.target.getPos()[2]
-        upForce = (targetPos - futurePos) * 1.
-        self.bodyNp.node().applyCentralForce(Vec3(0,0, upForce))
-        #print self.bodyNp.getPos(), upForce
+        futurePos = relCurPos[2] + (1. * self.bodyNp.node().getLinearVelocity()[2])
+        targetPos = self.height
+        corrForce = (targetPos - futurePos) * 4.
+        self.bodyNp.node().applyCentralForce(Vec3(0,0, corrForce))
 
         # Adjust the circular position
+        # Using the same code as above, abusing "thrust control" for the (rougly) one-dimensional rotation around the target.
+        lastHDiff = self.curHDiff
+        self.curHDiff = self._getHeadingDiff(self.bodyNp.getH(), self.target.getH())
 
-        # BEFORE COMMIT UNSELF TARGETSPEED
+        curH = self.bodyNp.getH()
+        rotSpd = self.curHDiff - lastHDiff
+        futureH = (curH + (.5 * rotSpd)) % 360
+        targetH = self.target.getH(self.bodyNp)
+        #targetH = 0
+        corrForce = self._getHeadingDiff(targetH, futureH) * .01
+        corrForce = self._vecRotate((corrForce, 0), self.bodyNp.getH())
+        self.bodyNp.node().applyCentralForce(Vec3(corrForce[0], corrForce[1], 0))
 
-        lastSpd = self.targetSpd
-        self.targetSpd = self.target.node().getLinearVelocity()
-        self.targetSpd[2] = 0 # Height handling is not our task.
-        self.targetSpd *= .5
+        print targetH, "-", futureH, "=", corrForce
 
-        self.bodyNp.node().applyCentralForce(-self.targetSpd)
-        print self.targetSpd
+        self.bodyNp.lookAt(self.target)
+        return task.cont
 
-    def sqrt(self, val):
-        if val < 0:
-            return -math.sqrt(abs(val))
-        else:
-            return math.sqrt(val)
+    def _vecRotate(self, vec, deg):
+        """ Rotates vec by deg. """
+        deg *= math.pi / 180.
+
+        return (vec[0] * math.cos(deg) - vec[1] * math.sin(deg),
+                vec[0] * math.sin(deg) - vec[1] * math.cos(deg))
+
+    def _getHeadingDiff(self, h1, h2):
+        diff = h1 - h2
+        if abs(diff) > 180.:
+            diff = (h1 + diff) % 360. - (h2 + diff) % 360.
+        return diff
+
