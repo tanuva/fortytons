@@ -171,7 +171,10 @@ class Main(ShowBase):
         #con.enableFeedback(True)
         self.world.attachConstraint(con)"""
 
-        self.camcon = FlyingCameraController(self.world, self.camera, self.trucks[0].getChassis().getBody())
+        self.camcon = ManualCameraController(self.world, self.camera, self.trucks[0].getChassis().getBody())
+        taskMgr.add(self.camcon.update, 'CameraController')
+        self.accept("wheel_up", self.camcon.mwheelup)
+        self.accept("wheel_down", self.camcon.mwheeldown)
 
     def renderTask(self, task):
         """ Do stuff. """
@@ -186,7 +189,6 @@ class Main(ShowBase):
         if len(self.trucks) > 0:
             self.trucks[0].update(globalClock.getDt())
 
-        self.camcon.update()
         return Task.cont
 
     def toggleDebug(self):
