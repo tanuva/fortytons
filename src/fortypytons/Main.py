@@ -53,9 +53,6 @@ class Main(ShowBase):
         # render in wireframe by default for now
         base.toggleWireframe()
 
-        # register the render task for ODE updating
-        self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask")
-
         # Enable shad(er|ow) generation
         render.setShaderAuto()
 
@@ -145,9 +142,12 @@ class Main(ShowBase):
         self.accept("r-up", self.trucks[0].reset)
 
         self.camcon = ManualCameraController(self.world, self.camera, self.trucks[0].getChassis().getBody())
-        taskMgr.add(self.camcon.update, 'CameraController')
+        taskMgr.add(self.camcon.update, 'CameraController', priority=10)
         self.accept("wheel_up", self.camcon.mwheelup)
         self.accept("wheel_down", self.camcon.mwheeldown)
+
+        # register the render task for updating
+        self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask", priority=9)
 
     def renderTask(self, task):
         """ Do stuff. """
