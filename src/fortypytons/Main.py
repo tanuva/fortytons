@@ -153,14 +153,14 @@ class Main(ShowBase):
         """ Do stuff. """
         self.terrain.update()
 
-        # Apply forces to the truck
-        if len(self.trucks) > 0:
-            self.trucks[0].update(globalClock.getDt())
-
         # Update object positions
         self.world.doPhysics(globalClock.getDt()*SCALE)
         # Update the truck's speedometer
         self.lblSpeedo["text"] = "%i" % self.trucks[0].getSpeed()
+
+        # Apply forces to the truck
+        if len(self.trucks) > 0:
+            self.trucks[0].update(globalClock.getDt())
 
         return Task.cont
 
