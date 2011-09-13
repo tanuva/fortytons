@@ -144,33 +144,6 @@ class Main(ShowBase):
         self.accept("a-up", self.trucks[0].dumperStop)
         self.accept("r-up", self.trucks[0].reset)
 
-        # TESTING
-        """npBox = render.attachNewNode(BulletRigidBodyNode('Box'))
-        boxS = BulletBoxShape(Vec3(.5, .5, .5))
-        npBox.node().addShape(boxS)
-        npBox.node().setDeactivationEnabled(False)
-        npBox.setPos(2, -4, 3)
-        self.world.attachRigidBody(npBox.node())
-
-        npbox2 = render.attachNewNode(BulletRigidBodyNode('Box2'))
-        box2S = BulletBoxShape(Vec3(.5, .5, .5))
-        npbox2.node().addShape(box2S)
-        npbox2.node().setDeactivationEnabled(False)
-        npbox2.node().setMass(5)
-        npbox2.setPos(2, -4, 1)
-        self.world.attachRigidBody(npbox2.node())
-
-        t1 = TransformState.makePosHpr(Point3(0,0,0), Vec3(0,0,90))
-        t2 = TransformState.makePosHpr(Point3(0,0,0), Vec3(0,0,0))
-        con = BulletSliderConstraint(npBox.node(), npbox2.node(), t1, t2, True)
-        con.setLowerLinearLimit(0.05)
-        con.setUpperLinearLimit(3)
-        con.setLowerAngularLimit(0)
-        con.setUpperAngularLimit(0)
-        con.setDebugDrawSize(2.0)
-        #con.enableFeedback(True)
-        self.world.attachConstraint(con)"""
-
         self.camcon = ManualCameraController(self.world, self.camera, self.trucks[0].getChassis().getBody())
         taskMgr.add(self.camcon.update, 'CameraController')
         self.accept("wheel_up", self.camcon.mwheelup)
