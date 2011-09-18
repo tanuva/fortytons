@@ -232,6 +232,8 @@ class Truck:
     def update(self):
         self.steer()
 
+        # acceleration = engine_torque x 2 x pi x engine_rpm / (velocity x mass)
+
     def accel(self):
         self._accel = True
         self.vehicle.applyEngineForce(1600.0, 2)
