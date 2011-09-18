@@ -157,7 +157,7 @@ class Main(ShowBase):
         # Update object positions
         self.world.doPhysics(globalClock.getDt()*SCALE)
         # Update the truck's speedometer
-        self.lblSpeedo["text"] = "%i" % self.trucks[0].getSpeed()
+        self.lblSpeedo["text"] = "%i" % abs(self.trucks[0].getSpeed())
 
         # Apply forces to the truck
         if len(self.trucks) > 0:
