@@ -24,6 +24,9 @@ class Truck:
     maxAngle = 45.0 # The maximum steering angle at the current speed (speed-sensitive)
     physMaxAngle = 45.0 # The absolute maximum angle
     rate = 1.1
+    _gbStates = {0: 'p', 1: 'r', 2: 'n', 3: 'd'}
+    _gbState = 0
+    _gbGear = 0
 
     def __init__(self, chassismesh, wheelmesh, pos, SCALE, maskTrucks, world):
         '''
@@ -233,27 +236,40 @@ class Truck:
         self.steer()
 
         # acceleration = engine_torque x 2 x pi x engine_rpm / (velocity x mass)
+        # acceleration = engine_torque x 2 x pi x engine_rpm / gear
 
     def accel(self):
-        self._accel = True
-        self.vehicle.applyEngineForce(1600.0, 2)
-        self.vehicle.applyEngineForce(1600.0, 3)
+        force = 1600.
+
+        if self._gbState == 3:
+            self.vehicle.applyEngineForce(force, 2)
+            self.vehicle.applyEngineForce(force, 3)
+        elif self._gbState == 1:
+            self.vehicle.applyEngineForce(force * -1., 2)
+            self.vehicle.applyEngineForce(force * -1., 3)
 
     def brake(self):
-        self._brake = True
-        if self.vehicle.getCurrentSpeedKmHour() > 1:
-            self.vehicle.applyEngineForce(0, 2)
-            self.vehicle.applyEngineForce(0, 3)
-            self.vehicle.setBrake(200.0, 2)
-            self.vehicle.setBrake(200.0, 3)
-        else:
-            self.vehicle.applyEngineForce(-1000.0, 2)
-            self.vehicle.applyEngineForce(-1000.0, 3)
+        # We don't check self._gbState here, braking should always work...
+        self.vehicle.applyEngineForce(0, 2)
+        self.vehicle.applyEngineForce(0, 3)
+        self.vehicle.setBrake(200.0, 2)
+        self.vehicle.setBrake(200.0, 3)
 
     def neutral(self):
         for i in range(0,4):
             self.vehicle.applyEngineForce(0, i)
             self.vehicle.setBrake(0, i)
+
+    def shiftUp(self):
+        if self._gbState < 3:
+            self._gbState += 1
+
+    def shiftDown(self):
+        if self._gbState > 0:
+            self._gbState -= 1
+
+    def getGbState(self):
+        return self._gbStates[self._gbState]
 
     def steerLeft(self):
         self._steer = 1
