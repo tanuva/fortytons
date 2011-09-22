@@ -44,6 +44,7 @@ class Main(ShowBase):
 
         # We need some gui
         self.lblSpeedo = DirectLabel(text = "xxx", scale = .1, pos = Point3(1.2, 0, -.9))
+        self.lblGearState = DirectLabel(text = "xxx", scale = .1, pos = Point3(1.2, 0, -.97))
 
         self.accept("f9", self.toggleDebug)
         self.accept("f10", base.toggleWireframe)
@@ -138,9 +139,11 @@ class Main(ShowBase):
         self.accept('arrow_right-up', self.trucks[0].steerStraight)
         self.accept("q", self.trucks[0].dumperUp)
         self.accept("q-up", self.trucks[0].dumperStop)
-        self.accept("a", self.trucks[0].dumperDown)
-        self.accept("a-up", self.trucks[0].dumperStop)
+        self.accept("w", self.trucks[0].dumperDown)
+        self.accept("w-up", self.trucks[0].dumperStop)
         self.accept("r-up", self.trucks[0].reset)
+        self.accept("a-up", self.trucks[0].shiftUp)
+        self.accept("y-up", self.trucks[0].shiftDown)
 
         self.camcon = ManualCameraController(self.world, self.camera, self.trucks[0].getChassis().getBody())
         taskMgr.add(self.camcon.update, 'CameraController', priority=10)
@@ -158,6 +161,7 @@ class Main(ShowBase):
         self.world.doPhysics(globalClock.getDt()*SCALE)
         # Update the truck's speedometer
         self.lblSpeedo["text"] = "%i" % abs(self.trucks[0].getSpeed())
+        self.lblGearState["text"] = self.trucks[0].getGbState()
 
         # Apply forces to the truck
         if len(self.trucks) > 0:
