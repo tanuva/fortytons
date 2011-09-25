@@ -92,12 +92,6 @@ class Truck:
         self.tuningGui = TuningGui(self.vehicle.getTuning())
 
         tuning = self.vehicle.getTuning()
-        tuning.setMaxSuspensionTravelCm(40.0)
-        tuning.setMaxSuspensionForce(40000.0) # 1500 kg * 10 N/kg + a little extra
-        tuning.setSuspensionStiffness(20.0)
-        tuning.setSuspensionDamping(3.0)
-        tuning.setSuspensionCompression(5.0)
-        tuning.setFrictionSlip(1.5)
 
         # === We need rolling devices! ===
         self.wheels = []
@@ -128,13 +122,32 @@ class Truck:
             wheel = self.vehicle.createWheel()
             wheel.setNode(npBody.node())
             wheel.setChassisConnectionPointCs(pos)
-            if i < 2:
-                wheel.setFrontWheel(True)
 
             wheel.setWheelDirectionCs(Vec3(0, 0, -1))
             wheel.setWheelAxleCs(Vec3(1, 0, 0))
             wheel.setWheelRadius(.45)
-            wheel.setRollInfluence(0.3)
+
+            # suspension setup
+            if i in range(0, 2): # [0, 1]
+                # front axle
+                wheel.setFrontWheel(True)
+                wheel.setMaxSuspensionTravelCm(35.0)
+                wheel.setMaxSuspensionForce(60000.0) # 3362 kg * 10 N/kg + some extra
+                wheel.setSuspensionStiffness(20.0)
+                wheel.setWheelsDampingRelaxation(2.)
+                wheel.setWheelsDampingCompression(5.)
+                wheel.setFrictionSlip(1.5)
+                wheel.setRollInfluence(0.3)
+
+            if i in range(2, 4): # [2, 3]
+                # rear axle
+                wheel.setMaxSuspensionTravelCm(40.0)
+                wheel.setMaxSuspensionForce(60000.0)
+                wheel.setSuspensionStiffness(35.0)
+                wheel.setWheelsDampingRelaxation(2.)
+                wheel.setWheelsDampingCompression(5.)
+                wheel.setFrictionSlip(1.5)
+                wheel.setRollInfluence(0.3)
 
             self.wheels.append(VWheel(npWheelMdl, npBody, wheel))
 
