@@ -24,9 +24,12 @@ class Truck:
     curAngle = 0.0
     maxAngle = physMaxAngle # The maximum steering angle at the current speed (speed-sensitive)
     rate = 1.1
-    _gbStates = {0: 'p', 1: 'r', 2: 'n', 3: 'd'}
+
+    # gearbox
+    _gbStates = { 0: 'p', 1: 'r', 2: 'n', 3: 'd' }
+    _gbRatios = { 0: 6.29, 1: 6.29, 2: 3.48, 3: 2.10, 4: 1.38, 5: 1.00, 6: 0.79 }
     _gbState = 0
-    _gbGear = 0
+    _gbGear = 1 # 0 is reverse, default to first gear
 
     def __init__(self, chassismesh, wheelmesh, pos, SCALE, maskTrucks, world):
         '''
