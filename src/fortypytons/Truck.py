@@ -70,7 +70,7 @@ class Truck:
         self.dump = VComponent(npDumpMdl, npDump)
 
         # === Connect Chassis and Dumper ===
-	#BulletHingeConstraint (BulletRigidBodyNode const node_a, BulletRigidBodyNode const node_b,
+        #BulletHingeConstraint (BulletRigidBodyNode const node_a, BulletRigidBodyNode const node_b,
         #                       Point3 const pivot_a, Point3 const pivot_b,
         #                       Vec3 const axis_a, Vec3 const axis_b,
         #                       bool use_frame_a)
