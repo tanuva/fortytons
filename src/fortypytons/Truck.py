@@ -50,7 +50,7 @@ class Truck:
         # TransformState: compensate for the exhausts sticking out of the top
         npBody.node().addShape(BulletBoxShape(Vec3(1, 2.5, .51/2.0)), TransformState.makePos(Vec3(0, 0, -.65)))
         npBody.node().addShape(BulletBoxShape(Vec3(1, .75, 1.18/2.0)), TransformState.makePos(Vec3(0, 1.75, .2)))
-        npBody.node().setMass(1200.0)
+        npBody.node().setMass(3362.0)
         npBody.node().setDeactivationEnabled(False)
         npBody.setPos(pos)
         self.world.attachRigidBody(npBody.node())
