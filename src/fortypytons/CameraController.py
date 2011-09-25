@@ -38,10 +38,10 @@ class ManualCameraController:
             # inc: angle between Z+ and the camera (roughly inclination)
             # rot: angle between X+ and the camera (rotation)
             x = self.distance * math.sin(self.deg2rad(self.inc)) * math.cos(self.deg2rad(self.rot))
-            y = self.distance * math.sin(self.deg2rad(self.inc)) * math.sin(self.deg2rad(self.rot))
+            y = self.distance * math.sin(self.deg2rad(self.inc)) * math.sin(self.deg2rad(self.rot)) * (-1.) # Invert y to imitate aircraft pitch control
             z = self.distance * math.cos(self.deg2rad(self.inc))
 
-            self.cam.setPos(self.target.getPos() + Point3(x,-y,z)) # Invert y to imitate aircraft pitch control
+            self.cam.setPos(self.target.getPos() + Point3(x, y, z))
             base.win.movePointer(0, base.win.getXSize() / 2, base.win.getYSize() / 2) # Reset the pointer to the window's center
 
         # Make the camera look at the target again.
