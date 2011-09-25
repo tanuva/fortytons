@@ -107,14 +107,7 @@ class Main(ShowBase):
         self.bridgeNp.node().addShape(BulletTriangleMeshShape(mesh, dynamic=False))
         self.world.attachRigidBody(self.bridgeNp.node())
 
-        # for testing
-        """shpStand = BulletBoxShape(Vec3(0.5, 0.5, 1.0))
-        stand = BulletRigidBodyNode('Box')
-        stand.addShape(shpStand)
-        npStand = render.attachNewNode(stand)
-        npStand.setPos(0, 0, 1.0)
-        self.world.attachRigidBody(npStand.node()) """
-
+        # Configure the debug node
         self.debug = render.attachNewNode(BulletDebugNode('debug'))
         self.debug.node().showWireframe(True)
         self.debug.node().showConstraints(True)
