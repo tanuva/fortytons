@@ -143,15 +143,20 @@ class Main(ShowBase):
         self.accept("wheel_up", self.camcon.mwheelup)
         self.accept("wheel_down", self.camcon.mwheeldown)
 
-        # register the render task for updating
+        # register the physics update task
+        self.taskMgr.doMethodLater(1./60., self.physicsTask, "physicsTask", priority=5)
+        # register the render task
         self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask", priority=9)
+
+    def physicsTask(self, task):
+        # We do 5 substeps per task frame, chosen by fair dice roll ;)
+        self.world.doPhysics(task.delayTime, 5, task.delayTime/5.)
+        return task.again
 
     def renderTask(self, task):
         """ Do stuff. """
         self.terrain.update()
 
-        # Update object positions
-        self.world.doPhysics(globalClock.getDt()*SCALE)
         # Update the truck's speedometer
         self.lblSpeedo["text"] = "%i" % abs(self.trucks[0].getSpeed())
         self.lblGearState["text"] = self.trucks[0].getGbState()
