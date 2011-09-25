@@ -20,9 +20,9 @@ class Truck:
     '''
 
     # steering
-    curAngle = 0.0
-    maxAngle = 45.0 # The maximum steering angle at the current speed (speed-sensitive)
     physMaxAngle = 45.0 # The absolute maximum angle
+    curAngle = 0.0
+    maxAngle = physMaxAngle # The maximum steering angle at the current speed (speed-sensitive)
     rate = 1.1
     _gbStates = {0: 'p', 1: 'r', 2: 'n', 3: 'd'}
     _gbState = 0
