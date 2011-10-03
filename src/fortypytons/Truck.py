@@ -335,9 +335,21 @@ class Truck:
         if self._gbState < 3:
             self._gbState += 1
 
+        # Switch to reverse or first if appropriate
+        if self._gbState == 1:
+            self._gbGear = 0
+        else:
+            self._gbGear = 1
+
     def shiftDown(self):
         if self._gbState > 0:
             self._gbState -= 1
+
+        # Switch to reverse or first if appropriate
+        if self._gbState == 1:
+            self._gbGear = 0
+        else:
+            self._gbGear = 1
 
     def getGbState(self):
         return self._gbStates[self._gbState]
