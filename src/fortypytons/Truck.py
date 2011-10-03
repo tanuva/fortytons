@@ -394,6 +394,9 @@ class Truck:
     def getRpm(self):
         return self._currpm
 
+    def getGear(self):
+        return self._gbGear
+
     def reset(self):
         self.chassis.setPos(self.chassis.getPos() + (0,0,1.5))
         self.chassis.setR(0)
