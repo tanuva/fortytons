@@ -10,7 +10,7 @@ from Truck import Truck
 from CameraController import *
 from direct.showbase.ShowBase import ShowBase
 from direct.task import Task
-from direct.gui.DirectGui import DirectButton, DirectLabel
+from direct.gui.DirectGui import DirectButton, DirectLabel, DirectSlider
 from panda3d.core import *
 from panda3d.bullet import *
 from pandac.PandaModules import WindowProperties
@@ -45,6 +45,7 @@ class Main(ShowBase):
         # We need some gui
         self.lblSpeedo = DirectLabel(text = "xxx", scale = .1, pos = Point3(1.2, 0, -.9))
         self.lblGearState = DirectLabel(text = "xxx", scale = .1, pos = Point3(1.2, 0, -.97))
+        self.lblRpmSlider = DirectSlider(scale = .5, pos = Point3(1, 0, -.8), range=(0,5500), value=0, pageSize=0)
 
         self.accept("f9", self.toggleDebug)
         self.accept("f10", base.toggleWireframe)
@@ -164,6 +165,7 @@ class Main(ShowBase):
         # Apply forces to the truck
         if len(self.trucks) > 0:
             self.trucks[0].update(globalClock.getDt())
+        self.lblRpmSlider["value"] = self.trucks[0].getRpm()
 
         return Task.cont
 
