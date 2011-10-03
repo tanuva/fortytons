@@ -278,7 +278,7 @@ class Truck:
         #print "%i <> %i" % (realrpm, self._currpm)
 
         # Idle gas
-        if realrpm < self._idlerpm and not self._brake == 1:
+        if realrpm < self._idlerpm and not self._brake == 1 and self._gas < 0.4:
             self.accel(600, .4)
         else:
             self.accel()
