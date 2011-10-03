@@ -123,12 +123,12 @@ class Main(ShowBase):
                                  self.world))
 
         # Register truck functions
-        self.accept('arrow_up', self.trucks[0].accel)
-        self.accept('arrow_down', self.trucks[0].brake)
+        self.accept('arrow_up', self.trucks[0].setGas, [1.])
+        self.accept('arrow_down', self.trucks[0].setBrake, [1.])
         self.accept('arrow_left', self.trucks[0].steerLeft)
         self.accept('arrow_right', self.trucks[0].steerRight)
-        self.accept('arrow_up-up', self.trucks[0].neutral)
-        self.accept('arrow_down-up', self.trucks[0].neutral)
+        self.accept('arrow_up-up', self.trucks[0].setGas, [0.])
+        self.accept('arrow_down-up', self.trucks[0].setBrake, [0.])
         self.accept('arrow_left-up', self.trucks[0].steerStraight)
         self.accept('arrow_right-up', self.trucks[0].steerStraight)
         self.accept("q", self.trucks[0].dumperUp)
