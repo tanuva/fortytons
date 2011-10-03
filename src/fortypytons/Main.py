@@ -45,7 +45,8 @@ class Main(ShowBase):
         # We need some gui
         self.lblSpeedo = DirectLabel(text = "xxx", scale = .1, pos = Point3(1.2, 0, -.9))
         self.lblGearState = DirectLabel(text = "xxx", scale = .1, pos = Point3(1.2, 0, -.97))
-        self.lblRpmSlider = DirectSlider(scale = .5, pos = Point3(1, 0, -.8), range=(0,5500), value=0, pageSize=0)
+        self.lblGear = DirectLabel(text = "xxx", scale = .1, pos = Point3(1., 0, -.97))
+        self.lblRpmSlider = DirectSlider(scale = .5, pos = Point3(1, 0, -.8), range=(0,3000), value=0, pageSize=0)
 
         self.accept("f9", self.toggleDebug)
         self.accept("f10", base.toggleWireframe)
@@ -165,6 +166,11 @@ class Main(ShowBase):
         self.lblSpeedo["text"] = "%i" % abs(self.trucks[0].getSpeed())
         self.lblGearState["text"] = self.trucks[0].getGbState()
         self.lblRpmSlider["value"] = self.trucks[0].getRpm()
+
+        if self.trucks[0].getGear() == 0:
+            self.lblGear["text"] = 'r'
+        else:
+            self.lblGear["text"] = "%i" % self.trucks[0].getGear()
 
         return Task.cont
 
