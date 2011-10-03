@@ -150,8 +150,11 @@ class Main(ShowBase):
         self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask", priority=9)
 
     def physicsTask(self, task):
-        # We do 5 substeps per task frame, chosen by fair dice roll ;)
-        self.world.doPhysics(task.delayTime, 5, task.delayTime/5.)
+        # We do 5 substeps per task frame, amount chosen by fair dice roll ;)
+        self.world.doPhysics(task.delayTime, 10, task.delayTime/10.)
+
+        if len(self.trucks) > 0:
+            self.trucks[0].update(task.delayTime)
         return task.again
 
     def renderTask(self, task):
@@ -161,10 +164,6 @@ class Main(ShowBase):
         # Update the truck's speedometer
         self.lblSpeedo["text"] = "%i" % abs(self.trucks[0].getSpeed())
         self.lblGearState["text"] = self.trucks[0].getGbState()
-
-        # Apply forces to the truck
-        if len(self.trucks) > 0:
-            self.trucks[0].update(globalClock.getDt())
         self.lblRpmSlider["value"] = self.trucks[0].getRpm()
 
         return Task.cont
