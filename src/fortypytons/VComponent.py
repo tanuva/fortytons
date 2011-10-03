@@ -45,12 +45,13 @@ class VWheel(VComponent):
     classdocs
     '''
 
-    def __init__(self, npMesh, npBody, wheel):
+    def __init__(self, npMesh, npBody, wheel, isPowered):
         '''
         Constructor
         '''
         VComponent.__init__(self, npMesh, npBody)
-        self.wheel = wheel
+        self._wheel = wheel
+        self._isPowered = isPowered
 
     def steer(self, direction, torque):
         print "steer: NYI"
@@ -66,11 +67,10 @@ class VWheel(VComponent):
         if angle < -0.01:
             self.steer(1, 10.0)
 
-    def accel(self, force):
-        print "accel: NYI"
+    def getWheel(self):
+        return self._wheel
 
-    def brake(self, force):
-        print "brake: NYI"
-
-    def getWheel():
-        return self.wheel
+    def isPowered(self):
+        return self._isPowered
+    def isSteerable(self):
+        return self.wheel.getFrontWheel()
