@@ -290,22 +290,20 @@ class Truck:
         if gas == -1.:
             gas = self._gas
 
+        # switch some gears
+        if self._gbState == 3:
+            """self._calcAccelForce(rpm, gas, self._gbGear) < self._calcAccelForce(rpm, gas, self._getPrevGear()) or"""
+            """self._calcAccelForce(rpm, gas, self._gbGear) < self._calcAccelForce(rpm, gas, self._getNextGear()) or"""
+
+            if rpm < 800.:
+                self._gbGear = self._getPrevGear()
+            elif rpm > 1600.:
+                self._gbGear = self._getNextGear()
+
         force = 0.
 
         if self._gbState == 1 or self._gbState == 3:
-            if rpm >= 600. and rpm < 1151.:
-                force = (1./3.) * rpm + 450.
-            elif rpm >= 1151. and rpm < 1601.:
-                force = 500.
-            elif rpm >= 1601. and rpm <= 2521.:
-                force = -.234 * (rpm - 1600.) + 500.
-
-            # Take the gas pedal's position into account
-            force *= gas
-
-            # Gearbox reduces RPM by ratio, therefore increases torque by ratio
-            # RPM / 6.32 ==> Nm * 6.32
-            force *= self._gbRatios[self._gbGear] * self._rearAxRatio
+            force = self._calcAccelForce(rpm, gas, self._gbGear)
 
         if self._gbState == 3:
             self.vehicle.applyEngineForce(force, 2)
@@ -313,6 +311,25 @@ class Truck:
         elif self._gbState == 1:
             self.vehicle.applyEngineForce(force * -1., 2)
             self.vehicle.applyEngineForce(force * -1., 3)
+
+    def _calcAccelForce(self, rpm, gas, gear):
+        force = 0.
+
+        if rpm >= 600. and rpm < 1151.:
+            force = (1./3.) * rpm + 450.
+        elif rpm >= 1151. and rpm < 1601.:
+            force = 500.
+        elif rpm >= 1601. and rpm <= 2521.:
+            force = -.234 * (rpm - 1600.) + 500.
+
+        # Take the gas pedal's position into account
+        force *= gas
+
+        # Gearbox reduces RPM by ratio, therefore increases torque by ratio
+        # RPM / 6.32 ==> Nm * 6.32
+        force *= self._gbRatios[gear] * self._rearAxRatio
+
+        return force
 
     def brake(self):
         # We don't check self._gbState here, braking should always work...
@@ -350,6 +367,18 @@ class Truck:
             self._gbGear = 0
         else:
             self._gbGear = 1
+
+    def _getNextGear(self):
+        if self._gbGear < len(self._gbRatios) - 1:  # subtract the reverse gear!
+            return self._gbGear + 1
+        else:
+            return self._gbGear
+
+    def _getPrevGear(self):
+        if self._gbGear > 1:
+            return self._gbGear - 1
+        else:
+            return self._gbGear
 
     def getGbState(self):
         return self._gbStates[self._gbState]
