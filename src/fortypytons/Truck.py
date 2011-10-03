@@ -262,7 +262,7 @@ class Truck:
         self.steer()
 
         # FIXME Do we have to abs() here?
-        drot = (self.vehicle.getWheel(2).getDeltaRotation() + self.vehicle.getWheel(3).getDeltaRotation()) / 2
+        drot = abs((self.vehicle.getWheel(2).getDeltaRotation() + self.vehicle.getWheel(3).getDeltaRotation()) / 2)
         rotspd = drot * (1./dt) # Average of the rear wheels' rotation speed (revs per second)
         rotspd *= 60 # convert to revs per minute
 
