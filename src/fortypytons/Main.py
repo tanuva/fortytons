@@ -137,8 +137,10 @@ class Main(ShowBase):
         self.accept("w", self.trucks[0].dumperDown)
         self.accept("w-up", self.trucks[0].dumperStop)
         self.accept("r-up", self.trucks[0].reset)
-        self.accept("a-up", self.trucks[0].shiftUp)
-        self.accept("y-up", self.trucks[0].shiftDown)
+        self.accept("y-up", self.trucks[0].shiftPark)
+        self.accept("x-up", self.trucks[0].shiftReverse)
+        self.accept("c-up", self.trucks[0].shiftNeutral)
+        self.accept("v-up", self.trucks[0].shiftDrive)
 
         self.camcon = ManualCameraController(self.world, self.camera, self.trucks[0].getChassis().getBody())
         taskMgr.add(self.camcon.update, 'CameraController', priority=10)
@@ -168,9 +170,13 @@ class Main(ShowBase):
         self.lblRpmSlider["value"] = self.trucks[0].getRpm()
 
         if self.trucks[0].getGear() == 0:
+            self.lblGear["text"] = 'n'
+        elif self.trucks[0].getGear() == 1:
             self.lblGear["text"] = 'r'
         else:
-            self.lblGear["text"] = "%i" % self.trucks[0].getGear()
+            self.lblGear["text"] = "%i" % (self.trucks[0].getGear() - 1)
+
+        #self.lblGear["text"] = "%i" % self.trucks[0].getGear()
 
         return Task.cont
 

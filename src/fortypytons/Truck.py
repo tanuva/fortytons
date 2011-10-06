@@ -9,6 +9,7 @@ import math
 
 #from WireGeom import WireGeom
 from TuningGui import TuningGui
+from Drivetrain import AutomaticDt
 from VComponent import *
 from direct.directtools.DirectGeometry import LineNodePath
 from panda3d.core import *
@@ -24,29 +25,13 @@ class Truck:
     curAngle = 0.0
     maxAngle = physMaxAngle # The maximum steering angle at the current speed (speed-sensitive)
     rate = 1.1
-
-    # engine
-    _maxrpm = 2520
-    _idlerpm = 600
-    _currpm = 1000
-    _gas = 0.0      # Gas pedal. Range: 0.0 - 1.0
-    _brake = 0.0    # Brake pedal.
-
-    # gearbox
-    _gbStates = { 0: 'p', 1: 'r', 2: 'n', 3: 'd' }
-    _gbRatios = { 0: 6.29, 1: 6.29, 2: 3.48, 3: 2.10, 4: 1.38, 5: 1.00, 6: 0.79 }
-    _gbState = 0
-    _gbGear = 1 # 0 is reverse, default to first gear
-    _rearAxRatio = 3.636
+    _steerDir = 0       # -1, 0, 1: Sets the direction of steering
 
     def __init__(self, chassismesh, wheelmesh, pos, SCALE, maskTrucks, world):
         '''
         Loads the chassismesh, sets the truck up and ignites the engine.
         '''
 
-        self._steer = 0
-        self._accel = False
-        self._brake = False
         self.world = world
 
         # eggmesh: center-side 1m, center-front 2.5m, center-top 1.7m, height exhaust: 0.1m
@@ -100,6 +85,8 @@ class Truck:
         self.tuningGui = TuningGui(self.vehicle.getTuning())
 
         tuning = self.vehicle.getTuning()
+
+        self.drivetrain = AutomaticDt(self.vehicle)
 
         # === We need rolling devices! ===
         self.wheels = []
@@ -259,138 +246,44 @@ class Truck:
         tcon.enableAngularMotor(True, -5., 300.)
 
     def update(self, dt):
-        self.steer()
-
-        # FIXME Do we have to abs() here?
-        drot = abs((self.vehicle.getWheel(2).getDeltaRotation() + self.vehicle.getWheel(3).getDeltaRotation()) / 2)
-        rotspd = drot * (1./dt) # Average of the rear wheels' rotation speed (revs per second)
-        rotspd *= 60 # convert to revs per minute
-
-        # Calculate the rpm value the engine should have at our current speed
-        realrpm = rotspd * self._gbRatios[self._gbGear] * self._rearAxRatio
-
-        # Do some "clutch" work
-        if realrpm < self._idlerpm:
-            self._currpm = self._idlerpm
-        else:
-            self._currpm = realrpm
-
-        #print "%i <> %i" % (realrpm, self._currpm)
-
-        # Idle gas
-        if realrpm < self._idlerpm and not self._brake == 1 and self._gas < 0.4:
-            self.accel(600, .4)
-        else:
-            self.accel()
-            self.brake()
-
-    def accel(self, rpm = -1., gas = -1.):
-        if rpm == -1.:
-            rpm = self._currpm
-        if gas == -1.:
-            gas = self._gas
-
-        # switch some gears
-        if self._gbState == 3:
-            """self._calcAccelForce(rpm, gas, self._gbGear) < self._calcAccelForce(rpm, gas, self._getPrevGear()) or"""
-            """self._calcAccelForce(rpm, gas, self._gbGear) < self._calcAccelForce(rpm, gas, self._getNextGear()) or"""
-
-            if rpm < 800.:
-                self._gbGear = self._getPrevGear()
-            elif rpm > 1600.:
-                self._gbGear = self._getNextGear()
-
-        force = 0.
-
-        if self._gbState == 1 or self._gbState == 3:
-            force = self._calcAccelForce(rpm, gas, self._gbGear)
-
-        if self._gbState == 3:
-            self.vehicle.applyEngineForce(force, 2)
-            self.vehicle.applyEngineForce(force, 3)
-        elif self._gbState == 1:
-            self.vehicle.applyEngineForce(force * -1., 2)
-            self.vehicle.applyEngineForce(force * -1., 3)
-
-    def _calcAccelForce(self, rpm, gas, gear):
-        force = 0.
-
-        if rpm >= 600. and rpm < 1151.:
-            force = (1./3.) * rpm + 450.
-        elif rpm >= 1151. and rpm < 1601.:
-            force = 500.
-        elif rpm >= 1601. and rpm <= 2521.:
-            force = -.234 * (rpm - 1600.) + 500.
-
-        # Take the gas pedal's position into account
-        force *= gas
-
-        # Gearbox reduces RPM by ratio, therefore increases torque by ratio
-        # RPM / 6.32 ==> Nm * 6.32
-        force *= self._gbRatios[gear] * self._rearAxRatio
-
-        return force
-
-    def brake(self):
-        # We don't check self._gbState here, braking should always work...
-        self.vehicle.setBrake(200.0 * self._brake, 2)
-        self.vehicle.setBrake(200.0 * self._brake, 3)
+        self._steer()
+        self.drivetrain.update(dt)
 
     def setGas(self, gas):
         if gas <= 1. and gas >= 0.:
-            self._gas = gas
+            self.drivetrain.setGas(gas)
         else:
             print "Truck.py:setGas(gas) out of range! (0 < x < 1)"
 
     def setBrake(self, brake):
         if brake <= 1. and brake >= 0.:
-            self._brake = brake
+            self.drivetrain.setBrake(brake)
         else:
             print "Truck.py:setBrake(brake) out of range! (0 < x < 1)"
 
-    def shiftUp(self):
-        if self._gbState < 3:
-            self._gbState += 1
-
-        # Switch to reverse or first if appropriate
-        if self._gbState == 1:
-            self._gbGear = 0
-        else:
-            self._gbGear = 1
-
-    def shiftDown(self):
-        if self._gbState > 0:
-            self._gbState -= 1
-
-        # Switch to reverse or first if appropriate
-        if self._gbState == 1:
-            self._gbGear = 0
-        else:
-            self._gbGear = 1
-
-    def _getNextGear(self):
-        if self._gbGear < len(self._gbRatios) - 1:  # subtract the reverse gear!
-            return self._gbGear + 1
-        else:
-            return self._gbGear
-
-    def _getPrevGear(self):
-        if self._gbGear > 1:
-            return self._gbGear - 1
-        else:
-            return self._gbGear
-
     def getGbState(self):
-        return self._gbStates[self._gbState]
+        return self.drivetrain.getGbState()
+
+    def shiftDrive(self):
+        self.drivetrain.shiftDrive()
+
+    def shiftNeutral(self):
+        self.drivetrain.shiftNeutral()
+
+    def shiftReverse(self):
+        self.drivetrain.shiftReverse()
+
+    def shiftPark(self):
+        self.drivetrain.shiftPark()
 
     def steerLeft(self):
-        self._steer = 1
+        self._steerDir = 1
     def steerRight(self):
-        self._steer = -1
+        self._steerDir = -1
     def steerStraight(self):
-        self._steer = 0
+        self._steerDir = 0
 
-    def steer(self):
+    def _steer(self):
         # We are speed sensitive
         speed = self.vehicle.getCurrentSpeedKmHour()
         if speed > 0 and speed < 90:
@@ -398,17 +291,17 @@ class Truck:
         elif speed > 90:
             self.maxAngle = 1.0
 
-        if self._steer == 1 and self.curAngle < self.maxAngle:
+        if self._steerDir == 1 and self.curAngle < self.maxAngle:
             if self.curAngle < 0:
                 self.curAngle += 2.0 * self.rate
             else:
                 self.curAngle += self.rate
-        elif self._steer == -1 and self.curAngle > self.maxAngle * -1:
+        elif self._steerDir == -1 and self.curAngle > self.maxAngle * -1:
             if self.curAngle > 0:
                 self.curAngle -= 2.0 * self.rate
             else:
                 self.curAngle -= self.rate
-        else: # self._steer == 0
+        else: # self._steerDir == 0
             # steer straight
             if self.curAngle > self.rate:
                 self.curAngle -= 2.0 * self.rate
@@ -421,10 +314,10 @@ class Truck:
         self.vehicle.setSteeringValue(self.curAngle, 1)
 
     def getRpm(self):
-        return self._currpm
+        return self.drivetrain.getRpm()
 
     def getGear(self):
-        return self._gbGear
+        return self.drivetrain.getGear()
 
     def reset(self):
         self.chassis.setPos(self.chassis.getPos() + (0,0,1.5))
