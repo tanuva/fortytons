@@ -32,15 +32,15 @@ class KeyConfig:
 
 		if params == None and paramsup == None:
 			self.showbase.accept(self.mapping[action], method)
-			print "Hook: {0} => {1} => {2}".format(self.mapping[action], action, method)
+			#print "Hook: {0} => {1} => {2}".format(self.mapping[action], action, method)
 
 		if not params == None:
 			self.showbase.accept(self.mapping[action], method, params)
-			print "Hook: {0} => {1} => {2} {3}".format(self.mapping[action], action, method, params)
+			#print "Hook: {0} => {1} => {2} {3}".format(self.mapping[action], action, method, params)
 
 		if not paramsup == None:
 			self.showbase.accept("%s-up" % self.mapping[action], method, paramsup)
-			print "Hook: {0} => {1} => {2} {3}".format(self.mapping[action], action, method, paramsup)
+			#print "Hook: {0} => {1} => {2} {3}".format(self.mapping[action], action, method, paramsup)
 
 	def loadConfig(self, filename):
 		f = open(filename, 'r')
