@@ -322,14 +322,13 @@ class Truck:
         self.chassis.setPos(self.chassis.getPos() + (0,0,1.5))
         self.chassis.setR(0)
 
-    def dumperUp(self):
-        self.dumperCon.enableAngularMotor(True, .2, 300.)
-
-    def dumperStop(self):
-        self.dumperCon.enableAngularMotor(True, .0, 300.)
-
-    def dumperDown(self):
-        self.dumperCon.enableAngularMotor(True, -.2, 300.)
+    def tiltDumper(self, direction):
+        if direction in [-1., 1.]:
+            self.dumperCon.enableAngularMotor(True, .4 * direction, 10000000.)
+        elif direction == 0.:
+            self.dumperCon.enableAngularMotor(True, .0, 1000000.)
+        else:
+            print "[WRN] Truck.py:tiltDumper(direction): Direction is none of [1., 0., -1.]"
 
     def getChassisNp(self):
         return self.chassis.getNp()
