@@ -276,12 +276,11 @@ class Truck:
     def shiftPark(self):
         self.drivetrain.shiftPark()
 
-    def steerLeft(self):
-        self._steerDir = 1
-    def steerRight(self):
-        self._steerDir = -1
-    def steerStraight(self):
-        self._steerDir = 0
+    def steer(self, direction):
+        if direction in [-1, 0, 1]:
+            self._steerDir = direction
+        else:
+            print "[WRN] Truck.py:steer(): Invalid direction parameter."
 
     def _steer(self):
         # We are speed sensitive
