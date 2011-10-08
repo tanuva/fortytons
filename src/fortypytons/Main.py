@@ -98,6 +98,12 @@ class Main(ShowBase):
         # Generate it.
         self.terrain.generate()
 
+        # Paint it
+        terTex = loader.loadTexture(self.datadir + "tex/vegetati.png")
+        terTex.setAnisotropicDegree(2)
+        self.terrainNp.setTexture(terTex)
+        self.terrainNp.setTexScale(TextureStage.getDefault(), 16., 16.)
+
         # Build our bridge
         p0 = Point3(-11, -6.5, 3.5 - height/2.)
         p2 = Point3(-8.5,  -6.5, 3.5 - height/2.)
