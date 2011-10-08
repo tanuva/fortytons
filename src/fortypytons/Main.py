@@ -123,7 +123,7 @@ class Main(ShowBase):
         self.debug.node().showBoundingBoxes(False)
         self.debug.node().showNormals(False)
         self.world.setDebugNode(self.debug.node())
-        self.debug.show()
+        #self.debug.show()
 
         self.trucks.append(Truck(self.datadir + "mesh/truck.egg",
                                  self.datadir + "mesh/wheel.egg",
