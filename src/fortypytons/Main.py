@@ -55,7 +55,7 @@ class Main(ShowBase):
         self.accept("f12", base.screenshot, ["40tons"])
 
         # render in wireframe by default for now
-        base.toggleWireframe()
+        #base.toggleWireframe()
 
         # Enable shad(er|ow) generation
         render.setShaderAuto()
