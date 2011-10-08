@@ -8,6 +8,7 @@ Created on 11.07.2011
 
 from Truck import Truck
 from CameraController import *
+from KeyConfig import KeyConfig
 from direct.showbase.ShowBase import ShowBase
 from direct.task import Task
 from direct.gui.DirectGui import DirectButton, DirectLabel, DirectSlider
@@ -124,23 +125,20 @@ class Main(ShowBase):
                                  self.world))
 
         # Register truck functions
-        self.accept('arrow_up', self.trucks[0].setGas, [1.])
-        self.accept('arrow_down', self.trucks[0].setBrake, [1.])
-        self.accept('arrow_left', self.trucks[0].steerLeft)
-        self.accept('arrow_right', self.trucks[0].steerRight)
-        self.accept('arrow_up-up', self.trucks[0].setGas, [0.])
-        self.accept('arrow_down-up', self.trucks[0].setBrake, [0.])
-        self.accept('arrow_left-up', self.trucks[0].steerStraight)
-        self.accept('arrow_right-up', self.trucks[0].steerStraight)
-        self.accept("q", self.trucks[0].dumperUp)
-        self.accept("q-up", self.trucks[0].dumperStop)
-        self.accept("w", self.trucks[0].dumperDown)
-        self.accept("w-up", self.trucks[0].dumperStop)
-        self.accept("r-up", self.trucks[0].reset)
-        self.accept("y-up", self.trucks[0].shiftPark)
-        self.accept("x-up", self.trucks[0].shiftReverse)
-        self.accept("c-up", self.trucks[0].shiftNeutral)
-        self.accept("v-up", self.trucks[0].shiftDrive)
+        # Truck should do this by itself! (or advertise keys it wants to use? better approach...)
+        self.keyconf = KeyConfig(self)
+        self.keyconf.loadConfig("de_neo2.conf")
+        self.keyconf.setHook("gas", self.trucks[0].setGas, [1.], [0.])
+        self.keyconf.setHook("brake", self.trucks[0].setBrake, [1.], [0.])
+        self.keyconf.setHook("steerLeft", self.trucks[0].steer, [1], [0])
+        self.keyconf.setHook("steerRight", self.trucks[0].steer, [-1], [0])
+        self.keyconf.setHook("dumperUp", self.trucks[0].tiltDumper, [1.], [0.])
+        self.keyconf.setHook("dumperDown", self.trucks[0].tiltDumper, [-1.], [0.])
+        self.keyconf.setHook("reset", self.trucks[0].reset)
+        self.keyconf.setHook("shiftPark", self.trucks[0].shiftPark)
+        self.keyconf.setHook("shiftReverse", self.trucks[0].shiftReverse)
+        self.keyconf.setHook("shiftNeutral", self.trucks[0].shiftNeutral)
+        self.keyconf.setHook("shiftDrive", self.trucks[0].shiftDrive)
 
         self.camcon = ManualCameraController(self.world, self.camera, self.trucks[0].getChassis().getBody())
         taskMgr.add(self.camcon.update, 'CameraController', priority=10)
