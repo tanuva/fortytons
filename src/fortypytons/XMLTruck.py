@@ -19,6 +19,8 @@ class VehicleDOMParser:
 
 	# The actual data we've read
 	data = {}
+	# Acts as a stack and helps us find the right path to use for storage inside self.data
+	path = []
 
 	def __init__(self, xmlfile):
 		self.xmlfile = xmlfile
@@ -37,10 +39,16 @@ class VehicleDOMParser:
 		if not self._traverseTree(vehicleNode):
 			exit(1)
 
-		print self.data
+		#print self.data
 
-	def _traverseTree(self, startnode):
-		for node in startnode.childNodes:
+	def _traverseTree(self, startNode, recursing = False):
+		if recursing:
+			# Add our current node to the path as its the parent for everything we'll add to the data store
+			self.path.append(startNode.nodeName)
+			if not startNode.getAttribute("id") == "":
+				self.path.append(startNode.getAttribute("id"))
+
+		for node in startNode.childNodes:
 			if not node.nodeName == "#text":
 				#print node.nodeName, "|\n", node.childNodes, "\n", len(node.childNodes), "\n==="
 
@@ -49,24 +57,54 @@ class VehicleDOMParser:
 						return False
 				else:
 					# recurse
-					self._traverseTree(node)
+					self._traverseTree(node, True)
+
+		if recursing:
+			# Recursion step is done, remove this path element
+
+			if not self.path[-1] == startNode.nodeName:
+				# We also appended an id (as in <axle id = "1">)
+				self.path.pop()
+
+			# Pop the original <axle> node
+			self.path.pop()
 
 		return True
 
-	def _addData(self, nodeName, datatype, data):
+	def _addData(self, nodeName, datatype, data, parent = "vehicle"):
 		if not datatype in self.allowedDatatypes:
-			print "[ERR] \"%s\" has no type attribute defined!" % (nodeName)
+			print "[ERR] \"%s\" has no valid type attribute defined!" % (nodeName)
 			return False
-		elif nodeName in self.data.keys():
+
+		# Push it into self.data
+		# Combines the path elements collected in self.path to access self.data the right way
+		# Do a "print strPath" to see what's happening! :)
+		# Ex: Recursion: <vehicle> -> <axle id = "1"> -> <suspension> -> <stiffness>
+		#     Generated code: self.data[axle][1][suspension][stiffness] = newEntry
+		strPath = "self.data"
+
+		for pathNodeName in self.path:
+			if not pathNodeName in eval(strPath).keys():
+				eval(strPath)[pathNodeName] = {}
+			strPath += "[\"%s\"]" % pathNodeName
+
+		# Check if the current key already exists...
+		if nodeName in eval(strPath).keys():
 			print "[WRN] %s defines \"%s\" more than once. Using the first definition." % (self.xmlfile, nodeName)
 			return True
 
+		strPath += "[\"%s\"] = " % nodeName
+
+		# Prepare the actual data for storage
 		if datatype == "vector":
-			self.data[nodeName] = eval("Vec3(%s)" % (data))
+			strPath += "Vec3(%s)" % (data)
 		elif datatype == "func":
-			self.data[nodeName] = data
+			strPath += ("\"" + data + "\"")
 		else:
-			self.data[nodeName] = eval("%s('%s')" % (datatype, data))
+			strPath += "%s('%s')" % (datatype, data)
+
+		print strPath
+		exec strPath
 		return True
 
 	def get(self, attr):
