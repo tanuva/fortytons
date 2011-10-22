@@ -107,10 +107,29 @@ class VehicleDOMParser:
 		exec strPath
 		return True
 
-	def get(self, attr):
-		if attr in self.data.keys():
-			return self.data[attr]
-		else:
+	def get(self, path):
+		"""
+		Build the data access code (like in _addData(...))
+		"""
+
+		# Make sure we iterate over an array even if path only has one stage (and therefore is a string)
+		if type(path).__name__ == "str":
+			tmp = path
+			path = []
+			path.append(tmp)
+
+		strPath = "self.data"
+
+		for nodename in path:
+			if not type(nodename).__name__ == "str":
+				nodename = str(nodename)
+
+			strPath += "[\"%s\"]" % nodename
+
+		try:
+			return eval(strPath)
+		except KeyError:
+			print "[ERR] VehicleDOMParser: Requested unexisting value:", strPath
 			return None
 
 class XMLTruck:
