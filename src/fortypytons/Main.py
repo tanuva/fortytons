@@ -101,7 +101,7 @@ class Main(ShowBase):
 
         # Paint it
         terTex = loader.loadTexture(self.datadir + "tex/vegetati.png")
-        terTex.setAnisotropicDegree(4)
+        terTex.setAnisotropicDegree(2)
         self.terrainNp.setTexture(terTex)
         self.terrainNp.setTexScale(TextureStage.getDefault(), 16., 16.)
 
@@ -158,7 +158,6 @@ class Main(ShowBase):
         # register the render task
         self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask", priority=9)
 
-
     def physicsTask(self, task):
         # We do 5 substeps per task frame, amount chosen by fair dice roll ;)
         self.world.doPhysics(task.delayTime, 10, task.delayTime/10.)
@@ -195,12 +194,6 @@ class Main(ShowBase):
 
     def resetTruck(self):
         self.trucks[0].reset()
-        # play a sound to see if it plays...
-        self.starter = base.loader.loadSfx("../../data/snd/default_starter.wav.ogg")
-        self.starter.setLoop(True)
-        self.starter.setVolume(1.)
-        self.starter.play()
-        print "Main.py: Should play a starter sound now..."
 
 if __name__ == '__main__':
     app = Main()
