@@ -22,13 +22,30 @@ class AutomaticDt:
 	_brakePedal = 0.0
 
 	# gearbox
-	_gbRatios = { 0: 0.0, 1: -6.29, 2: 6.29, 3: 3.48, 4: 2.10, 5: 1.38, 6: 1.00, 7: 0.79 }
 	_gbState = 'p'
 	_gbGear = 0 # 1 is reverse, 2 is first gear, default to neutral
 	_rearAxRatio = 3.636
 
-	def __init__(self, vehicle):
+	def __init__(self, vehicle, idleRpm, maxRpm, torqueFunctions, gbRatios):
 		self._vehicle = vehicle
+		self._idlerpm = idleRpm
+		self._maxrpm = maxRpm
+		self._funcs = torqueFunctions
+		self._gbRatios = self.cleanGbRatios(gbRatios)
+
+	def cleanGbRatios(self, dic):
+		"""
+		Convert the dictionary keys to int, put the values (gbRatios) into a sorted array.
+		"""
+
+		out = []
+		tmp = [int(key) for key in dic.keys()]
+
+		# convert the keys from string to int, preserving order
+		for key in sorted(tmp):
+			out.append(dic[str(key)]["ratio"])
+
+		return out
 
 	def setGas(self, gas):
 		if gas <= 1. and gas >= 0.:
