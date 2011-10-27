@@ -52,11 +52,7 @@ class XMLTruck:
 
 		# ===== Select a drivetrain =====
 		if p.get(["drivetrain", "type"]) == "automatic":
-			self.drivetrain = AutomaticDt(self.vehicle,
-										p.get(["drivetrain", "idleRpm"]),
-										p.get(["drivetrain", "maxRpm"]),
-										p.get(["drivetrain", "torque"]).values(),
-										p.get(["drivetrain", "gears"]))
+			self.drivetrain = AutomaticDt(self.vehicle, self.parser)
 		else:
 			print "[WRN] The selected drivetrain type is unknown, choosing automatic!"
 
