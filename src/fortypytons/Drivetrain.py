@@ -22,13 +22,32 @@ class AutomaticDt:
 	_brakePedal = 0.0
 
 	# gearbox
-	_gbRatios = { 0: 0.0, 1: -6.29, 2: 6.29, 3: 3.48, 4: 2.10, 5: 1.38, 6: 1.00, 7: 0.79 }
 	_gbState = 'p'
 	_gbGear = 0 # 1 is reverse, 2 is first gear, default to neutral
-	_rearAxRatio = 3.636
 
-	def __init__(self, vehicle):
+	def __init__(self, vehicle, parser):
+		self.parser = parser
+		p = parser # A VehicleDOMParser instance we can get our data from
 		self._vehicle = vehicle
+		self._idlerpm = p.get(["drivetrain", "idleRpm"])
+		self._maxrpm = p.get(["drivetrain", "maxRpm"])
+		self._funcs = p.get(["drivetrain", "torque"]).values()
+		self._gbRatios = self.cleanGbRatios(p.get(["drivetrain", "gears"]))
+		self._powAxleRatio = p.get(["drivetrain", "powAxleRatio"])
+
+	def cleanGbRatios(self, dic):
+		"""
+		Convert the dictionary keys to int, put the values (gbRatios) into a sorted array.
+		"""
+
+		out = []
+		tmp = [int(key) for key in dic.keys()]
+
+		# convert the keys from string to int, preserving order
+		for key in sorted(tmp):
+			out.append(dic[str(key)]["ratio"])
+
+		return out
 
 	def setGas(self, gas):
 		if gas <= 1. and gas >= 0.:
@@ -97,7 +116,7 @@ class AutomaticDt:
 		rotspd *= 60 # convert to revs per minute
 
 		# Calculate the rpm value the engine should have at our current speed
-		realrpm = rotspd * self._gbRatios[self._gbGear] * self._rearAxRatio
+		realrpm = rotspd * self._gbRatios[self._gbGear] * self._powAxleRatio
 
         # Do some "clutch" work
 		if realrpm < self._idlerpm:
@@ -138,29 +157,34 @@ class AutomaticDt:
 			self._vehicle.applyEngineForce(force, 3)
 
 	def _brake(self):
-        # We don't check self._gbState here, braking should always work...
-		self._vehicle.setBrake(200.0 * self._brakePedal, 2)
-		self._vehicle.setBrake(200.0 * self._brakePedal, 3)
+		p = self.parser
+
+		# We don't check self._gbState here, braking should always work...
+		for axIndex in p.get(["axles"]):
+			if p.get(["axles", axIndex, "powered"]):
+				self._vehicle.setBrake(25.0 * self._brakePedal, int(axIndex))
+				self._vehicle.setBrake(25.0 * self._brakePedal, int(axIndex) + 1)
 
 	def _parkingBrake(self):
-		self._vehicle.setBrake(800., 2)
-		self._vehicle.setBrake(800., 3)
+		p = self.parser
+
+		for axIndex in p.get(["axles"]):
+			if p.get(["axles", axIndex, "powered"]):
+				self._vehicle.setBrake(800., int(axIndex))
+				self._vehicle.setBrake(800., int(axIndex) + 1)
 
 	def _calcAccelForce(self, rpm, gas, gear):
 		force = 0.
 
-		if rpm >= 600. and rpm < 1151.:
-			force = (1./3.) * rpm + 450.
-		elif rpm >= 1151. and rpm < 1601.:
-			force = 500.
-		elif rpm >= 1601. and rpm <= 2521.:
-			force = -.234 * (rpm - 1600.) + 500.
+		for func in self._funcs:
+			if rpm >= func["lo"] and rpm < func["hi"]:
+				force = eval(func["function"])
 
         # Take the gas pedal's position into account
 		force *= gas
 
         # Gearbox reduces RPM by ratio, therefore increases torque by ratio
         # RPM / 6.32 ==> Nm * 6.32
-		force *= self._gbRatios[gear] * self._rearAxRatio
+		force *= self._gbRatios[gear] * self._powAxleRatio
 
 		return force
