@@ -73,6 +73,17 @@ class AutomaticDt:
 		else:
 			return self._gbGear
 
+	def _shiftGearUp(self):
+		if self._gbState == 'd':
+			self._gbGear = self._getNextGear()
+
+	def _shiftGearDown(self):
+		if self._gbState == 'd':
+			self._gbGear = self._getPrevGear()
+
+	def _shiftReverse(self):
+		self._gbGear = 1
+
 	def getGbState(self):
 		return self._gbState
 
@@ -101,14 +112,6 @@ class AutomaticDt:
 		if not self._gbState == 'p':
 			self._gbState = 'p'
 			self._gbGear = 0
-
-	def _shiftGearUp(self):
-		if self._gbState == 'd' and self._gbGear < len(self._gbRatios) - 1:
-			self._gbGear += 1
-
-	def _shiftGearDown(self):
-		if self._gbState == 'd' and self._gbGear > 2:
-			self._gbGear -= 1
 
 	def update(self, dt):
 		drot = abs((self._vehicle.getWheel(2).getDeltaRotation() + self._vehicle.getWheel(3).getDeltaRotation()) / 2)
