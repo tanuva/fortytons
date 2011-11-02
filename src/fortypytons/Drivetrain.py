@@ -167,15 +167,15 @@ class AutomaticDt:
 		# We don't check self._gbState here, braking should always work...
 		for axIndex in p.get(["axles"]):
 			if p.get(["axles", axIndex, "powered"]):
-				self._vehicle.setBrake(25.0 * self._brakePedal, int(axIndex))
-				self._vehicle.setBrake(25.0 * self._brakePedal, int(axIndex) + 1)
+				self._vehicle.setBrake(p.get(["brakingForce"]) * self._brakePedal, int(axIndex))
+				self._vehicle.setBrake(p.get(["brakingForce"]) * self._brakePedal, int(axIndex) + 1)
 
 	def _parkingBrake(self):
 		p = self.parser
 
 		for axIndex in p.get(["axles"]):
-			self._vehicle.setBrake(800., int(axIndex))
-			self._vehicle.setBrake(800., int(axIndex) + 1)
+			self._vehicle.setBrake(p.get(["parkingBrakeForce"]), int(axIndex))
+			self._vehicle.setBrake(p.get(["parkingBrakeForce"]), int(axIndex) + 1)
 
 	def _calcAccelForce(self, rpm, gas, gear):
 		force = 0.

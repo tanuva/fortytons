@@ -17,6 +17,8 @@ by Tanuva
 	<spawnheight type = "float">1.0</spawnheight>
 	<rideheight type = "float">-0.6</rideheight>
 	<weight type = "float">3362.0</weight>
+	<brakingForce type = "float">25.0</brakingForce>
+	<parkingBrakeForce type = "float">50.0</parkingBrakeForce>
 
 	<steering>
 		<maxAngle type = "float">45.0</maxAngle>
