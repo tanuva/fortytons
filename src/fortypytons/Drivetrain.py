@@ -154,6 +154,8 @@ class AutomaticDt:
 					self._gbGear = self._getPrevGear()
 				elif rpm > 1600.:
 					self._gbGear = self._getNextGear()
+			else:
+				self._shiftReverse()
 
 			force = self._calcAccelForce(rpm, gas, self._gbGear)
 			self._vehicle.applyEngineForce(force, 2)
