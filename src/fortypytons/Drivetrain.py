@@ -183,6 +183,7 @@ class AutomaticDt:
 		for func in self._funcs:
 			if rpm >= func["lo"] and rpm < func["hi"]:
 				force = eval(func["function"])
+				break
 
         # Take the gas pedal's position into account
 		force *= gas
