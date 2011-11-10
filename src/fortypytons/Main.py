@@ -45,10 +45,20 @@ class Main(ShowBase):
         self.world.setGravity(Vec3(0, 0, -9.81))
 
         # We need some gui
-        self.lblSpeedo = DirectLabel(text = "xxx", scale = .1, pos = Point3(1.2, 0, -.9))
         self.lblGearState = DirectLabel(text = "xxx", scale = .1, pos = Point3(1.2, 0, -.97))
         self.lblGear = DirectLabel(text = "xxx", scale = .1, pos = Point3(1., 0, -.97))
         self.lblRpmSlider = DirectSlider(scale = .5, pos = Point3(1, 0, -.8), range=(0,3000), value=0, pageSize=0)
+
+        # speedometer
+        self.lblSpeedo = TextNode("speedometer")
+        self.lblSpeedo.setText("000")
+        self.lblSpeedo.setFont(loader.loadFont(self.datadir + "gui/lcd-normal.ttf"))
+        self.lblSpeedo.setSlant(-.1)
+        self.lblSpeedo.setAlign(TextNode.ARight)
+        self.lblSpeedo.setTextColor(0, 0, 0, 1)
+        self.lblSpeedoNp = aspect2d.attachNewNode(self.lblSpeedo)
+        self.lblSpeedoNp.setScale(0.08)
+        self.lblSpeedoNp.setPos(Point3(1.15, 0, -.9))
 
         self.accept("f9", self.toggleDebug)
         self.accept("f10", base.toggleWireframe)
@@ -170,7 +180,7 @@ class Main(ShowBase):
         self.terrain.update()
 
         # Update the truck's speedometer
-        self.lblSpeedo["text"] = "%i" % abs(self.trucks[0].getSpeed())
+        self.lblSpeedoNp.node().setText("%i" % abs(self.trucks[0].getSpeed()))
         self.lblGearState["text"] = self.trucks[0].getGbState()
         self.lblRpmSlider["value"] = self.trucks[0].getRpm()
 
