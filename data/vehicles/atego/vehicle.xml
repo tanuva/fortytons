@@ -65,15 +65,15 @@ by Tanuva
 			<width type = "float">2.</width>
 			<height type = "float">0.51</height>
 			<length type = "float">5.0</length>
-			<offset type = "vector">0, 0, -0.65</offset>
+			<offset type = "vector">0, 0.025, -0.65</offset>
 		</colShape>
 
 		<colShape id = "1">
 			<type type = "str">box</type>
 			<width type = "float">2.</width>
-			<height type = "float">1.5</height>
-			<length type = "float">1.18</length>
-			<offset type = "vector">0, 1.75, 0.2</offset>
+			<height type = "float">1.7</height>
+			<length type = "float">1.5</length>
+			<offset type = "vector">0, 1.8, -.05</offset>
 		</colShape>
 	</colShapes>
 
