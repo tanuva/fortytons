@@ -159,7 +159,6 @@ class Main(ShowBase):
         self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask", priority=9)
 
     def physicsTask(self, task):
-        # We do 5 substeps per task frame, amount chosen by fair dice roll ;)
         self.world.doPhysics(task.delayTime, 10, task.delayTime/10.)
 
         if len(self.trucks) > 0:
@@ -181,8 +180,6 @@ class Main(ShowBase):
             self.lblGear["text"] = 'r'
         else:
             self.lblGear["text"] = "%i" % (self.trucks[0].getGear() - 1)
-
-        #self.lblGear["text"] = "%i" % self.trucks[0].getGear()
 
         return Task.cont
 
