@@ -96,7 +96,7 @@ class XMLTruck:
 
 				wheel.setWheelDirectionCs(Vec3(0, 0, -1))
 				wheel.setWheelAxleCs(Vec3(1, 0, 0))
-				wheel.setWheelRadius(p.get(["wheel", "width"]))
+				wheel.setWheelRadius(p.get(["wheel", "radius"]))
 
 				# suspension setup
 				wheel.setFrontWheel(p.get(["axles", axIndex, "steerable"]))
