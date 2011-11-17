@@ -14,17 +14,6 @@ class AutomaticDt:
 	Manages everything between the engine and BulletVehicle.setEngineForce()
 	"""
 
-	# engine
-	_maxrpm = 2520
-	_idlerpm = 600
-	_currpm = 1000
-	_gasPedal = 0.0		# Range: 0.0 - 1.0
-	_brakePedal = 0.0
-
-	# gearbox
-	_gbState = 'p'
-	_gbGear = 0 # 1 is reverse, 2 is first gear, default to neutral
-
 	def __init__(self, vehicle, parser):
 		self.parser = parser
 		p = parser # A VehicleDOMParser instance we can get our data from
@@ -34,6 +23,20 @@ class AutomaticDt:
 		self._funcs = p.get(["drivetrain", "torque"]).values()
 		self._gbRatios = self.cleanGbRatios(p.get(["drivetrain", "gears"]))
 		self._powAxleRatio = p.get(["drivetrain", "powAxleRatio"])
+
+		# engine
+		self._maxrpm = 2520
+		self._idlerpm = 600
+		self._currpm = 1000
+		self._gasPedal = 0.0	# Range: 0.0 - 1.0
+		self._brakePedal = 0.0
+
+
+		# TODO switch reverse and neutral, this is fuckin unintuitive!
+
+		# gearbox
+		_gbState = 'p'
+		_gbGear = 0 # 1 is reverse, 2 is first gear, default to neutral
 
 	def cleanGbRatios(self, dic):
 		"""
