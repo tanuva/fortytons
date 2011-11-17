@@ -35,8 +35,8 @@ class AutomaticDt:
 		# TODO switch reverse and neutral, this is fuckin unintuitive!
 
 		# gearbox
-		_gbState = 'p'
-		_gbGear = 0 # 1 is reverse, 2 is first gear, default to neutral
+		self._gbState = 'p'
+		self._gbGear = 0 # 1 is reverse, 2 is first gear, default to neutral
 
 	def cleanGbRatios(self, dic):
 		"""
@@ -121,8 +121,9 @@ class AutomaticDt:
 		drot = 0.
 		poweredWheelCount = 0
 
-		for axIndex in p.get(["axles"]):
-			if p.get(["axles", axIndex, "powered"]):
+		for axIndex in self.parser.get(["axles"]):
+			axIndex = int(axIndex)
+			if self.parser.get(["axles", axIndex, "powered"]):
 				drot += self._vehicle.getWheel(axIndex).getDeltaRotation()
 				drot += self._vehicle.getWheel(axIndex + 1).getDeltaRotation()
 				poweredWheelCount += 2
@@ -172,8 +173,9 @@ class AutomaticDt:
 
 			force = self._calcAccelForce(rpm, gas, self._gbGear)
 
-			for axIndex in p.get(["axles"]):
-				if p.get(["axles", axIndex, "powered"]):
+			for axIndex in self.parser.get(["axles"]):
+				axIndex = int(axIndex)
+				if self.parser.get(["axles", axIndex, "powered"]):
 					self._vehicle.applyEngineForce(force, axIndex)
 					self._vehicle.applyEngineForce(force, axIndex + 1)
 
