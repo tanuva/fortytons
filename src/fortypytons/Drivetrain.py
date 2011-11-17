@@ -117,7 +117,17 @@ class AutomaticDt:
 			self._gbGear = 0
 
 	def update(self, dt):
-		drot = abs((self._vehicle.getWheel(2).getDeltaRotation() + self._vehicle.getWheel(3).getDeltaRotation()) / 2)
+		# Average the delta rotation value for all powered wheels
+		drot = 0.
+		poweredWheelCount = 0
+
+		for axIndex in p.get(["axles"]):
+			if p.get(["axles", axIndex, "powered"]):
+				drot += self._vehicle.getWheel(axIndex).getDeltaRotation()
+				drot += self._vehicle.getWheel(axIndex + 1).getDeltaRotation()
+				poweredWheelCount += 2
+
+		drot = abs(drot) / poweredWheelCount
 		rotspd = drot * (1./dt) # Average of the rear wheels' rotation speed (revs per second)
 		rotspd *= 60 # convert to revs per minute
 
