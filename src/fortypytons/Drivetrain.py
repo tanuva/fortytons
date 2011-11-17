@@ -133,7 +133,8 @@ class AutomaticDt:
 		rotspd *= 60 # convert to revs per minute
 
 		# Calculate the rpm value the engine should have at our current speed
-		realrpm = rotspd * self._gbRatios[self._gbGear] * self._powAxleRatio
+		# Must be absolute as reverse would result in negative rpm otherwise
+		realrpm = abs(rotspd * self._gbRatios[self._gbGear] * self._powAxleRatio)
 
         # Do some "clutch" work
 		if realrpm < self._idlerpm:
