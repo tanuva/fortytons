@@ -55,6 +55,7 @@ class XMLTruck:
 			self.drivetrain = AutomaticDt(self.vehicle, self.parser)
 		else:
 			print "[WRN] The selected drivetrain type is unknown, choosing automatic!"
+			self.drivetrain = AutomaticDt(self.vehicle, self.parser)
 
 		# ===== Dumper =====
 
