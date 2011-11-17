@@ -171,8 +171,11 @@ class AutomaticDt:
 				self._shiftReverse()
 
 			force = self._calcAccelForce(rpm, gas, self._gbGear)
-			self._vehicle.applyEngineForce(force, 2)
-			self._vehicle.applyEngineForce(force, 3)
+
+			for axIndex in p.get(["axles"]):
+			if p.get(["axles", axIndex, "powered"]):
+				self._vehicle.applyEngineForce(force, axIndex)
+				self._vehicle.applyEngineForce(force, axIndex + 1)
 
 	def _brake(self):
 		p = self.parser
