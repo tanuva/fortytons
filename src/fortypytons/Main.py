@@ -56,7 +56,7 @@ class Main(ShowBase):
         self.lblSpeedo.setTextColor(0, 0, 0, 1)
         self.lblSpeedoNp = aspect2d.attachNewNode(self.lblSpeedo)
         self.lblSpeedoNp.setScale(0.08)
-        self.lblSpeedoNp.setPos(Point3(1.15, 0, -.9))
+        self.lblSpeedoNp.setPos(Point3(1.25, 0, -.9))
 
         self.accept("f9", self.toggleDebug)
         self.accept("f10", base.toggleWireframe)
