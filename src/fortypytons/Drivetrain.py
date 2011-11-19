@@ -136,7 +136,7 @@ class AutomaticDt:
 		# Must be absolute as reverse would result in negative rpm otherwise
 		realrpm = abs(rotspd * self._gbRatios[self._gbGear] * self._powAxleRatio)
 
-        # Do some "clutch" work
+		# Do some "clutch" work
 		if realrpm < self._idlerpm:
 			self._currpm = self._idlerpm
 		else:
