@@ -23,8 +23,6 @@ SCALE = 1.0
 
 class Main(ShowBase):
     trucks = []
-    maskTrucks = BitMask32.bit(1)
-    maskWheel = BitMask32.bit(2)
     datadir = "../../data/"
     accel, brake, left, right = False, False, False, False
 
