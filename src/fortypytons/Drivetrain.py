@@ -154,7 +154,9 @@ class AutomaticDt:
 			self._parkingBrake()
 		else:
 			self._accel()
-			self._brake()
+
+		# Braking must always work
+		self._brake()
 
 	def _accel(self, rpm = -1., gas = -1.):
 		if rpm == -1.:
