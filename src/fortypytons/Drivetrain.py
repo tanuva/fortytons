@@ -166,13 +166,12 @@ class AutomaticDt:
 
 		if self._gbState == 'r' or self._gbState == 'd':
 			# switch some gears
+			# Don't consider reverse here since there's only one rev gear.
 			if self._gbState == 'd':
 				if rpm < 800.:
 					self._gbGear = self._getPrevGear()
 				elif rpm > 1600.:
 					self._gbGear = self._getNextGear()
-			else:
-				self._shiftReverse()
 
 			force = self._calcAccelForce(rpm, gas, self._gbGear)
 
