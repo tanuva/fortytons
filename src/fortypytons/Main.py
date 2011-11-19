@@ -70,12 +70,12 @@ class Main(ShowBase):
         render.setShaderAuto()
 
         # Let there be light!
-        plight = PointLight('plight')
-        plight.setColor(VBase4(0.95, 0.95, 1., 1.))
-        plight.setShadowCaster(True, 512, 512)
-        plnp = render.attachNewNode(plight)
-        plnp.setPos(10, -20, 100)
-        render.setLight(plnp)
+        dlight = DirectionalLight('dlight')
+        dlight.setColor(VBase4(0.8, 0.8, 0.5, 1))
+        #dlight.setShadowCaster(True, 512, 512)
+        dlnp = render.attachNewNode(dlight)
+        dlnp.setHpr(0, -60, 0)
+        render.setLight(dlnp)
 
         amblight = AmbientLight('amblight')
         amblight.setColor(VBase4(0.4, 0.4, 0.4, 1))
