@@ -147,9 +147,9 @@ class AutomaticDt:
 
 		if realrpm < self._idlerpm \
 		and (self._gbState == 'd' or self._gbState == 'r') \
-		and not self._brakePedal == 1 \
-		and self._gasPedal < 0.4:
-			self.accel(600, .4)
+		and not self._brakePedal == 1 and self._gasPedal < 0.4:
+			# Idle gas
+			self._accel(600., .4)
 		elif self._gbState == 'p':
 			self._parkingBrake()
 		else:
