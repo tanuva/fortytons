@@ -142,9 +142,10 @@ class AutomaticDt:
 		else:
 			self._currpm = realrpm
 
+		# Switching into reverse while going forward won't brake and go backward automatically. Thats not possible
+		# in the real thing (tm) anyway.
 
-        # Idle gas
-		if self._currpm < self._idlerpm \
+		if realrpm < self._idlerpm \
 		and (self._gbState == 'd' or self._gbState == 'r') \
 		and not self._brakePedal == 1 \
 		and self._gasPedal < 0.4:
