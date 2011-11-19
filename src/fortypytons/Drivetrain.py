@@ -142,7 +142,6 @@ class AutomaticDt:
 		else:
 			self._currpm = realrpm
 
-        #print "%i <> %i" % (realrpm, self._currpm)
 
         # Idle gas
 		if self._currpm < self._idlerpm \
