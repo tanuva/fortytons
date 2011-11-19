@@ -43,8 +43,8 @@ class Main(ShowBase):
         self.world.setGravity(Vec3(0, 0, -9.81))
 
         # We need some gui
-        self.lblGearState = DirectLabel(text = "xxx", scale = .1, pos = Point3(1.2, 0, -.97))
-        self.lblGear = DirectLabel(text = "xxx", scale = .1, pos = Point3(1., 0, -.97))
+        self.lblGearState = DirectLabel(text = "X", scale = .1, pos = Point3(1.2, 0, -.97))
+        self.lblGear = DirectLabel(text = "X", scale = .1, pos = Point3(1., 0, -.97))
         self.lblRpmSlider = DirectSlider(scale = .5, pos = Point3(1, 0, -.8), range=(0,3000), value=0, pageSize=0)
 
         # speedometer
