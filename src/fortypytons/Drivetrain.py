@@ -96,6 +96,9 @@ class AutomaticDt:
 	def getGear(self):
 		return self._gbGear
 
+	def getGasPedal(self):
+		return self._gasPedal
+
 	def shiftDrive(self):
 		if not self._gbState == 'd':
 			self._gbState = 'd'
