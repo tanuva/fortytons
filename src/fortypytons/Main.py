@@ -71,7 +71,7 @@ class Main(ShowBase):
 
         # Let there be light!
         dlight = DirectionalLight('dlight')
-        dlight.setColor(VBase4(0.8, 0.8, 0.5, 1))
+        dlight.setColor(VBase4(1., 1., 1., 1))
         #dlight.setShadowCaster(True, 512, 512)
         dlnp = render.attachNewNode(dlight)
         dlnp.setHpr(0, -60, 0)
