@@ -176,8 +176,22 @@ class AutomaticDt:
 				elif rpm > 1600.:
 					self._gbGear = self._getNextGear()
 
-			force = self._calcAccelForce(rpm, gas, self._gbGear)
+			# Calculate the acceleration force
+			force = 0.
 
+			for func in self._funcs:
+				if rpm >= func["lo"] and rpm < func["hi"]:
+					force = eval(func["function"])
+					break
+
+			# Take the gas pedal's position into account
+			force *= gas
+
+			# Gearbox reduces RPM by ratio, therefore increases torque by ratio
+			# RPM / 6.32 ==> Nm * 6.32
+			force *= self._gbRatios[gear] * self._powAxleRatio
+
+			# Use the force!
 			for axIndex in self.parser.get(["axles"]):
 				axIndex = int(axIndex)
 				if self.parser.get(["axles", axIndex, "powered"]):
@@ -199,20 +213,3 @@ class AutomaticDt:
 		for axIndex in p.get(["axles"]):
 			self._vehicle.setBrake(p.get(["parkingBrakeForce"]), int(axIndex))
 			self._vehicle.setBrake(p.get(["parkingBrakeForce"]), int(axIndex) + 1)
-
-	def _calcAccelForce(self, rpm, gas, gear):
-		force = 0.
-
-		for func in self._funcs:
-			if rpm >= func["lo"] and rpm < func["hi"]:
-				force = eval(func["function"])
-				break
-
-        # Take the gas pedal's position into account
-		force *= gas
-
-        # Gearbox reduces RPM by ratio, therefore increases torque by ratio
-        # RPM / 6.32 ==> Nm * 6.32
-		force *= self._gbRatios[gear] * self._powAxleRatio
-
-		return force
