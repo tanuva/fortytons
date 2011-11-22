@@ -27,8 +27,8 @@ class XMLTruck:
 		self._steerDir = 0	# -1, 0, 1: Sets the direction of steering
 
 		# ===== Chassis =====
-		npBody = render.attachNewNode(BulletRigidBodyNode('truckBox'))
-		npTruckMdl = npBody.attachNewNode(loader.loadModel(self.datadir + p.get("mesh")).node())
+		self.npBody = render.attachNewNode(BulletRigidBodyNode('truckBox'))
+		npTruckMdl = self.npBody.attachNewNode(loader.loadModel(self.datadir + p.get("mesh")).node())
 
 		# Configure the collision shapes
 		for index in p.get(["colShapes"]).keys():
@@ -37,16 +37,16 @@ class XMLTruck:
 				size = Vec3(p.get(["colShapes", index, "width"])/2,
 							p.get(["colShapes", index, "length"])/2,
 							p.get(["colShapes", index, "height"])/2)
-				npBody.node().addShape(BulletBoxShape(size), TransformState.makePos(offset))
+				self.npBody.node().addShape(BulletBoxShape(size), TransformState.makePos(offset))
 
-		npBody.node().setMass(p.get(["weight"]))
-		npBody.node().setDeactivationEnabled(False)
-		npBody.setPos(spawnpos + p.get(["spawnheight"]))
-		self.world.attachRigidBody(npBody.node())
-		self.chassis = VComponent(npTruckMdl, npBody)
+		self.npBody.node().setMass(p.get(["weight"]))
+		self.npBody.node().setDeactivationEnabled(False)
+		self.npBody.setPos(spawnpos + p.get(["spawnheight"]))
+		self.world.attachRigidBody(self.npBody.node())
+		self.chassis = VComponent(npTruckMdl, self.npBody)
 
         # ===== BulletVehicle setup =====
-		self.vehicle = BulletVehicle(self.world, npBody.node())
+		self.vehicle = BulletVehicle(self.world, self.npBody.node())
 		self.vehicle.setCoordinateSystem(ZUp)
 		self.world.attachVehicle(self.vehicle)
 
