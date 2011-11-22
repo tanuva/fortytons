@@ -114,6 +114,7 @@ class XMLTruck:
 	def update(self, dt):
 		self._steer()
 		self.drivetrain.update(dt)
+		self._applyAirDrag()
 
 	def setGas(self, gas):
 		if gas <= 1. and gas >= 0.:
@@ -177,6 +178,22 @@ class XMLTruck:
 
 		self.vehicle.setSteeringValue(self.curAngle, 0)
 		self.vehicle.setSteeringValue(self.curAngle, 1)
+
+	def _applyAirDrag(self):
+		# air density 0.0012 g/cm3 (at sea level and 20 °C)
+		# cw-Value: 0.8 for a "truck", 0.5 for a modern 40 ton "with aero-kit" (see wikipedia), choosing 0.4 for now.
+		# force = (density * cw * A * vel) / 2
+		force = 0.0012 * 0.4 \
+				* (self.parser.get(["height"]) * self.parser.get(["width"])) \
+				* (self.getSpeed() / 3.6) \
+				/ 2
+
+		# Its a braking force, after all
+		force *= -1.
+
+		relFVector = self.npBody.getRelativeVector(render, Point3(0, force, 0))
+		print relFVector
+		self.npBody.node().applyCentralForce(relFVector);
 
 	def getRpm(self):
 		return self.drivetrain.getRpm()
