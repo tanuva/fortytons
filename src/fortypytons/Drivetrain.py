@@ -189,7 +189,7 @@ class AutomaticDt:
 
 			# Gearbox reduces RPM by ratio, therefore increases torque by ratio
 			# RPM / 6.32 ==> Nm * 6.32
-			force *= self._gbRatios[gear] * self._powAxleRatio
+			force *= self._gbRatios[self._gbGear] * self._powAxleRatio
 
 			# Use the force!
 			for axIndex in self.parser.get(["axles"]):
