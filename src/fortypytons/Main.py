@@ -156,7 +156,7 @@ class Main(ShowBase):
         self.keyconf.setHook("shiftNeutral", self.trucks[0].shiftNeutral)
         self.keyconf.setHook("shiftDrive", self.trucks[0].shiftDrive)
 
-        self.camcon = ManualCameraController(self.world, self.camera, self.trucks[0].getChassis().getBody())
+        self.camcon = FollowerCameraController(self.world, self.camera, self.trucks[0].getChassis().getBody())
         taskMgr.add(self.camcon.update, 'CameraController', priority=10)
         self.accept("wheel_up", self.camcon.mwheelup)
         self.accept("wheel_down", self.camcon.mwheeldown)
