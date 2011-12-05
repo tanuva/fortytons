@@ -9,6 +9,7 @@ Created on 26.08.2011
 import math
 from panda3d.core import *
 from panda3d.bullet import *
+from scipy import integrate
 
 class ManualCameraController:
     """
@@ -58,7 +59,7 @@ class ManualCameraController:
     def deg2rad(self, deg):
         return deg * math.pi / 180.
 
-class FlyingCameraController:
+class FollowerCameraController:
     """
     Gently keeps the camera behind the target.
     """
@@ -67,77 +68,80 @@ class FlyingCameraController:
     radius = 15
     curHDiff = 0
 
+    i = 0
+    error = Vec3(0,0,0)
+
     def __init__(self, world, camera, target):
+        self.render = render
         self.world = world
         self.cam = camera
         self.target = target
-        self.bodyNp = self.target.attachNewNode(BulletRigidBodyNode("cameraBody"))
-        self.bodyNp.node().setCollisionResponse(False)
-        self.bodyNp.node().addShape(BulletSphereShape(0.5))
-        self.bodyNp.node().setMass(0.1)
-        #self.bodyNp.node().setLinearDamping(.5) # Is this really needed?
-        self.bodyNp.setPos(self.target, Point3(0,-self.radius, self.height))
-        self.world.attachRigidBody(self.bodyNp.node())
-        self.cam.reparentTo(self.bodyNp)
-
-        # Keep us on a sphere around the target
-        self.con = BulletSphericalConstraint(self.bodyNp.node(), self.target.node(), Point3(0,self.radius,0), Point3(0,0,0))
-        self.world.attachConstraint(self.con)
+        self.cam.setPos(self.target, Vec3(0, -self.radius, self.height))
 
     def update(self, task):
-        # adapted thrust control logic from: http://opende.sourceforge.net/wiki/index.php/HOWTO_thrust_control_logic
-        """
-        curVel = *(Vec3*)dBodyGetLinearVelocity( b );
-        curPos = *(Vec3*)dBodyGetPosition( b );
-        futurePos = curPos + LOOKAHEAD * curVel;
-        desiredPos = YOUR_TARGET_HERE;
-        applyForce = (futurePos - desiredPos) * SENSITIVITY;
-        clampLength( applyForce, MAX_FORCE );
-        dBodyAddForce( b, applyForce );
-        """
+        # Calculate our desired position, then use a PID-controller to get there
+        relTargetPos = Vec3(0, -self.radius, self.height)
 
-        # Make us weightless
-        self.bodyNp.node().applyCentralForce(Vec3(0,0, 9.81 * self.bodyNp.node().getMass()))
+        tmp = self.cam.getPos()
+        self.cam.setPos(self.target, relTargetPos)
+        absTargetPos = self.cam.getPos()
+        self.cam.setPos(tmp)
 
-        relCurPos = self.bodyNp.getPos(self.target)
+        # http://en.wikipedia.org/wiki/PID_controller
+        # http://www.engin.umich.edu/group/ctm/PID/PID.html
+        # Kx: modifying factors: proportional, integral and derivative
+        # error = targetPos - curPos
+        # dt: the time difference
+        # u = Kp * error + Ki * integrate(error, dt) + Kd * (de / dt)
 
-        # TODO Take target pitch into account!
+        self._printAsInt(absTargetPos)
 
-        # Get ourselves on the right height
-        futurePos = relCurPos[2] + (1. * self.bodyNp.node().getLinearVelocity()[2])
-        targetPos = self.height
-        corrForce = (targetPos - futurePos) * 4.
-        self.bodyNp.node().applyCentralForce(Vec3(0,0, corrForce))
+        Kp = 0.05
+        Ki = 0.05
+        Kd = .001
+        lastError = self.error
+        self.error = absTargetPos - self.cam.getPos()
 
-        # Adjust the circular position
-        # Using the same code as above, abusing "thrust control" for the (rougly) one-dimensional rotation around the target.
-        lastHDiff = self.curHDiff
-        self.curHDiff = self._getHeadingDiff(self.bodyNp.getH(), self.target.getH())
+        # linear pid, x axis
+        prop = Kp * self.error[0]
+        intgr = Ki * integrate.trapz([self.error[0]], dx = globalClock.getDt())
+        derv = Kd * (lastError[0] - self.error[0]) / globalClock.getDt()
+        corrForce = Vec3(prop + intgr + derv, 0, 0)
+        # y axis
+        prop = Kp * self.error[1]
+        intgr = Ki * integrate.trapz([self.error[1]], dx = globalClock.getDt())
+        derv = Kd * (lastError[1] - self.error[1]) / globalClock.getDt()
+        corrForce[1] = prop + intgr + derv
+        # z axis
+        # more or less statically set as targetheight + our height offset
+        newCamPos = self.cam.getPos() + corrForce
+        newCamPos[2] = self.target.getPos()[2] + self.height
 
-        curH = self.bodyNp.getH()
-        rotSpd = self.curHDiff - lastHDiff
-        futureH = (curH + (.5 * rotSpd)) % 360
-        targetH = self.target.getH(self.bodyNp)
-        #targetH = 0
-        corrForce = self._getHeadingDiff(targetH, futureH) * .01
-        corrForce = self._vecRotate((corrForce, 0), self.bodyNp.getH())
-        self.bodyNp.node().applyCentralForce(Vec3(corrForce[0], corrForce[1], 0))
-
-        print targetH, "-", futureH, "=", corrForce
-
-        self.bodyNp.lookAt(self.target)
+        #print self.cam.getPos(self.target) # prints correct relative coordinates, just FYI
+        self.cam.setPos(newCamPos)
+        self.cam.lookAt(self.target)
+        #self.cam.lookAt(self.target.getPos(self.cam) + Vec3(0, 0, 1.5)) # works
         return task.cont
 
-    def _vecRotate(self, vec, deg):
-        """ Rotates vec by deg. """
-        deg *= math.pi / 180.
+    def _printAsInt(self, vec):
+        if self.i % 40 == 0:
+            print "(", int(vec[0]), int(vec[1]), int(vec[2]), ")"
+        self.i += 1
 
-        return (vec[0] * math.cos(deg) - vec[1] * math.sin(deg),
-                vec[0] * math.sin(deg) - vec[1] * math.cos(deg))
+    def mwheelup(self):
+        pass
 
-    def _getHeadingDiff(self, h1, h2):
-        diff = h1 - h2
-        if abs(diff) > 180.:
-            diff = (h1 + diff) % 360. - (h2 + diff) % 360.
-        return diff
+    def mwheeldown(self):
+        pass
 
+    def _rotateVector(self, vec, deg):
+        # x' = x*cos q - y*sin q
+        # y' = x*sin q + y*cos q
+        # z' = z
+
+        rad = deg * math.pi / 180.
+        out = Vec3()
+        out[0] = vec[0] * math.cos(rad) - vec[1] * math.sin(rad)
+        out[1] = vec[0] * math.sin(rad) + vec[1] * math.cos(rad)
+        out[2] = vec[2]
+        return out
