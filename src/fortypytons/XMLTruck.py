@@ -192,7 +192,6 @@ class XMLTruck:
 		force *= -1.
 
 		relFVector = self.npBody.getRelativeVector(render, Point3(0, force, 0))
-		print relFVector
 		self.npBody.node().applyCentralForce(relFVector);
 
 	def getRpm(self):
