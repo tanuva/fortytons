@@ -9,7 +9,6 @@ Created on 26.08.2011
 import math
 from panda3d.core import *
 from panda3d.bullet import *
-from scipy import integrate
 
 class ManualCameraController:
     """
@@ -104,12 +103,13 @@ class FollowerCameraController:
 
         # linear pid, x axis
         prop = Kp * self.error[0]
-        intgr = Ki * integrate.trapz([self.error[0]], dx = globalClock.getDt())
+        intgr = Ki * self.error[0] * globalClock.getDt()
         derv = Kd * (lastError[0] - self.error[0]) / globalClock.getDt()
         corrForce = Vec3(prop + intgr + derv, 0, 0)
+
         # y axis
         prop = Kp * self.error[1]
-        intgr = Ki * integrate.trapz([self.error[1]], dx = globalClock.getDt())
+        intgr = Ki * self.error[1] * globalClock.getDt()
         derv = Kd * (lastError[1] - self.error[1]) / globalClock.getDt()
         corrForce[1] = prop + intgr + derv
         # z axis

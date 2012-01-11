@@ -9,10 +9,3 @@ A devel snapshot of Panda3D >= 2011-08-22 is required.
 Older builds lack parts of the Bullet integration code
 and have different DebugNode API.
 
-As of 2011-12-05, the FlyingCameraController requires
-SciPy. Version 0.10.0 is known to work, others might or
-might not do the job. Have a look at
-http://sourceforge.net/projects/scipy/files/scipy/
-SciPy also needs NumPy:
-http://sourceforge.net/projects/numpy/files/NumPy/
-
