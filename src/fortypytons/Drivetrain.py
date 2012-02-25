@@ -18,11 +18,11 @@ class AutomaticDt:
 		self.parser = parser
 		p = parser # A VehicleDOMParser instance we can get our data from
 		self._vehicle = vehicle
-		self._idlerpm = p.get(["drivetrain", "idleRpm"])
-		self._maxrpm = p.get(["drivetrain", "maxRpm"])
-		self._funcs = p.get(["drivetrain", "torque"]).values()
-		self._gbRatios = self.cleanGbRatios(p.get(["drivetrain", "gears"]))
-		self._powAxleRatio = p.get(["drivetrain", "powAxleRatio"])
+		self._idlerpm = p.getEngineRpmIdle()
+		self._maxrpm = p.getEngineRpmMax()
+		self._funcs = p.getTorqueFuncs()
+		self._gbRatios = p.getGearRatios()
+		self._powAxleRatio = p.getPoweredAxleRatio()
 
 		# engine
 		self._maxrpm = 2520
@@ -124,9 +124,8 @@ class AutomaticDt:
 		drot = 0.
 		poweredWheelCount = 0
 
-		for axIndex in self.parser.get(["axles"]):
-			axIndex = int(axIndex)
-			if self.parser.get(["axles", axIndex, "powered"]):
+		for axIndex in range(0, self.parser.getAxleCount()):
+			if self.parser.axleIsPowered(axIndex):
 				drot += self._vehicle.getWheel(axIndex).getDeltaRotation()
 				drot += self._vehicle.getWheel(axIndex + 1).getDeltaRotation()
 				poweredWheelCount += 2
@@ -192,9 +191,8 @@ class AutomaticDt:
 			force *= self._gbRatios[self._gbGear] * self._powAxleRatio
 
 			# Use the force!
-			for axIndex in self.parser.get(["axles"]):
-				axIndex = int(axIndex)
-				if self.parser.get(["axles", axIndex, "powered"]):
+			for axIndex in range(0, self.parser.getAxleCount()):
+				if self.parser.axleIsPowered(axIndex):
 					self._vehicle.applyEngineForce(force, axIndex)
 					self._vehicle.applyEngineForce(force, axIndex + 1)
 
@@ -202,14 +200,14 @@ class AutomaticDt:
 		p = self.parser
 
 		# We don't check self._gbState here, braking should always work...
-		for axIndex in p.get(["axles"]):
-			if p.get(["axles", axIndex, "powered"]):
-				self._vehicle.setBrake(p.get(["brakingForce"]) * self._brakePedal, int(axIndex))
-				self._vehicle.setBrake(p.get(["brakingForce"]) * self._brakePedal, int(axIndex) + 1)
+		for axIndex in range(0, p.getAxleCount()):
+			if self.parser.axleIsPowered(axIndex):
+				self._vehicle.setBrake(p.getBrakingForce() * self._brakePedal, int(axIndex))
+				self._vehicle.setBrake(p.getBrakingForce() * self._brakePedal, int(axIndex) + 1)
 
 	def _parkingBrake(self):
 		p = self.parser
 
-		for axIndex in p.get(["axles"]):
-			self._vehicle.setBrake(p.get(["parkingBrakeForce"]), int(axIndex))
-			self._vehicle.setBrake(p.get(["parkingBrakeForce"]), int(axIndex) + 1)
+		for axIndex in range(0, p.getAxleCount()):
+			self._vehicle.setBrake(p.getParkingBrakeForce(), axIndex)
+			self._vehicle.setBrake(p.getParkingBrakeForce(), axIndex + 1)

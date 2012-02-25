@@ -20,28 +20,25 @@ class XMLTruck:
 		p = self.parser # Will get ugly otherwise...
 
 		# ===== Steering =====
-		self.physMaxAngle = p.get(["steering", "maxAngle"])	# The absolute maximum angle possible
+		self.physMaxAngle = p.getSteeringAngleMax()	# The absolute maximum angle possible
 		self.maxAngle = self.physMaxAngle 					# The maximum steering angle at the current speed (speed-sensitive)
-		self.rate = p.get(["steering", "rate"])
+		self.rate = p.getSteeringRate()
 		self.curAngle = 0.0
 		self._steerDir = 0	# -1, 0, 1: Sets the direction of steering
 
 		# ===== Chassis =====
 		self.npBody = render.attachNewNode(BulletRigidBodyNode('truckBox'))
-		npTruckMdl = self.npBody.attachNewNode(loader.loadModel(self.datadir + p.get("mesh")).node())
+		npTruckMdl = self.npBody.attachNewNode(loader.loadModel(self.datadir + p.getMesh()).node())
 
 		# Configure the collision shapes
-		for index in p.get(["colShapes"]).keys():
-			if p.get(["colShapes", index, "type"]) == "box":
-				offset = p.get(["colShapes", index, "offset"])
-				size = Vec3(p.get(["colShapes", index, "width"])/2,
-							p.get(["colShapes", index, "length"])/2,
-							p.get(["colShapes", index, "height"])/2)
-				self.npBody.node().addShape(BulletBoxShape(size), TransformState.makePos(offset))
+		for shape in p.getColShapes():
+			if shape["type"] == "box":
+				size = Vec3(shape["width"]/2, shape["length"]/2, shape["height"]/2)
+				self.npBody.node().addShape(BulletBoxShape(size), TransformState.makePos(shape["offset"]))
 
-		self.npBody.node().setMass(p.get(["weight"]))
+		self.npBody.node().setMass(p.getWeight())
 		self.npBody.node().setDeactivationEnabled(False)
-		self.npBody.setPos(spawnpos + p.get(["spawnheight"]))
+		self.npBody.setPos(spawnpos + p.getSpawnheight())
 		self.world.attachRigidBody(self.npBody.node())
 		self.chassis = VComponent(npTruckMdl, self.npBody)
 
@@ -51,7 +48,7 @@ class XMLTruck:
 		self.world.attachVehicle(self.vehicle)
 
 		# ===== Select a drivetrain =====
-		if p.get(["drivetrain", "type"]) == "automatic":
+		if p.getDrivetrainType() == "automatic":
 			self.drivetrain = AutomaticDt(self.vehicle, self.parser)
 		else:
 			print "[WRN] The selected drivetrain type is unknown, choosing automatic!"
@@ -62,14 +59,11 @@ class XMLTruck:
 		# ===== Wheels =====
 		self.wheels = []
 
-		# Find out how many axles we have
-		axCount = len(p.get(["axles"]).keys())
-
-		for axIndex in range(0, axCount):
-			axPos = p.get(["axles", axIndex, "position"])
-			axWidth = p.get(["axles", axIndex, "width"])
-			rideHeight = p.get(["rideheight"])
-			isPowered = p.get(["axles", axIndex, "powered"])
+		for axIndex in range(0, p.getAxleCount()):
+			axPos = p.getAxlePosition(axIndex)
+			axWidth = p.getAxleWidth(axIndex)
+			rideHeight = p.getRideheight()
+			isPowered = p.axleIsPowered(axIndex)
 
 			for wheelIndex in range(0, 2):
 				# Wheel 0 is left, 1 is the right one
@@ -78,12 +72,12 @@ class XMLTruck:
 
 				# Prepare the wheel's bullet node
 				npWheel = render.attachNewNode(BulletRigidBodyNode('wheelBox'))
-				npWheel.node().setMass(p.get(["wheel", "weight"]))
+				npWheel.node().setMass(p.getWheelWeight())
 				npWheel.setPos(pos)
 				self.world.attachRigidBody(npWheel.node())
 
 				# Load the wheel mesh
-				npWheelMdl = npWheel.attachNewNode(loader.loadModel(self.datadir + p.get(["wheel", "mesh"])).node())
+				npWheelMdl = npWheel.attachNewNode(loader.loadModel(self.datadir + p.getWheelMesh()).node())
 				if wheelIndex == 0:
 					# We need to turn around the mesh of the left wheel
 					npWheelMdl.setH(180.0)
@@ -97,17 +91,17 @@ class XMLTruck:
 
 				wheel.setWheelDirectionCs(Vec3(0, 0, -1))
 				wheel.setWheelAxleCs(Vec3(1, 0, 0))
-				wheel.setWheelRadius(p.get(["wheel", "radius"]))
+				wheel.setWheelRadius(p.getWheelRadius())
 
 				# suspension setup
-				wheel.setFrontWheel(p.get(["axles", axIndex, "steerable"]))
-				wheel.setMaxSuspensionTravelCm(p.get(["axles", axIndex, "suspension", "maxTravel"]))
-				wheel.setMaxSuspensionForce(p.get(["axles", axIndex, "suspension", "maxForce"]))
-				wheel.setSuspensionStiffness(p.get(["axles", axIndex, "suspension", "stiffness"]))
-				wheel.setWheelsDampingRelaxation(p.get(["axles", axIndex, "suspension", "dampingRelax"]))
-				wheel.setWheelsDampingCompression(p.get(["axles", axIndex, "suspension", "dampingCompression"]))
-				wheel.setFrictionSlip(p.get(["axles", axIndex, "suspension", "frictionSlip"]))
-				wheel.setRollInfluence(p.get(["axles", axIndex, "suspension", "rollInfluence"]))
+				wheel.setFrontWheel(p.axleIsSteerable(axIndex))
+				wheel.setMaxSuspensionTravelCm(p.getAxleSuspMaxTravel(axIndex))
+				wheel.setMaxSuspensionForce(p.getAxleSuspMaxForce(axIndex))
+				wheel.setSuspensionStiffness(p.getAxleSuspStiffness(axIndex))
+				wheel.setWheelsDampingRelaxation(p.getAxleSuspDampingRelax(axIndex))
+				wheel.setWheelsDampingCompression(p.getAxleSuspDampingComp(axIndex))
+				wheel.setFrictionSlip(p.getAxleSuspFrictionSlip(axIndex))
+				wheel.setRollInfluence(p.getAxleSuspRollInfluence(axIndex))
 
 				self.wheels.append(VWheel(npWheelMdl, npWheel, wheel, isPowered))
 
@@ -184,7 +178,7 @@ class XMLTruck:
 		# cw-Value: 0.8 for a "truck", 0.5 for a modern 40 ton "with aero-kit" (see wikipedia), choosing 0.4 for now.
 		# force = (density * cw * A * vel) / 2
 		force = 0.0012 * 0.4 \
-				* (self.parser.get(["height"]) * self.parser.get(["width"])) \
+				* (self.parser.getDimensions()[0] * self.parser.getDimensions()[1]) \
 				* (self.getSpeed() / 3.6) \
 				/ 2
 

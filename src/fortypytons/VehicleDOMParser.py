@@ -105,7 +105,7 @@ class VehicleDOMParser:
 		exec strPath
 		return True
 
-	def get(self, path):
+	def _get(self, path):
 		"""
 		Build the data access code (like in _addData(...))
 		"""
@@ -129,3 +129,126 @@ class VehicleDOMParser:
 		except KeyError:
 			print "[ERR] VehicleDOMParser: Requested unexisting value:", strPath
 			return None
+
+	def getType(self):
+		return self._get(["data", "type"])
+	
+	def getManufacturer(self):
+		return self._get("manufacturer")
+	
+	def getModel(self):
+		return self._get("model")
+	
+	def getMesh(self):
+		return self._get("mesh")
+		
+	def getDimensions(self):
+		return Vec3(self._get("width"), self._get("height"), self._get("length"))
+	
+	def getWeight(self):
+		return self._get("weight")
+		
+	def getSpawnheight(self):
+		return self._get("spawnheight")
+		
+	def getRideheight(self):
+		return self._get("rideheight")
+	
+	def getBrakingForce(self):
+		return self._get("brakingForce")
+	
+	def getParkingBrakeForce(self):
+		return self._get("parkingBrakeForce")
+	
+	def getSteeringAngleMax(self):
+		return self._get(["steering", "maxAngle"])
+	
+	def getSteeringRate(self):
+		return self._get(["steering", "rate"])
+	
+	def getDrivetrainType(self):
+		return self._get(["drivetrain", "type"])
+	
+	def getEngineRpmMax(self):
+		return self._get(["drivetrain", "maxRpm"])
+	
+	def getEngineRpmIdle(self):
+		return self._get(["drivetrain", "idleRpm"])
+	
+	def getPoweredAxleRatio(self):
+		return self._get(["drivetrain", "powAxleRatio"])
+	
+	def getGearCount(self):
+		return len(self._get(["drivetrain"]).keys())
+	
+	def getGearRatios(self):
+		ratios = []
+
+		for gear in range(0, self.getGearCount()):
+			ratios.append(self._get(["drivetrain", "gears", str(gear), "ratio"]))
+		
+		return ratios
+	
+	def getTorqueFuncs(self):
+		funcs = []
+		
+		for gear in range(0, self.getGearCount()):
+			funcs.append(self._get(["drivetrain", "torque", str(gear)]))
+		
+		return funcs
+
+	def getColShapes(self):
+		shapes = []
+		
+		for shape in range(0, len(self._get(["colShapes"]).keys())):
+			shapes.append(self._get(["colShapes", str(shape)]))
+		
+		return shapes
+	
+	def getWheelMesh(self):
+		return self._get(["wheel", "mesh"])
+	
+	def getWheelWeight(self):
+		return self._get(["wheel", "weight"])
+	
+	def getWheelRadius(self):
+		return self._get(["wheel", "radius"])
+	
+	def getWheelWidth(self):
+		return self._get(["wheel", "width"])
+	
+	def getAxleCount(self):
+		return len(self._get("axles").keys())
+		
+	def axleIsSteerable(self, axle):
+		return self._get(["axles", str(axle), "steerable"])
+	
+	def axleIsPowered(self, axle):
+		return self._get(["axles", str(axle), "powered"])
+	
+	def getAxlePosition(self, axle):
+		return self._get(["axles", str(axle), "position"])
+	
+	def getAxleWidth(self, axle):
+		return self._get(["axles", str(axle), "width"])
+	
+	def getAxleSuspMaxTravel(self, axle):
+		return self._get(["axles", str(axle), "suspension", "maxTravel"])
+	
+	def getAxleSuspMaxForce(self, axle):
+		return self._get(["axles", str(axle), "suspension", "maxForce"])
+	
+	def getAxleSuspStiffness(self, axle):
+		return self._get(["axles", str(axle), "suspension", "stiffness"])
+	
+	def getAxleSuspDampingRelax(self, axle):
+		return self._get(["axles", str(axle), "suspension", "dampingRelax"])
+	
+	def getAxleSuspDampingComp(self, axle):
+		return self._get(["axles", str(axle), "suspension", "dampingCompression"])
+	
+	def getAxleSuspFrictionSlip(self, axle):
+		return self._get(["axles", str(axle), "suspension", "frictionSlip"])
+	
+	def getAxleSuspRollInfluence(self, axle):
+		return self._get(["axles", str(axle), "suspension", "rollInfluence"])
