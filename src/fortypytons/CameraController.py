@@ -64,7 +64,7 @@ class FollowerCameraController:
     """
 
     height = 4
-    radius = 15
+    distance = 15
     curHDiff = 0
 
     i = 0
@@ -75,11 +75,11 @@ class FollowerCameraController:
         self.world = world
         self.cam = camera
         self.target = target
-        self.cam.setPos(self.target, Vec3(0, -self.radius, self.height))
+        self.cam.setPos(self.target, Vec3(0, -self.distance, self.height))
 
     def update(self, task):
         # Calculate our desired position, then use a PID-controller to get there
-        relTargetPos = Vec3(0, -self.radius, self.height)
+        relTargetPos = Vec3(0, -self.distance, self.height)
 
         tmp = self.cam.getPos()
         self.cam.setPos(self.target, relTargetPos)
@@ -93,7 +93,7 @@ class FollowerCameraController:
         # dt: the time difference
         # u = Kp * error + Ki * integrate(error, dt) + Kd * (de / dt)
 
-        self._printAsInt(absTargetPos)
+        #self._printAsInt(absTargetPos)
 
         Kp = 0.05
         Ki = 0.05
@@ -129,10 +129,11 @@ class FollowerCameraController:
         self.i += 1
 
     def mwheelup(self):
-        pass
+        if self.distance > 8:
+            self.distance -= .5
 
     def mwheeldown(self):
-        pass
+        self.distance += .5
 
     def _rotateVector(self, vec, deg):
         # x' = x*cos q - y*sin q
