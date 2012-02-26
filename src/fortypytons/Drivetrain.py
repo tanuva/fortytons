@@ -112,8 +112,8 @@ class AutomaticDt:
 
 		for axIndex in range(0, self.parser.getAxleCount()):
 			if self.parser.axleIsPowered(axIndex):
-				drot += self._vehicle.getWheel(axIndex).getDeltaRotation()
-				drot += self._vehicle.getWheel(axIndex + 1).getDeltaRotation()
+				drot += self._vehicle.getWheel(2 * axIndex).getDeltaRotation()
+				drot += self._vehicle.getWheel(2 * axIndex + 1).getDeltaRotation()
 				poweredWheelCount += 2
 
 		drot = abs(drot) / poweredWheelCount
@@ -134,12 +134,16 @@ class AutomaticDt:
 		# in the real thing (tm) anyway.
 
 		# Idle gas management (Automatically engage the clutch when switched to "Drive" or "Reverse")
+		if self._gbState == 'p':
+			self._parkingBrake()
+		else:
+			self._releaseParkingBrake()
+
 		if realrpm < self._idlerpm \
 		and (self._gbState == 'd' or self._gbState == 'r') \
-		and not self._brakePedal == 1 and self._gasPedal < 0.4:
-			self._accel(600., .4)
-		elif self._gbState == 'p':
-			self._parkingBrake()
+		and not self._brakePedal == 1 and self._gasPedal < 0.2:
+			self._accel(600., .2)
+
 		else:
 			self._accel()
 
@@ -179,21 +183,28 @@ class AutomaticDt:
 			# Use the force!
 			for axIndex in range(0, self.parser.getAxleCount()):
 				if self.parser.axleIsPowered(axIndex):
-					self._vehicle.applyEngineForce(force, axIndex)
-					self._vehicle.applyEngineForce(force, axIndex + 1)
+					self._vehicle.applyEngineForce(force, 2 * axIndex)
+					self._vehicle.applyEngineForce(force, 2 * axIndex + 1)
 
 	def _brake(self):
 		p = self.parser
 
 		# We don't check self._gbState here, braking should always work...
 		for axIndex in range(0, p.getAxleCount()):
-			if self.parser.axleIsPowered(axIndex):
-				self._vehicle.setBrake(p.getBrakingForce() * self._brakePedal, int(axIndex))
-				self._vehicle.setBrake(p.getBrakingForce() * self._brakePedal, int(axIndex) + 1)
+			if p.axleIsPowered(axIndex):
+				self._vehicle.setBrake(p.getBrakingForce() * self._brakePedal, 2 * axIndex)
+				self._vehicle.setBrake(p.getBrakingForce() * self._brakePedal, 2 * axIndex + 1)
 
 	def _parkingBrake(self):
 		p = self.parser
 
 		for axIndex in range(0, p.getAxleCount()):
-			self._vehicle.setBrake(p.getParkingBrakeForce(), axIndex)
-			self._vehicle.setBrake(p.getParkingBrakeForce(), axIndex + 1)
+			self._vehicle.setBrake(p.getParkingBrakeForce(), 2 * axIndex)
+			self._vehicle.setBrake(p.getParkingBrakeForce(), 2 * axIndex + 1)
+
+	def _releaseParkingBrake(self):
+		p = self.parser
+
+		for axIndex in range(0, p.getAxleCount()):
+			self._vehicle.setBrake(0, 2 * axIndex)
+			self._vehicle.setBrake(0, 2 * axIndex + 1)

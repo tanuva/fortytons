@@ -179,8 +179,10 @@ class XMLTruck:
 			else:
 				self.curAngle = 0.0
 
-		self.vehicle.setSteeringValue(self.curAngle, 0)
-		self.vehicle.setSteeringValue(self.curAngle, 1)
+		for i in range(0, self.parser.getAxleCount()):
+			if self.parser.axleIsSteerable(i):
+				self.vehicle.setSteeringValue(self.curAngle, 2 * i)
+				self.vehicle.setSteeringValue(self.curAngle, 2 * i + 1)
 
 	def _applyAirDrag(self):
 		# air density 0.0012 g/cm3 (at sea level and 20 °C)

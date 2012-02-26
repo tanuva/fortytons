@@ -100,6 +100,8 @@ class VehicleDOMParser:
 			strPath += "Vec3(%s)" % (data)
 		elif datatype == "func":
 			strPath += ("\"" + data + "\"")
+		elif datatype == "bool":
+			strPath += "bool(%s)" % (data) # we don't want quotes around the value (not: bool('False'))
 		else:
 			strPath += "%s('%s')" % (datatype, data)
 
