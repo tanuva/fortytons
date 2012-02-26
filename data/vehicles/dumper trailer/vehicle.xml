@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+40tons vehicle description file
+https://github.com/tanuva/fortytons
+
+Mercedes-Benz Atego 815 "The first one"
+by Tanuva
+-->
+<vehicle id = "2345678901">
+	<type type = "str">trailer</type>
+	<manufacturer type = "str">Lownuva Trucks Inc.</manufacturer>
+	<model type = "str">Dumper Trailer A</model>
+	<mesh type = "str">vehicles/dumper trailer/trailer.egg</mesh>
+	<width type = "float">2.</width>
+	<height type = "float">.27</height>
+	<length type = "float">3.15</length>
+	<spawnheight type = "float">1.0</spawnheight>
+	<rideheight type = "float">0</rideheight>
+	<weight type = "float">800.0</weight>
+	<brakingForce type = "float">25.0</brakingForce>
+	<parkingBrakeForce type = "float">50.0</parkingBrakeForce>
+
+	<colShapes>
+		<colShape id = "0">
+			<type type = "str">box</type>
+			<width type = "float">2.</width>
+			<height type = "float">.27</height>
+			<length type = "float">3.15</length>
+			<offset type = "vector">0, -.5, .075</offset>
+		</colShape>
+		<colShape id = "1">
+			<type type = "str">box</type>
+			<width type = "float">.1</width>
+			<height type = "float">.1</height>
+			<length type = "float">1.</length>
+			<offset type = "vector">0, 1.575, .075</offset>
+		</colShape>
+	</colShapes>
+
+	<!-- All wheels are created equal. -->
+	<wheel>
+		<mesh type = "str">vehicles/dumper trailer/wheel.egg</mesh>
+		<weight type = "float">25.0</weight>
+		<radius type = "float">0.45</radius>
+		<width type = "float">0.3</width>
+	</wheel>
+
+	<axles>
+		<axle id = "0">
+			<steerable type = "bool">True</steerable>
+			<position type = "float">0</position>
+			<width type = "float">1.7</width>
+			<suspension>
+				<maxTravel type = "float">35.0</maxTravel>
+				<maxForce type = "float">40000.0</maxForce>
+				<stiffness type = "float">20.0</stiffness>
+				<dampingRelax type = "float">3.0</dampingRelax>
+				<dampingCompression type = "float">5.0</dampingCompression>
+				<frictionSlip type = "float">1.5</frictionSlip>
+				<rollInfluence type = "float">0.3</rollInfluence>
+			</suspension>
+		</axle>
+
+		<axle id = "1">
+			<steerable type = "bool">False</steerable>
+			<position type = "float">-1</position>
+			<width type = "float">1.7</width>
+			<suspension>
+				<maxTravel type = "float">35.0</maxTravel>
+				<maxForce type = "float">40000.0</maxForce>
+				<stiffness type = "float">20.0</stiffness>
+				<dampingRelax type = "float">3.0</dampingRelax>
+				<dampingCompression type = "float">5.0</dampingCompression>
+				<frictionSlip type = "float">1.5</frictionSlip>
+				<rollInfluence type = "float">0.3</rollInfluence>
+			</suspension>
+		</axle>
+	</axles>
+
+	<trailerHitch>
+		<!-- <type></type> -->
+		<position type = "vector">0, 2.086, .075</position>
+	</trailerHitch>
+</vehicle>
