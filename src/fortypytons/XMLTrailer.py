@@ -135,3 +135,5 @@ class XMLTrailer:
 		return self.vehicle.getCurrentSpeedKmHour()
 	def getTrailerHitchPoint(self):
 		return self.parser.getTrailerHitchPoint()
+	def getType(self):
+		return self.parser.getType()

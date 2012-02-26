@@ -23,7 +23,7 @@ from pandac.PandaModules import WindowProperties
 SCALE = 1.0
 
 class Main(ShowBase):
-    trucks = []
+    vehicles = []
     datadir = "../../data/"
     accel, brake, left, right = False, False, False, False
 
@@ -35,6 +35,9 @@ class Main(ShowBase):
         props = WindowProperties()
         props.setCursorHidden(True)
         base.win.requestProperties(props)
+
+        # Disable sound for now
+        base.disableAllAudio() # Doesn't work oO
 
         # Enable anti aliasing
         render.setAntialias(AntialiasAttrib.MAuto)
@@ -82,6 +85,16 @@ class Main(ShowBase):
         amblight.setColor(VBase4(0.4, 0.4, 0.4, 1))
         amblightNp = render.attachNewNode(amblight)
         render.setLight(amblightNp)
+
+        # TODO Load the skybox
+        #tex = loader.loadCubeMap(self.datadir + "tex/skyrender#.png")
+        #skyboxNp = self.camera.attachNewNode(loader.loadModel("box").node())
+        #skyboxNp.setBin("background", 0);
+        #skyboxNp.setDepthWrite(False);
+        #skyboxNp.setCompass()
+        #skyboxNp.setTexture(tex)
+        #skyboxNp.setLightOff()
+        #skyboxNp.setShaderOff()
 
         self.terBodyNp = render.attachNewNode(BulletRigidBodyNode("terrainBody"))
         img = PNMImage(Filename(self.datadir + "tex/inclined.png"))
@@ -135,30 +148,27 @@ class Main(ShowBase):
         self.world.setDebugNode(self.debug.node())
         #self.debug.show()
 
-        self.trucks.append(XMLTruck("vehicles/atego/vehicle.xml", self.datadir, Vec3(0,0,0), self.world))
-        self.trucks.append(XMLTrailer("vehicles/dumper trailer/vehicle.xml", self.datadir, Vec3(4,8,0), self.world))
-        #self.trucks.append(Truck(self.datadir + "mesh/truck.egg",
-        #                         self.datadir + "mesh/wheel.egg",
-        #                         Vec3(0, 0, 2.), SCALE, self.maskTrucks,
-        #                         self.world))
+        self.vehicles.append(XMLTruck("vehicles/atego/vehicle.xml", self.datadir, Vec3(0,0,0), self.world))
+        self.vehicles.append(XMLTrailer("vehicles/dumper trailer/vehicle.xml", self.datadir, Vec3(4,8,0), self.world))
 
         # Register truck functions
         # Truck should do this by itself! (or advertise keys it wants to use? better approach...)
         self.keyconf = KeyConfig(self)
         self.keyconf.loadConfig("neo2.conf")
-        self.keyconf.setHook("gas", self.trucks[0].setGas, [1.], [0.])
-        self.keyconf.setHook("brake", self.trucks[0].setBrake, [1.], [0.])
-        self.keyconf.setHook("steerLeft", self.trucks[0].steer, [1], [0])
-        self.keyconf.setHook("steerRight", self.trucks[0].steer, [-1], [0])
-        self.keyconf.setHook("dumperUp", self.trucks[0].tiltDumper, [1.], [0.])
-        self.keyconf.setHook("dumperDown", self.trucks[0].tiltDumper, [-1.], [0.])
-        self.keyconf.setHook("reset", self.trucks[0].reset)
-        self.keyconf.setHook("shiftPark", self.trucks[0].shiftPark)
-        self.keyconf.setHook("shiftReverse", self.trucks[0].shiftReverse)
-        self.keyconf.setHook("shiftNeutral", self.trucks[0].shiftNeutral)
-        self.keyconf.setHook("shiftDrive", self.trucks[0].shiftDrive)
+        self.keyconf.setHook("gas", self.vehicles[0].setGas, [1.], [0.])
+        self.keyconf.setHook("brake", self.vehicles[0].setBrake, [1.], [0.])
+        self.keyconf.setHook("steerLeft", self.vehicles[0].steer, [1], [0])
+        self.keyconf.setHook("steerRight", self.vehicles[0].steer, [-1], [0])
+        self.keyconf.setHook("dumperUp", self.vehicles[0].tiltDumper, [1.], [0.])
+        self.keyconf.setHook("dumperDown", self.vehicles[0].tiltDumper, [-1.], [0.])
+        self.keyconf.setHook("reset", self.vehicles[0].reset)
+        self.keyconf.setHook("shiftPark", self.vehicles[0].shiftPark)
+        self.keyconf.setHook("shiftReverse", self.vehicles[0].shiftReverse)
+        self.keyconf.setHook("shiftNeutral", self.vehicles[0].shiftNeutral)
+        self.keyconf.setHook("shiftDrive", self.vehicles[0].shiftDrive)
+        self.keyconf.setHook("couple", self.vehicles[0].couple, [self.vehicles])
 
-        self.camcon = FollowerCameraController(self.world, self.camera, self.trucks[0].getChassis().getBody())
+        self.camcon = FollowerCameraController(self.world, self.camera, self.vehicles[0].getChassis().getBody())
         taskMgr.add(self.camcon.update, 'CameraController', priority=10)
         self.accept("wheel_up", self.camcon.mwheelup)
         self.accept("wheel_down", self.camcon.mwheeldown)
@@ -171,8 +181,10 @@ class Main(ShowBase):
     def physicsTask(self, task):
         self.world.doPhysics(task.delayTime, 10, task.delayTime/10.)
 
-        if len(self.trucks) > 0:
-            self.trucks[0].update(task.delayTime)
+        if len(self.vehicles) > 0:
+            for truck in self.vehicles:
+                if truck.getType() == "truck":
+                    truck.update(task.delayTime)
         return task.again
 
     def renderTask(self, task):
@@ -180,16 +192,16 @@ class Main(ShowBase):
         self.terrain.update()
 
         # Update the truck's speedometer
-        self.lblSpeedoNp.node().setText("%i" % abs(self.trucks[0].getSpeed()))
-        self.lblGearState["text"] = self.trucks[0].getGbState()
-        self.lblRpmSlider["value"] = self.trucks[0].getRpm()
+        self.lblSpeedoNp.node().setText("%i" % abs(self.vehicles[0].getSpeed()))
+        self.lblGearState["text"] = self.vehicles[0].getGbState()
+        self.lblRpmSlider["value"] = self.vehicles[0].getRpm()
 
-        if self.trucks[0].getGear() == 0:
+        if self.vehicles[0].getGear() == 0:
             self.lblGear["text"] = 'n'
-        elif self.trucks[0].getGear() == 1:
+        elif self.vehicles[0].getGear() == 1:
             self.lblGear["text"] = 'r'
         else:
-            self.lblGear["text"] = "%i" % (self.trucks[0].getGear() - 1)
+            self.lblGear["text"] = "%i" % (self.vehicles[0].getGear() - 1)
 
         return Task.cont
 
@@ -200,7 +212,7 @@ class Main(ShowBase):
             self.debug.hide()
 
     def resetTruck(self):
-        self.trucks[0].reset()
+        self.vehicles[0].reset()
 
 if __name__ == '__main__':
     app = Main()

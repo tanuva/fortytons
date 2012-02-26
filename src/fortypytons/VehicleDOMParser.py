@@ -136,7 +136,7 @@ class VehicleDOMParser:
 
 	# Getters
 	def getType(self):
-		return self._get(["data", "type"])
+		return self._get(["type"])
 	
 	def getManufacturer(self):
 		return self._get("manufacturer")

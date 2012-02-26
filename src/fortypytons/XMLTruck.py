@@ -212,6 +212,10 @@ class XMLTruck:
 		self.chassis.setPos(self.chassis.getPos() + (0,0,1.5))
 		self.chassis.setR(0)
 
+		if not self.hitchedTrailer == None:
+			self.hitchedTrailer.getChassis().setPos(self.hitchedTrailer.getChassis().getPos() + (0,0,1.5))
+			self.hitchedTrailer.getChassis().setR(0)
+
 	def tiltDumper(self, direction):
 		if direction in [-1., 1.]:
 			self.dumperCon.enableAngularMotor(True, .4 * direction, 10000000.)
@@ -228,7 +232,8 @@ class XMLTruck:
 			for vehicle in vehicles:
 				otherHitchAbsolute = Util.getAbsolutePos(vehicle.getTrailerHitchPoint(), vehicle.getChassisNp())
 
-				if not self == vehicle and Util.getDistance(ourHitchAbsolute, otherHitchAbsolute) <= 1:
+				if not self == vehicle and vehicle.getType() == "trailer"
+					and Util.getDistance(ourHitchAbsolute, otherHitchAbsolute) <= 1:
 					self.HitchJoint = self.createCouplingJoint(self.getTrailerHitchPoint(),
 												vehicle.getTrailerHitchPoint(), vehicle.getChassis().getBody().node())
 					self.hitchedTrailer = vehicle
@@ -256,3 +261,5 @@ class XMLTruck:
 		return self.vehicle.getCurrentSpeedKmHour()
 	def getTrailerHitchPoint(self):
 		return self.parser.getTrailerHitchPoint()
+	def getType(self):
+		return self.parser.getType()
