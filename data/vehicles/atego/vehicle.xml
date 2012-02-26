@@ -41,6 +41,7 @@ by Tanuva
 		</gears>
 		<torque>
 			<!-- These ranges must not overlap! (Would be a strange gearbox, wouldn't it?) -->
+			<!-- Just noticed this statement is real crap. But our gearbox requires non-overlapping gears. -->
 			<range id = "0">
 				<lo type = "float">600</lo>
 				<hi type = "float">1150</hi>
@@ -118,4 +119,9 @@ by Tanuva
 			</suspension>
 		</axle>
 	</axles>
+
+	<trailerHitch>
+		<!-- <type></type> -->
+		<position type = "vector">0, -2.511, -.515</position>
+	</trailerHitch>
 </vehicle>
