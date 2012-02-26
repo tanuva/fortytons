@@ -262,9 +262,9 @@ class TruckDOMParser(VehicleDOMParser):
 	
 	def getTorqueFuncs(self):
 		funcs = []
-		
-		for gear in range(0, self.getGearCount()):
-			funcs.append(self._get(["drivetrain", "torque", str(gear)]))
+
+		for funcIndex in range(0, len(self._get(["drivetrain", "torque"]))):
+			funcs.append(self._get(["drivetrain", "torque", str(funcIndex)]))
 		
 		return funcs
 	
