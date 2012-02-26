@@ -150,10 +150,10 @@ class XMLTruck:
 		self.drivetrain.shiftPark()
 
 	def steer(self, direction):
-		if direction in [-1, 0, 1]:
+		if direction >= -1 and direction <= 1:
 			self._steerDir = direction
 		else:
-			print "[WRN] Truck.py:steer(): Invalid direction parameter."
+			print "[WRN] XMLTruck:steer(): Invalid direction parameter."
 
 	def _steer(self):
 		# We are speed sensitive

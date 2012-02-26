@@ -120,9 +120,9 @@ class XMLTrailer:
 		self.chassis.setR(0)
 
 	def tiltDumper(self, direction):
-		if direction in [-1., 1.]:
+		if direction >= -1 and direction <= 1:
 			self.dumperCon.enableAngularMotor(True, .4 * direction, 10000000.)
-		elif direction == 0.:
+		elif direction == 0:
 			self.dumperCon.enableAngularMotor(True, .0, 1000000.)
 		else:
 			print "[WRN] Truck.py:tiltDumper(direction): Direction is none of [1., 0., -1.]"
