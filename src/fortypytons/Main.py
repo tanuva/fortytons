@@ -136,7 +136,7 @@ class Main(ShowBase):
         #self.debug.show()
 
         self.trucks.append(XMLTruck("vehicles/atego/vehicle.xml", self.datadir, Vec3(0,0,0), self.world))
-        XMLTrailer("vehicles/dumper trailer/vehicle.xml", self.datadir, Vec3(4,8,0), self.world)
+        self.trucks.append(XMLTrailer("vehicles/dumper trailer/vehicle.xml", self.datadir, Vec3(4,8,0), self.world))
         #self.trucks.append(Truck(self.datadir + "mesh/truck.egg",
         #                         self.datadir + "mesh/wheel.egg",
         #                         Vec3(0, 0, 2.), SCALE, self.maskTrucks,
