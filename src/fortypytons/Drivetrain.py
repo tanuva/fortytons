@@ -38,31 +38,17 @@ class AutomaticDt:
 		self._gbState = 'p'
 		self._gbGear = 0 # 1 is reverse, 2 is first gear, default to neutral
 
-	def cleanGbRatios(self, dic):
-		"""
-		Convert the dictionary keys to int, put the values (gbRatios) into a sorted array.
-		"""
-
-		out = []
-		tmp = [int(key) for key in dic.keys()]
-
-		# convert the keys from string to int, preserving order
-		for key in sorted(tmp):
-			out.append(dic[str(key)]["ratio"])
-
-		return out
-
 	def setGas(self, gas):
 		if gas <= 1. and gas >= 0.:
 			self._gasPedal = gas
 		else:
-			print "Truck.py:setGas(gas) out of range! (0 < x < 1)"
+			print "Drivetrain:setGas(gas) out of range! (0 < x < 1)"
 
 	def setBrake(self, brake):
 		if brake <= 1. and brake >= 0.:
 			self._brakePedal = brake
 		else:
-			print "Truck.py:setBrake(brake) out of range! (0 < x < 1)"
+			print "Drivetrain:setBrake(brake) out of range! (0 < x < 1)"
 
 	def _getNextGear(self):
 		if self._gbGear < len(self._gbRatios) - 2:
