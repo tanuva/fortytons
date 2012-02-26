@@ -185,6 +185,9 @@ class VehicleDOMParser:
 	def isAxleSteerable(self, axle):
 		return self._get(["axles", str(axle), "steerable"])
 
+	def getAxleSteeringFactor(self, axle):
+		return self._get(["axles", str(axle), "steeringFactor"])
+
 	def getAxlePosition(self, axle):
 		return self._get(["axles", str(axle), "position"])
 	

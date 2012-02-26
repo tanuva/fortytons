@@ -15,6 +15,7 @@ from panda3d.bullet import *
 
 class XMLTruck:
 	hitchJoint = None
+	hitchedTrailer = None
 
 	def __init__(self, xmlfile, datadir, spawnpos, world):
 		self.datadir = datadir
@@ -118,6 +119,8 @@ class XMLTruck:
 		self._steer()
 		self.drivetrain.update(dt)
 		self._applyAirDrag()
+		if not self.hitchedTrailer == None:
+			self.hitchedTrailer.update(dt, self.curAngle)
 
 	def setGas(self, gas):
 		if gas <= 1. and gas >= 0.:
@@ -179,10 +182,10 @@ class XMLTruck:
 			else:
 				self.curAngle = 0.0
 
-		for i in range(0, self.parser.getAxleCount()):
-			if self.parser.axleIsSteerable(i):
-				self.vehicle.setSteeringValue(self.curAngle, 2 * i)
-				self.vehicle.setSteeringValue(self.curAngle, 2 * i + 1)
+		for axle in range(0, self.parser.getAxleCount()):
+			if self.parser.isAxleSteerable(axle):
+				self.vehicle.setSteeringValue(self.curAngle * self.parser.getAxleSteeringFactor(axle), 2 * axle)
+				self.vehicle.setSteeringValue(self.curAngle * self.parser.getAxleSteeringFactor(axle), 2 * axle + 1)
 
 	def _applyAirDrag(self):
 		# air density 0.0012 g/cm3 (at sea level and 20 °C)
@@ -226,22 +229,24 @@ class XMLTruck:
 				otherHitchAbsolute = Util.getAbsolutePos(vehicle.getTrailerHitchPoint(), vehicle.getChassisNp())
 
 				if not self == vehicle and Util.getDistance(ourHitchAbsolute, otherHitchAbsolute) <= 1:
-					self.createCouplingJoint(self.getTrailerHitchPoint(),
-											vehicle.getTrailerHitchPoint(), vehicle.getChassis().getBody().node())
+					self.HitchJoint = self.createCouplingJoint(self.getTrailerHitchPoint(),
+												vehicle.getTrailerHitchPoint(), vehicle.getChassis().getBody().node())
+					self.hitchedTrailer = vehicle
 
 		else:
 			self.world.removeConstraint(self.hitchJoint)
 			self.hitchJoint = None
+			self.hitchedTrailer = None
 
 	def createCouplingJoint(self, ourHitch, otherHitch, otherChassisNode):
 		#BulletConeTwistConstraint (BulletRigidBodyNode const node_a, BulletRigidBodyNode const node_b,
 		#							TransformState const frame_a, TransformState const frame_b)
 		ourFrame = TransformState.makePosHpr(ourHitch, Vec3(0,0,0))
 		otherFrame = TransformState.makePosHpr(otherHitch, Vec3(0,0,0))
-		hitch = BulletConeTwistConstraint(self.getChassis().getBody().node(), otherChassisNode, ourFrame, otherFrame)
-		hitch.setLimit(170, 40, 30)
-		self.world.attachConstraint(hitch)
-		self.hitchJoint = hitch
+		hitchJoint = BulletConeTwistConstraint(self.getChassis().getBody().node(), otherChassisNode, ourFrame, otherFrame)
+		hitchJoint.setLimit(170, 40, 30)
+		self.world.attachConstraint(hitchJoint)
+		return hitchJoint
 
 	def getChassisNp(self):
 		return self.chassis.getNp()

@@ -97,8 +97,8 @@ class XMLTrailer:
 
 				self.wheels.append(VWheel(npWheelMdl, npWheel, wheel, False))
 
-	def update(self, dt):
-		self._steer()
+	def update(self, dt, truckSteerDir):
+		self._steer(truckSteerDir)
 
 	def setBrake(self, brake):
 		if brake <= 1. and brake >= 0.:
@@ -106,41 +106,14 @@ class XMLTrailer:
 		else:
 			print "XMLTrailer:setBrake(brake) out of range! (0 < x < 1)"
 
-	def steer(self, direction):
-		if direction in [-1, 0, 1]:
-			self._steerDir = direction
+	def _steer(self, direction):
+		if direction > -90 and direction < 90:
+			for axle in range(0, self.parser.getAxleCount()):
+				if self.parser.isAxleSteerable(axle):
+					self.vehicle.setSteeringValue(direction * self.parser.getAxleSteeringFactor(axle), 2 * axle)
+					self.vehicle.setSteeringValue(direction * self.parser.getAxleSteeringFactor(axle), 2 * axle + 1)
 		else:
-			print "[WRN] XMLTrailer:steer(): Invalid direction parameter."
-
-	def _steer(self):
-		# We are speed sensitive
-		speed = self.vehicle.getCurrentSpeedKmHour()
-		if speed > 0 and speed < 90:
-			self.maxAngle = (-.5) * speed + 45 # Graph this on WolframAlpha to make it obvious :)
-		elif speed > 90:
-			self.maxAngle = 1.0
-
-		if self._steerDir == 1 and self.curAngle < self.maxAngle:
-			if self.curAngle < 0:
-				self.curAngle += 2.0 * self.rate
-			else:
-				self.curAngle += self.rate
-		elif self._steerDir == -1 and self.curAngle > self.maxAngle * -1:
-			if self.curAngle > 0:
-				self.curAngle -= 2.0 * self.rate
-			else:
-				self.curAngle -= self.rate
-		else: # self._steerDir == 0
-			# steer straight
-			if self.curAngle > self.rate:
-				self.curAngle -= 2.0 * self.rate
-			elif self.curAngle < self.rate * -1.0:
-				self.curAngle += 2.0 * self.rate
-			else:
-				self.curAngle = 0.0
-
-		self.vehicle.setSteeringValue(self.curAngle, 0)
-		self.vehicle.setSteeringValue(self.curAngle, 1)
+			print "[WRN] XMLTrailer:steer(): Invalid direction parameter:", direction
 
 	def reset(self):
 		self.chassis.setPos(self.chassis.getPos() + (0,0,1.5))

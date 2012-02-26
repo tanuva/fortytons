@@ -47,7 +47,8 @@ by Tanuva
 
 	<axles>
 		<axle id = "0">
-			<steerable type = "bool">True</steerable>
+			<steerable type = "bool">False</steerable>
+			<steeringFactor type = "float">0.</steeringFactor>
 			<position type = "float">0</position>
 			<width type = "float">1.7</width>
 			<suspension>
@@ -63,6 +64,7 @@ by Tanuva
 
 		<axle id = "1">
 			<steerable type = "bool">False</steerable>
+			<steeringFactor type = "float">0.</steeringFactor>
 			<position type = "float">-1</position>
 			<width type = "float">1.7</width>
 			<suspension>
