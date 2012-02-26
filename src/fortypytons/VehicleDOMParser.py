@@ -210,6 +210,9 @@ class VehicleDOMParser:
 	def getAxleSuspRollInfluence(self, axle):
 		return self._get(["axles", str(axle), "suspension", "rollInfluence"])
 
+	def getTrailerHitchPoint(self):
+		return self._get(["trailerHitch", "position"])
+
 class TruckDOMParser(VehicleDOMParser):
 	# The actual data we've read
 	data = {}
@@ -271,9 +274,6 @@ class TruckDOMParser(VehicleDOMParser):
 	def axleIsPowered(self, axle):
 		return self._get(["axles", str(axle), "powered"])
 
-	def getTrailerHitchPoint(self):
-		return self._get(["trailerHitch", "position"])
-
 class TrailerDOMParser(VehicleDOMParser):
 	# The actual data we've read
 	data = {}
@@ -287,6 +287,3 @@ class TrailerDOMParser(VehicleDOMParser):
 		if not self._traverseTree(vehicleNode):
 			print "doh"
 			exit(1)
-
-	def getTruckHitchPoint(self):
-		return self._get(["trailerHitch", "position"])

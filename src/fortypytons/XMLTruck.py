@@ -9,10 +9,13 @@ import math
 from Drivetrain import AutomaticDt
 from VehicleDOMParser import *
 from VComponent import *
+from Util import Util
 from panda3d.core import *
 from panda3d.bullet import *
 
 class XMLTruck:
+	hitchJoint = None
+
 	def __init__(self, xmlfile, datadir, spawnpos, world):
 		self.datadir = datadir
 		self.world = world
@@ -212,9 +215,37 @@ class XMLTruck:
 		else:
 			print "[WRN] Truck.py:tiltDumper(direction): Direction is none of [1., 0., -1.]"
 
+	def couple(self, vehicles):
+		""" Checks if another vehicle is within 1 unit (meter) range of our hitch. If yes, it will be connected to us. """
+		if self.hitchJoint == None:
+			ourHitchAbsolute = Util.getAbsolutePos(self.getTrailerHitchPoint(), self.getChassisNp())
+
+			for vehicle in vehicles:
+				otherHitchAbsolute = Util.getAbsolutePos(vehicle.getTrailerHitchPoint(), vehicle.getChassisNp())
+
+				if not self == vehicle and Util.getDistance(ourHitchAbsolute, otherHitchAbsolute) <= 1:
+					self.createCouplingJoint(self.getTrailerHitchPoint(),
+											vehicle.getTrailerHitchPoint(), vehicle.getChassis().getBody().node())
+
+		else:
+			self.world.removeConstraint(self.hitchJoint)
+			self.hitchJoint = None
+
+	def createCouplingJoint(self, ourHitch, otherHitch, otherChassisNode):
+		#BulletConeTwistConstraint (BulletRigidBodyNode const node_a, BulletRigidBodyNode const node_b,
+		#							TransformState const frame_a, TransformState const frame_b)
+		ourFrame = TransformState.makePosHpr(ourHitch, Vec3(0,0,0))
+		otherFrame = TransformState.makePosHpr(otherHitch, Vec3(0,0,0))
+		hitch = BulletConeTwistConstraint(self.getChassis().getBody().node(), otherChassisNode, ourFrame, otherFrame)
+		hitch.setLimit(170, 40, 30)
+		self.world.attachConstraint(hitch)
+		self.hitchJoint = hitch
+
 	def getChassisNp(self):
 		return self.chassis.getNp()
 	def getChassis(self):
 		return self.chassis
 	def getSpeed(self):
 		return self.vehicle.getCurrentSpeedKmHour()
+	def getTrailerHitchPoint(self):
+		return self.parser.getTrailerHitchPoint()
