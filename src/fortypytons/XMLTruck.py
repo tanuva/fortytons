@@ -39,6 +39,8 @@ class XMLTruck:
 			if shape["type"] == "box":
 				size = Vec3(shape["width"]/2, shape["length"]/2, shape["height"]/2)
 				self.npBody.node().addShape(BulletBoxShape(size), TransformState.makePos(shape["offset"]))
+			else:
+				print "[WRN] XMLTrailer: got a non-box collision shape, not supported yet."
 
 		self.npBody.node().setMass(p.getWeight())
 		self.npBody.node().setDeactivationEnabled(False)
