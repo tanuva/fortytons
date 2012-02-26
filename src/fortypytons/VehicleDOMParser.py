@@ -181,8 +181,8 @@ class VehicleDOMParser:
 	
 	def getAxleCount(self):
 		return len(self._get("axles").keys())
-		
-	def axleIsSteerable(self, axle):
+
+	def isAxleSteerable(self, axle):
 		return self._get(["axles", str(axle), "steerable"])
 
 	def getAxlePosition(self, axle):

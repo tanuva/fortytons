@@ -86,7 +86,7 @@ class XMLTrailer:
 				wheel.setWheelRadius(p.getWheelRadius())
 
 				# suspension setup
-				wheel.setFrontWheel(p.axleIsSteerable(axIndex))
+				wheel.setFrontWheel(p.isAxleSteerable(axIndex))
 				wheel.setMaxSuspensionTravelCm(p.getAxleSuspMaxTravel(axIndex))
 				wheel.setMaxSuspensionForce(p.getAxleSuspMaxForce(axIndex))
 				wheel.setSuspensionStiffness(p.getAxleSuspStiffness(axIndex))
