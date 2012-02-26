@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-Created on 16.10.2011
+Created on 26.02.2012
 
 @author: marcel
 '''
@@ -8,27 +8,21 @@ Created on 16.10.2011
 import math
 from Drivetrain import AutomaticDt
 from VehicleDOMParser import *
+from SoundController import SoundController
 from VComponent import *
 from panda3d.core import *
 from panda3d.bullet import *
 
-class XMLTruck:
+class XMLTrailer:
 	def __init__(self, xmlfile, datadir, spawnpos, world):
 		self.datadir = datadir
 		self.world = world
 		self.parser = VehicleDOMParser.createDOMParser(self.datadir + xmlfile)
 
 		if self.parser == None:
-			print "[ERR] XMLTruck: The xml file seems to have an unknown vehicle type set."
+			print "[ERR] XMLTrailer: The xml file seems to have an unknown vehicle type set."
 
 		p = self.parser # Will get ugly otherwise...
-
-		# ===== Steering =====
-		self.physMaxAngle = p.getSteeringAngleMax()	# The absolute maximum angle possible
-		self.maxAngle = self.physMaxAngle 					# The maximum steering angle at the current speed (speed-sensitive)
-		self.rate = p.getSteeringRate()
-		self.curAngle = 0.0
-		self._steerDir = 0	# -1, 0, 1: Sets the direction of steering
 
 		# ===== Chassis =====
 		self.npBody = render.attachNewNode(BulletRigidBodyNode('truckBox'))
@@ -39,6 +33,8 @@ class XMLTruck:
 			if shape["type"] == "box":
 				size = Vec3(shape["width"]/2, shape["length"]/2, shape["height"]/2)
 				self.npBody.node().addShape(BulletBoxShape(size), TransformState.makePos(shape["offset"]))
+			else:
+				print "[WRN] XMLTrailer: got a non-box collision shape, not supported yet."
 
 		self.npBody.node().setMass(p.getWeight())
 		self.npBody.node().setDeactivationEnabled(False)
@@ -51,13 +47,6 @@ class XMLTruck:
 		self.vehicle.setCoordinateSystem(ZUp)
 		self.world.attachVehicle(self.vehicle)
 
-		# ===== Select a drivetrain =====
-		if p.getDrivetrainType() == "automatic":
-			self.drivetrain = AutomaticDt(self.vehicle, self.parser)
-		else:
-			print "[WRN] The selected drivetrain type is unknown, choosing automatic!"
-			self.drivetrain = AutomaticDt(self.vehicle, self.parser)
-
 		# ===== Dumper =====
 
 		# ===== Wheels =====
@@ -67,7 +56,6 @@ class XMLTruck:
 			axPos = p.getAxlePosition(axIndex)
 			axWidth = p.getAxleWidth(axIndex)
 			rideHeight = p.getRideheight()
-			isPowered = p.axleIsPowered(axIndex)
 
 			for wheelIndex in range(0, 2):
 				# Wheel 0 is left, 1 is the right one
@@ -107,45 +95,22 @@ class XMLTruck:
 				wheel.setFrictionSlip(p.getAxleSuspFrictionSlip(axIndex))
 				wheel.setRollInfluence(p.getAxleSuspRollInfluence(axIndex))
 
-				self.wheels.append(VWheel(npWheelMdl, npWheel, wheel, isPowered))
+				self.wheels.append(VWheel(npWheelMdl, npWheel, wheel, False))
 
 	def update(self, dt):
 		self._steer()
-		self.drivetrain.update(dt)
-		self._applyAirDrag()
-
-	def setGas(self, gas):
-		if gas <= 1. and gas >= 0.:
-			self.drivetrain.setGas(gas)
-		else:
-			print "Truck.py:setGas(gas) out of range! (0 < x < 1)"
 
 	def setBrake(self, brake):
 		if brake <= 1. and brake >= 0.:
 			self.drivetrain.setBrake(brake)
 		else:
-			print "Truck.py:setBrake(brake) out of range! (0 < x < 1)"
-
-	def getGbState(self):
-		return self.drivetrain.getGbState()
-
-	def shiftDrive(self):
-		self.drivetrain.shiftDrive()
-
-	def shiftNeutral(self):
-		self.drivetrain.shiftNeutral()
-
-	def shiftReverse(self):
-		self.drivetrain.shiftReverse()
-
-	def shiftPark(self):
-		self.drivetrain.shiftPark()
+			print "XMLTrailer:setBrake(brake) out of range! (0 < x < 1)"
 
 	def steer(self, direction):
 		if direction in [-1, 0, 1]:
 			self._steerDir = direction
 		else:
-			print "[WRN] Truck.py:steer(): Invalid direction parameter."
+			print "[WRN] XMLTrailer:steer(): Invalid direction parameter."
 
 	def _steer(self):
 		# We are speed sensitive
@@ -176,27 +141,6 @@ class XMLTruck:
 
 		self.vehicle.setSteeringValue(self.curAngle, 0)
 		self.vehicle.setSteeringValue(self.curAngle, 1)
-
-	def _applyAirDrag(self):
-		# air density 0.0012 g/cm3 (at sea level and 20 °C)
-		# cw-Value: 0.8 for a "truck", 0.5 for a modern 40 ton "with aero-kit" (see wikipedia), choosing 0.4 for now.
-		# force = (density * cw * A * vel) / 2
-		force = 0.0012 * 0.4 \
-				* (self.parser.getDimensions()[0] * self.parser.getDimensions()[1]) \
-				* (self.getSpeed() / 3.6) \
-				/ 2
-
-		# Its a braking force, after all
-		force *= -1.
-
-		relFVector = self.npBody.getRelativeVector(render, Point3(0, force, 0))
-		self.npBody.node().applyCentralForce(relFVector);
-
-	def getRpm(self):
-		return self.drivetrain.getRpm()
-
-	def getGear(self):
-		return self.drivetrain.getGear()
 
 	def reset(self):
 		self.chassis.setPos(self.chassis.getPos() + (0,0,1.5))

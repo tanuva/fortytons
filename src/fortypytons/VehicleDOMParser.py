@@ -13,14 +13,10 @@ class VehicleDOMParser:
 	xmlfile = None
 	allowedDatatypes = ("int", "float", "vector", "bool", "str", "func")
 
-	# The actual data we've read
-	data = {}
-	# Acts as a stack and helps us find the right path to use for storage inside self.data
-	path = []
-
-	def __init__(self, xmlfile):
-		self.xmlfile = xmlfile
-		tree = dom.parse(self.xmlfile)
+	@staticmethod
+	def createDOMParser(xmlfile):
+		print "parsing", xmlfile
+		tree = dom.parse(xmlfile)
 
 		# Find a <vehicle> node in the doc root
 		vehicleNode = None
@@ -31,11 +27,17 @@ class VehicleDOMParser:
 		if vehicleNode == None:
 			print "[ERR] %s doesn't contain a <vehicle> node!" % xmlfile
 
-		# Read everything we can grab from the tree
-		if not self._traverseTree(vehicleNode):
-			exit(1)
+		# Find the vehicle type specified in the xml file
+		for node in vehicleNode.childNodes:
+			if not node.nodeName == "#text" and len(node.childNodes) == 1 and node.getAttribute("type"):
+				vehicleType = node.firstChild.data.strip()
 
-		#print self.data
+				if vehicleType == "truck":
+					return TruckDOMParser(xmlfile, vehicleNode)
+				elif vehicleType == "trailer":
+					return TrailerDOMParser(xmlfile, vehicleNode)
+				else:
+					return None
 
 	def _traverseTree(self, startNode, recursing = False):
 		if recursing:
@@ -101,7 +103,7 @@ class VehicleDOMParser:
 		else:
 			strPath += "%s('%s')" % (datatype, data)
 
-		print strPath
+		#print strPath # Print the path + the value we just read
 		exec strPath
 		return True
 
@@ -130,6 +132,7 @@ class VehicleDOMParser:
 			print "[ERR] VehicleDOMParser: Requested unexisting value:", strPath
 			return None
 
+	# Getters
 	def getType(self):
 		return self._get(["data", "type"])
 	
@@ -153,7 +156,75 @@ class VehicleDOMParser:
 		
 	def getRideheight(self):
 		return self._get("rideheight")
+
+	def getColShapes(self):
+		shapes = []
+		
+		for shape in range(0, len(self._get(["colShapes"]).keys())):
+			shapes.append(self._get(["colShapes", str(shape)]))
+		
+		return shapes
 	
+	def getWheelMesh(self):
+		return self._get(["wheel", "mesh"])
+	
+	def getWheelWeight(self):
+		return self._get(["wheel", "weight"])
+	
+	def getWheelRadius(self):
+		return self._get(["wheel", "radius"])
+	
+	def getWheelWidth(self):
+		return self._get(["wheel", "width"])
+	
+	def getAxleCount(self):
+		return len(self._get("axles").keys())
+		
+	def axleIsSteerable(self, axle):
+		return self._get(["axles", str(axle), "steerable"])
+
+	def getAxlePosition(self, axle):
+		return self._get(["axles", str(axle), "position"])
+	
+	def getAxleWidth(self, axle):
+		return self._get(["axles", str(axle), "width"])
+	
+	def getAxleSuspMaxTravel(self, axle):
+		return self._get(["axles", str(axle), "suspension", "maxTravel"])
+	
+	def getAxleSuspMaxForce(self, axle):
+		return self._get(["axles", str(axle), "suspension", "maxForce"])
+	
+	def getAxleSuspStiffness(self, axle):
+		return self._get(["axles", str(axle), "suspension", "stiffness"])
+	
+	def getAxleSuspDampingRelax(self, axle):
+		return self._get(["axles", str(axle), "suspension", "dampingRelax"])
+	
+	def getAxleSuspDampingComp(self, axle):
+		return self._get(["axles", str(axle), "suspension", "dampingCompression"])
+	
+	def getAxleSuspFrictionSlip(self, axle):
+		return self._get(["axles", str(axle), "suspension", "frictionSlip"])
+	
+	def getAxleSuspRollInfluence(self, axle):
+		return self._get(["axles", str(axle), "suspension", "rollInfluence"])
+
+class TruckDOMParser(VehicleDOMParser):
+	# The actual data we've read
+	data = {}
+	# Acts as a stack and helps us find the right path to use for storage inside self.data
+	path = []
+
+	def __init__(self, xmlfile, vehicleNode):
+		self.xmlfile = xmlfile
+
+		# Read everything we can grab from the tree
+		if not self._traverseTree(vehicleNode):
+			print "doh"
+			exit(1)
+
+	# Getters
 	def getBrakingForce(self):
 		return self._get("brakingForce")
 	
@@ -196,59 +267,26 @@ class VehicleDOMParser:
 			funcs.append(self._get(["drivetrain", "torque", str(gear)]))
 		
 		return funcs
-
-	def getColShapes(self):
-		shapes = []
-		
-		for shape in range(0, len(self._get(["colShapes"]).keys())):
-			shapes.append(self._get(["colShapes", str(shape)]))
-		
-		return shapes
-	
-	def getWheelMesh(self):
-		return self._get(["wheel", "mesh"])
-	
-	def getWheelWeight(self):
-		return self._get(["wheel", "weight"])
-	
-	def getWheelRadius(self):
-		return self._get(["wheel", "radius"])
-	
-	def getWheelWidth(self):
-		return self._get(["wheel", "width"])
-	
-	def getAxleCount(self):
-		return len(self._get("axles").keys())
-		
-	def axleIsSteerable(self, axle):
-		return self._get(["axles", str(axle), "steerable"])
 	
 	def axleIsPowered(self, axle):
 		return self._get(["axles", str(axle), "powered"])
-	
-	def getAxlePosition(self, axle):
-		return self._get(["axles", str(axle), "position"])
-	
-	def getAxleWidth(self, axle):
-		return self._get(["axles", str(axle), "width"])
-	
-	def getAxleSuspMaxTravel(self, axle):
-		return self._get(["axles", str(axle), "suspension", "maxTravel"])
-	
-	def getAxleSuspMaxForce(self, axle):
-		return self._get(["axles", str(axle), "suspension", "maxForce"])
-	
-	def getAxleSuspStiffness(self, axle):
-		return self._get(["axles", str(axle), "suspension", "stiffness"])
-	
-	def getAxleSuspDampingRelax(self, axle):
-		return self._get(["axles", str(axle), "suspension", "dampingRelax"])
-	
-	def getAxleSuspDampingComp(self, axle):
-		return self._get(["axles", str(axle), "suspension", "dampingCompression"])
-	
-	def getAxleSuspFrictionSlip(self, axle):
-		return self._get(["axles", str(axle), "suspension", "frictionSlip"])
-	
-	def getAxleSuspRollInfluence(self, axle):
-		return self._get(["axles", str(axle), "suspension", "rollInfluence"])
+
+	def getTrailerHitchPoint(self):
+		return self._get(["trailerHitch", "position"])
+
+class TrailerDOMParser(VehicleDOMParser):
+	# The actual data we've read
+	data = {}
+	# Acts as a stack and helps us find the right path to use for storage inside self.data
+	path = []
+
+	def __init__(self, xmlfile, vehicleNode):
+		self.xmlfile = xmlfile
+
+		# Read everything we can grab from the tree
+		if not self._traverseTree(vehicleNode):
+			print "doh"
+			exit(1)
+
+	def getTruckHitchPoint(self):
+		return self._get(["trailerHitch", "position"])
