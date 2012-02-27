@@ -96,8 +96,10 @@ class Main(ShowBase):
         #skyboxNp.setLightOff()
         #skyboxNp.setShaderOff()
 
+        terrainFile = self.datadir + "tex/inclined.png"
+
         self.terBodyNp = render.attachNewNode(BulletRigidBodyNode("terrainBody"))
-        img = PNMImage(Filename(self.datadir + "tex/inclined.png"))
+        img = PNMImage(Filename(terrainFile))
         offset = img.getXSize() / 2.0 - 0.5 # Used for the GeoMipTerrain
         height = 10.0
         self.terBodyNp.node().addShape(BulletHeightfieldShape(img, height, ZUp))
@@ -107,7 +109,7 @@ class Main(ShowBase):
 
         # Set up the GeoMipTerrain
         self.terrain = GeoMipTerrain("terrainNode")
-        self.terrain.setHeightfield(self.datadir + "tex/inclined.png")
+        self.terrain.setHeightfield(terrainFile)
         self.terrain.setBlockSize(128)
         #self.terrain.setNear(20)
         #self.terrain.setFar(200)
