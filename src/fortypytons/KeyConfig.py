@@ -11,6 +11,7 @@ class KeyConfig:
 	Loads pairs of "do_stuff key" assignments. Main then hooks our do_stuff actions that we call upon input.
 	"""
 
+	filename = None
 	mapping = {}
 	base = None
 
@@ -30,6 +31,12 @@ class KeyConfig:
 		To hook only the -up state of a key, set params to None
 		"""
 
+		try:
+			self.mapping[action]
+		except KeyError:
+			print "[WRN] Found no key for action", action, "configured in", self.filename
+			return
+
 		if params == None and paramsup == None:
 			self.showbase.accept(self.mapping[action], method)
 			#print "Hook: {0} => {1} => {2}".format(self.mapping[action], action, method)
@@ -43,6 +50,7 @@ class KeyConfig:
 			#print "Hook: {0} => {1} => {2} {3}".format(self.mapping[action], action, method, paramsup)
 
 	def loadConfig(self, filename):
+		self.filename = filename
 		f = open(filename, 'r')
 
 		for line in f.readlines():
@@ -56,8 +64,8 @@ class KeyConfig:
 
 				self._addMappingPair(action, key)
 
-		print "Loaded key mappings:"
-		print self.mapping
+		#print "Loaded key mappings:"
+		#print self.mapping
 
 	def _addMappingPair(self, action, key):
 		if not action in self.mapping:
