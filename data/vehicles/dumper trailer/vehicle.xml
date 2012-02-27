@@ -3,39 +3,47 @@
 40tons vehicle description file
 https://github.com/tanuva/fortytons
 
-Mercedes-Benz Atego 815 "The first one"
+A simple and light dumper trailer.
 by Tanuva
 -->
 <vehicle id = "2345678901">
 	<type type = "str">trailer</type>
 	<manufacturer type = "str">Lownuva Trucks Inc.</manufacturer>
 	<model type = "str">Dumper Trailer A</model>
-	<mesh type = "str">vehicles/dumper trailer/trailer.egg</mesh>
 	<width type = "float">2.</width>
 	<height type = "float">.27</height>
 	<length type = "float">3.15</length>
 	<spawnheight type = "float">1.0</spawnheight>
-	<rideheight type = "float">0</rideheight>
 	<weight type = "float">800.0</weight>
 	<brakingForce type = "float">25.0</brakingForce>
 	<parkingBrakeForce type = "float">50.0</parkingBrakeForce>
 
-	<colShapes>
-		<colShape id = "0">
-			<type type = "str">box</type>
-			<width type = "float">2.</width>
-			<height type = "float">.27</height>
-			<length type = "float">3.15</length>
-			<offset type = "vector">0, -.5, .075</offset>
-		</colShape>
-		<colShape id = "1">
-			<type type = "str">box</type>
-			<width type = "float">.1</width>
-			<height type = "float">.1</height>
-			<length type = "float">1.</length>
-			<offset type = "vector">0, 1.575, .075</offset>
-		</colShape>
-	</colShapes>
+	<meshes>
+		<mesh id = "0">
+			<!-- This should be the chassis of the vehicle. -->
+			<file type = "str">vehicles/dumper trailer/trailer.egg</file>
+			<parent type = "int">-1</parent>
+			<weight type = "float">800.0</weight>
+			<!-- Position relative to the BulletVehicle... Play with the height a little. -->
+			<offset type = "vector">0, 0, 0</offset>
+			<colShapes>
+				<colShape id = "0">
+					<type type = "str">box</type>
+					<width type = "float">2.</width>
+					<height type = "float">.27</height>
+					<length type = "float">3.15</length>
+					<offset type = "vector">0, -.5, .075</offset>
+				</colShape>
+				<colShape id = "1">
+					<type type = "str">box</type>
+					<width type = "float">.1</width>
+					<height type = "float">.1</height>
+					<length type = "float">1.</length>
+					<offset type = "vector">0, 1.575, .075</offset>
+				</colShape>
+			</colShapes>
+		</mesh>
+	</meshes>
 
 	<!-- All wheels are created equal. -->
 	<wheel>

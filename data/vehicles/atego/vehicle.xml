@@ -10,13 +10,10 @@ by Tanuva
 	<type type = "str">truck</type>
 	<manufacturer type = "str">Mercedes-Benz</manufacturer>
 	<model type = "str">Atego 815</model>
-	<mesh type = "str">vehicles/atego/truck.egg</mesh>
 	<width type = "float">2.</width>
 	<height type = "float">3.4</height>
 	<length type = "float">5.0</length>
 	<spawnheight type = "float">1.0</spawnheight>
-	<rideheight type = "float">-0.6</rideheight>
-	<weight type = "float">3362.0</weight>
 	<brakingForce type = "float">25.0</brakingForce>
 	<parkingBrakeForce type = "float">50.0</parkingBrakeForce>
 
@@ -41,7 +38,6 @@ by Tanuva
 		</gears>
 		<torque>
 			<!-- These ranges must not overlap! (Would be a strange gearbox, wouldn't it?) -->
-			<!-- Just noticed this statement is real crap. But our gearbox requires non-overlapping gears. -->
 			<range id = "0">
 				<lo type = "float">600</lo>
 				<hi type = "float">1150</hi>
@@ -60,23 +56,63 @@ by Tanuva
 		</torque>
 	</drivetrain>
 
-	<colShapes>
-		<colShape id = "0">
-			<type type = "str">box</type>
-			<width type = "float">2.</width>
-			<height type = "float">0.51</height>
-			<length type = "float">5.0</length>
-			<offset type = "vector">0, 0.025, -0.65</offset>
-		</colShape>
+	<meshes>
+		<mesh id = "0">
+			<!-- This should be the chassis of the vehicle. -->
+			<file type = "str">vehicles/atego/truck.egg</file>
+			<parent type = "int">-1</parent>
+			<weight type = "float">3362.0</weight>
+			<!-- Position relative to the BulletVehicle... Play with the height a little. -->
+			<offset type = "vector">0, 0, -.6</offset>
+			<colShapes>
+				<colShape id = "0">
+					<type type = "str">box</type>
+					<width type = "float">2.</width>
+					<height type = "float">0.51</height>
+					<length type = "float">5.0</length>
+					<offset type = "vector">0, 0.025, -0.65</offset>
+				</colShape>
+				<colShape id = "1">
+					<type type = "str">box</type>
+					<width type = "float">2.</width>
+					<height type = "float">1.7</height>
+					<length type = "float">1.5</length>
+					<offset type = "vector">0, 1.8, -.05</offset>
+				</colShape>
+			</colShapes>
+		</mesh>
+		<mesh id = "1">
+			<file type = "str">vehicles/atego/mulde.egg</file>
+			<parent type = "int">0</parent>
+			<weight type = "float">300.0</weight>
+			<!-- Position relative to the chassis -->
+			<offset type = "vector">0., -.9, -.09</offset>
+			<colShapes>
+				<colShape id = "0">
+					<type type = "str">box</type>
+					<width type = "float">2.</width>
+					<height type = "float">.6</height>
+					<length type = "float">3.15</length>
+					<offset type = "vector">0, 0, 0</offset>
+				</colShape>
+			</colShapes>
+		</mesh>
+	</meshes>
 
-		<colShape id = "1">
-			<type type = "str">box</type>
-			<width type = "float">2.</width>
-			<height type = "float">1.7</height>
-			<length type = "float">1.5</length>
-			<offset type = "vector">0, 1.8, -.05</offset>
-		</colShape>
-	</colShapes>
+	<constraints>
+		<constraint id = "0">
+			<type type = "str">hinge</type>
+			<controllable type = "bool">True</controllable>
+			<mesh1 type = "int">0</mesh1>
+			<mesh2 type = "int">1</mesh2>
+			<point1 type = "vector">0, -2.5, -.4</point1>
+			<point2 type = "vector">0, -1.575, -.4</point2>
+			<frame1 type = "vector">1, 0, 0</frame1>
+			<frame2 type = "vector">1, 0, 0</frame2>
+			<axis type = "vector">1, 0, 0</axis>
+			<limits type = "array">0, 50</limits>
+		</constraint>
+	</constraints>
 
 	<!-- All wheels are created equal. -->
 	<wheel>
