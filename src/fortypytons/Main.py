@@ -209,9 +209,9 @@ class Main(ShowBase):
         self.lblRpmSlider["value"] = self.vehicles[0].getRpm()
 
         if self.vehicles[0].getGear() == 0:
-            self.lblGear["text"] = 'n'
-        elif self.vehicles[0].getGear() == 1:
             self.lblGear["text"] = 'r'
+        elif self.vehicles[0].getGear() == 1:
+            self.lblGear["text"] = 'n'
         else:
             self.lblGear["text"] = "%i" % (self.vehicles[0].getGear() - 1)
 

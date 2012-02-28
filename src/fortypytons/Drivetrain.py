@@ -25,8 +25,6 @@ class AutomaticDt:
 		self._powAxleRatio = p.getPoweredAxleRatio()
 
 		# engine
-		self._maxrpm = 2520
-		self._idlerpm = 600
 		self._currpm = 1000
 		self._gasPedal = 0.0	# Range: 0.0 - 1.0
 		self._brakePedal = 0.0
@@ -36,7 +34,7 @@ class AutomaticDt:
 
 		# gearbox
 		self._gbState = 'p'
-		self._gbGear = 0 # 1 is reverse, 2 is first gear, default to neutral
+		self._gbGear = 1 # 0 is reverse, 2 is first gear, default to neutral
 
 	def setGas(self, gas):
 		if gas <= 1. and gas >= 0.:
@@ -70,9 +68,6 @@ class AutomaticDt:
 		if self._gbState == 'd':
 			self._gbGear = self._getPrevGear()
 
-	def _shiftReverse(self):
-		self._gbGear = 1
-
 	def getGbState(self):
 		return self._gbState
 
@@ -93,12 +88,12 @@ class AutomaticDt:
 	def shiftNeutral(self):
 		if not self._gbState == 'n':
 			self._gbState = 'n'
-			self.gbGear = 0
+			self.gbGear = 1
 
 	def shiftReverse(self):
 		if not self._gbState == 'r':
 			self._gbState = 'r'
-			self._gbGear = 1
+			self._gbGear = 0
 
 	def shiftPark(self):
 		if not self._gbState == 'p':

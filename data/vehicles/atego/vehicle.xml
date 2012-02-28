@@ -28,8 +28,8 @@ by Tanuva
 		<idleRpm type = "float">600.0</idleRpm>
 		<powAxleRatio type = "float">3.636</powAxleRatio>
 		<gears>
-			<gear id = "0"><!-- Idle    --><ratio type = "float">0.0</ratio></gear>
-			<gear id = "1"><!-- Reverse --><ratio type = "float">-6.29</ratio></gear>
+			<gear id = "0"><!-- Reverse --><ratio type = "float">-6.29</ratio></gear>
+			<gear id = "1"><!-- Idle    --><ratio type = "float">0.0</ratio></gear>
 			<gear id = "2"><!-- First   --><ratio type = "float">3.48</ratio></gear>
 			<gear id = "3"><!-- Second  --><ratio type = "float">2.10</ratio></gear>
 			<gear id = "4"><!-- Third   --><ratio type = "float">1.38</ratio></gear>
