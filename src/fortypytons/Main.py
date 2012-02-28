@@ -180,8 +180,8 @@ class Main(ShowBase):
         self.keyconf.setHook("control4Down", self.vehicles[0].control, [4, -1.], [4, 0.])
 
         self.camcon = FollowerCameraController(self.world, self.camera, self.vehicles[0].getChassis().getBodyNp())
-        #self.camcon = ManualCameraController(self.world, self.camera, self.vehicles[0].getChassis().getBodyNp())
         taskMgr.add(self.camcon.update, 'CameraController', priority=10)
+        self.keyconf.setHook("switchCamera", self.switchCamera)
         self.accept("wheel_up", self.camcon.mwheelup)
         self.accept("wheel_down", self.camcon.mwheeldown)
 
@@ -223,8 +223,19 @@ class Main(ShowBase):
         else:
             self.debug.hide()
 
-    def resetTruck(self):
-        self.vehicles[0].reset()
+    def switchCamera(self):
+        if isinstance(self.camcon, FollowerCameraController):
+            self.camcon = ManualCameraController(self.world, self.camera, self.vehicles[0].getChassis().getBodyNp())
+            taskMgr.remove("CameraController")
+            taskMgr.add(self.camcon.update, 'CameraController', priority=10)
+            self.accept("wheel_up", self.camcon.mwheelup)
+            self.accept("wheel_down", self.camcon.mwheeldown)
+        else:
+            self.camcon = FollowerCameraController(self.world, self.camera, self.vehicles[0].getChassis().getBodyNp())
+            taskMgr.remove("CameraController")
+            taskMgr.add(self.camcon.update, 'CameraController', priority=10)
+            self.accept("wheel_up", self.camcon.mwheelup)
+            self.accept("wheel_down", self.camcon.mwheeldown)
 
 if __name__ == '__main__':
     app = Main()
