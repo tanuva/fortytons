@@ -138,8 +138,16 @@ class XMLTruck(XMLVehicle):
 		return self.drivetrain.getGear()
 
 	def reset(self):
-		self.components[0].getBodyNp().setPos(self.components[0].getBodyNp().getPos() + (0,0,1.5))
-		self.components[0].setR(0)
+		for meshId in range(0, self.parser.getMeshCount()):
+			self.components[meshId].setR(0)
+
+			if meshId == 0:
+				self.components[meshId].setPos(self.components[meshId].getPos() + Vec3(0, 0, 1.5))
+			else:
+				parentComp = self.components[self.parser.getMeshParent(meshId)]
+				self.components[meshId].getBodyNp().setPos(self.components[meshId].getBodyNp().getPos()
+															+ self.parser.getMeshOffset(meshId)
+															+ Vec3(0, 0, 1.5))
 
 		if not self.hitchedTrailer == None:
 			self.hitchedTrailer.getChassis().setPos(self.hitchedTrailer.getChassis().getPos() + (0,0,1.5))
