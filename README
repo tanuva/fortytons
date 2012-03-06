@@ -5,7 +5,5 @@ by Tanuva & Lowjack
 
 ================================
 
-A devel snapshot of Panda3D >= 2011-08-22 is required.
-Older builds lack parts of the Bullet integration code
-and have different DebugNode API.
-
+dependencies:
+Panda3D >= 1.8.0 built with bullet physics support.
