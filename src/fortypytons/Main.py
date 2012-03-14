@@ -224,14 +224,20 @@ class Main(ShowBase):
             self.debug.hide()
 
     def switchCamera(self):
-        if isinstance(self.camcon, FollowerCameraController):
+        if isinstance(self.camcon, CockpitCameraController):
             self.camcon = ManualCameraController(self.world, self.camera, self.vehicles[0].getChassis().getBodyNp())
             taskMgr.remove("CameraController")
             taskMgr.add(self.camcon.update, 'CameraController', priority=10)
             self.accept("wheel_up", self.camcon.mwheelup)
             self.accept("wheel_down", self.camcon.mwheeldown)
-        else:
+        elif isinstance(self.camcon, ManualCameraController):
             self.camcon = FollowerCameraController(self.world, self.camera, self.vehicles[0].getChassis().getBodyNp())
+            taskMgr.remove("CameraController")
+            taskMgr.add(self.camcon.update, 'CameraController', priority=10)
+            self.accept("wheel_up", self.camcon.mwheelup)
+            self.accept("wheel_down", self.camcon.mwheeldown)
+        else:
+            self.camcon = CockpitCameraController(self.world, self.camera, self.vehicles[0].getChassis().getBodyNp())
             taskMgr.remove("CameraController")
             taskMgr.add(self.camcon.update, 'CameraController', priority=10)
             self.accept("wheel_up", self.camcon.mwheelup)

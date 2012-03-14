@@ -144,3 +144,69 @@ class FollowerCameraController:
         out[1] = vec[0] * math.sin(rad) + vec[1] * math.cos(rad)
         out[2] = vec[2]
         return out
+
+class CockpitCameraController(object):
+    """
+    Sits in the cab. Mostly.
+    """
+
+    relTargetPos = Vec3(-.4, 2, .4) # relative to vehicle
+    relLookAtPos = Vec3(0, 1, 0) # relative to camera
+    curHDiff = 0
+
+    error = Vec3(0,0,0)
+
+    def __init__(self, world, camera, target):
+        self.render = render
+        self.world = world
+        self.cam = camera
+        self.target = target
+        self.cam.setPos(self.target, self.relTargetPos)
+        base.camLens.setFov(90)
+        base.camLens.setNearFar(0.1, 500)
+
+    def update(self, task):
+        # Calculate our desired position, then use a PID-controller to get there
+        absTargetPos = Util.getAbsolutePos(self.relTargetPos, self.target)
+
+        # http://en.wikipedia.org/wiki/PID_controller
+        # http://www.engin.umich.edu/group/ctm/PID/PID.html
+        # Kx: modifying factors: proportional, integral and derivative
+        # error = targetPos - curPos
+        # dt: the time difference
+        # u = Kp * error + Ki * integrate(error, dt) + Kd * (de / dt)
+
+        Kp = 0.05
+        Ki = 0.08
+        Kd = .001
+        lastError = self.error
+        self.error = absTargetPos - self.cam.getPos()
+
+        # linear pid, x axis
+        prop = Kp * self.error[0]
+        intgr = Ki * self.error[0] * globalClock.getDt()
+        derv = Kd * (lastError[0] - self.error[0]) / globalClock.getDt()
+        corrForce = Vec3(prop + intgr + derv, 0, 0)
+
+        # y axis
+        prop = Kp * self.error[1]
+        intgr = Ki * self.error[1] * globalClock.getDt()
+        derv = Kd * (lastError[1] - self.error[1]) / globalClock.getDt()
+        corrForce[1] = prop + intgr + derv
+
+        # z axis
+        # more or less statically set as targetheight + our height offset
+        newCamPos = self.cam.getPos() + corrForce
+        newCamPos[2] = self.target.getPos()[2] + self.relTargetPos[2]
+
+        #print self.cam.getPos(self.target) # prints correct relative coordinates, just FYI
+        self.cam.setPos(newCamPos)
+        relToTarget = Util.getAbsolutePos(self.relLookAtPos, self.cam)
+        self.cam.lookAt(Util.getAbsolutePos(relToTarget, self.target))
+        return task.cont
+
+    def mwheelup(self):
+        pass
+
+    def mwheeldown(self):
+        pass
