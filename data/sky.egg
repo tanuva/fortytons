@@ -1,0 +1,781 @@
+<CoordinateSystem> { Z-Up }
+
+<Texture> clouds {
+  clouds.png
+  <Scalar> minfilter { linear_mipmap_linear }
+  <Scalar> magfilter { linear_mipmap_linear }
+}
+<VertexPool> sky {
+  <Vertex> 0 {
+    0 0 0.414214
+    <UV> { 0 0 }
+  }
+  <Vertex> 1 {
+    0.184592 0 0.402115
+    <UV> { 0.516857 0 }
+  }
+  <Vertex> 2 {
+    0.170541 0.0706403 0.402115
+    <UV> { 0.477514 0.197793 }
+  }
+  <Vertex> 3 {
+    0.130526 0.130526 0.402115
+    <UV> { 0.365473 0.365473 }
+  }
+  <Vertex> 4 {
+    0.0706403 0.170541 0.402115
+    <UV> { 0.197793 0.477514 }
+  }
+  <Vertex> 5 {
+    1.13026e-17 0.184592 0.402115
+    <UV> { 0 0.516857 }
+  }
+  <Vertex> 6 {
+    -0.0706403 0.170541 0.402115
+    <UV> { -0.197793 0.477514 }
+  }
+  <Vertex> 7 {
+    -0.130526 0.130526 0.402115
+    <UV> { -0.365473 0.365473 }
+  }
+  <Vertex> 8 {
+    -0.170541 0.0706403 0.402115
+    <UV> { -0.477514 0.197793 }
+  }
+  <Vertex> 9 {
+    -0.184592 2.26052e-17 0.402115
+    <UV> { -0.516857 0 }
+  }
+  <Vertex> 10 {
+    -0.170541 -0.0706403 0.402115
+    <UV> { -0.477514 -0.197793 }
+  }
+  <Vertex> 11 {
+    -0.130526 -0.130526 0.402115
+    <UV> { -0.365473 -0.365473 }
+  }
+  <Vertex> 12 {
+    -0.0706403 -0.170541 0.402115
+    <UV> { -0.197793 -0.477514 }
+  }
+  <Vertex> 13 {
+    -3.39079e-17 -0.184592 0.402115
+    <UV> { 0 -0.516857 }
+  }
+  <Vertex> 14 {
+    0.0706403 -0.170541 0.402115
+    <UV> { 0.197793 -0.477514 }
+  }
+  <Vertex> 15 {
+    0.130526 -0.130526 0.402115
+    <UV> { 0.365473 -0.365473 }
+  }
+  <Vertex> 16 {
+    0.170541 -0.0706403 0.402115
+    <UV> { 0.477514 -0.197793 }
+  }
+  <Vertex> 17 {
+    0.366025 0 0.366025
+    <UV> { 1.02487 0 }
+  }
+  <Vertex> 18 {
+    0.338163 0.140072 0.366025
+    <UV> { 0.946857 0.392201 }
+  }
+  <Vertex> 19 {
+    0.258819 0.258819 0.366025
+    <UV> { 0.724693 0.724693 }
+  }
+  <Vertex> 20 {
+    0.140072 0.338163 0.366025
+    <UV> { 0.392201 0.946857 }
+  }
+  <Vertex> 21 {
+    2.24119e-17 0.366025 0.366025
+    <UV> { 0 1.02487 }
+  }
+  <Vertex> 22 {
+    -0.140072 0.338163 0.366025
+    <UV> { -0.392201 0.946857 }
+  }
+  <Vertex> 23 {
+    -0.258819 0.258819 0.366025
+    <UV> { -0.724693 0.724693 }
+  }
+  <Vertex> 24 {
+    -0.338163 0.140072 0.366025
+    <UV> { -0.946857 0.392201 }
+  }
+  <Vertex> 25 {
+    -0.366025 4.48237e-17 0.366025
+    <UV> { -1.02487 0 }
+  }
+  <Vertex> 26 {
+    -0.338163 -0.140072 0.366025
+    <UV> { -0.946857 -0.392201 }
+  }
+  <Vertex> 27 {
+    -0.258819 -0.258819 0.366025
+    <UV> { -0.724693 -0.724693 }
+  }
+  <Vertex> 28 {
+    -0.140072 -0.338163 0.366025
+    <UV> { -0.392201 -0.946857 }
+  }
+  <Vertex> 29 {
+    -6.72356e-17 -0.366025 0.366025
+    <UV> { 0 -1.02487 }
+  }
+  <Vertex> 30 {
+    0.140072 -0.338163 0.366025
+    <UV> { 0.392201 -0.946857 }
+  }
+  <Vertex> 31 {
+    0.258819 -0.258819 0.366025
+    <UV> { 0.724693 -0.724693 }
+  }
+  <Vertex> 32 {
+    0.338163 -0.140072 0.366025
+    <UV> { 0.946857 -0.392201 }
+  }
+  <Vertex> 33 {
+    0.541196 0 0.306563
+    <UV> { 1.51535 0 }
+  }
+  <Vertex> 34 {
+    0.5 0.207107 0.306563
+    <UV> { 1.4 0.579899 }
+  }
+  <Vertex> 35 {
+    0.382683 0.382683 0.306563
+    <UV> { 1.07151 1.07151 }
+  }
+  <Vertex> 36 {
+    0.207107 0.5 0.306563
+    <UV> { 0.579899 1.4 }
+  }
+  <Vertex> 37 {
+    3.31376e-17 0.541196 0.306563
+    <UV> { 0 1.51535 }
+  }
+  <Vertex> 38 {
+    -0.207107 0.5 0.306563
+    <UV> { -0.579899 1.4 }
+  }
+  <Vertex> 39 {
+    -0.382683 0.382683 0.306563
+    <UV> { -1.07151 1.07151 }
+  }
+  <Vertex> 40 {
+    -0.5 0.207107 0.306563
+    <UV> { -1.4 0.579899 }
+  }
+  <Vertex> 41 {
+    -0.541196 6.62752e-17 0.306563
+    <UV> { -1.51535 0 }
+  }
+  <Vertex> 42 {
+    -0.5 -0.207107 0.306563
+    <UV> { -1.4 -0.579899 }
+  }
+  <Vertex> 43 {
+    -0.382683 -0.382683 0.306563
+    <UV> { -1.07151 -1.07151 }
+  }
+  <Vertex> 44 {
+    -0.207107 -0.5 0.306563
+    <UV> { -0.579899 -1.4 }
+  }
+  <Vertex> 45 {
+    -9.94128e-17 -0.541196 0.306563
+    <UV> { 0 -1.51535 }
+  }
+  <Vertex> 46 {
+    0.207107 -0.5 0.306563
+    <UV> { 0.579899 -1.4 }
+  }
+  <Vertex> 47 {
+    0.382683 -0.382683 0.306563
+    <UV> { 1.07151 -1.07151 }
+  }
+  <Vertex> 48 {
+    0.5 -0.207107 0.306563
+    <UV> { 1.4 -0.579899 }
+  }
+  <Vertex> 49 {
+    0.707107 0 0.224745
+    <UV> { 1.9799 0 }
+  }
+  <Vertex> 50 {
+    0.653281 0.270598 0.224745
+    <UV> { 1.82919 0.757675 }
+  }
+  <Vertex> 51 {
+    0.5 0.5 0.224745
+    <UV> { 1.4 1.4 }
+  }
+  <Vertex> 52 {
+    0.270598 0.653281 0.224745
+    <UV> { 0.757675 1.82919 }
+  }
+  <Vertex> 53 {
+    4.32964e-17 0.707107 0.224745
+    <UV> { 0 1.9799 }
+  }
+  <Vertex> 54 {
+    -0.270598 0.653281 0.224745
+    <UV> { -0.757675 1.82919 }
+  }
+  <Vertex> 55 {
+    -0.5 0.5 0.224745
+    <UV> { -1.4 1.4 }
+  }
+  <Vertex> 56 {
+    -0.653281 0.270598 0.224745
+    <UV> { -1.82919 0.757675 }
+  }
+  <Vertex> 57 {
+    -0.707107 8.65927e-17 0.224745
+    <UV> { -1.9799 0 }
+  }
+  <Vertex> 58 {
+    -0.653281 -0.270598 0.224745
+    <UV> { -1.82919 -0.757675 }
+  }
+  <Vertex> 59 {
+    -0.5 -0.5 0.224745
+    <UV> { -1.4 -1.4 }
+  }
+  <Vertex> 60 {
+    -0.270598 -0.653281 0.224745
+    <UV> { -0.757675 -1.82919 }
+  }
+  <Vertex> 61 {
+    -1.29889e-16 -0.707107 0.224745
+    <UV> { 0 -1.9799 }
+  }
+  <Vertex> 62 {
+    0.270598 -0.653281 0.224745
+    <UV> { 0.757675 -1.82919 }
+  }
+  <Vertex> 63 {
+    0.5 -0.5 0.224745
+    <UV> { 1.4 -1.4 }
+  }
+  <Vertex> 64 {
+    0.653281 -0.270598 0.224745
+    <UV> { 1.82919 -0.757675 }
+  }
+  <Vertex> 65 {
+    0.860919 0 0.121971
+    <UV> { 2.41057 0 }
+  }
+  <Vertex> 66 {
+    0.795385 0.329459 0.121971
+    <UV> { 2.22708 0.922486 }
+  }
+  <Vertex> 67 {
+    0.608761 0.608761 0.121971
+    <UV> { 1.70453 1.70453 }
+  }
+  <Vertex> 68 {
+    0.329459 0.795385 0.121971
+    <UV> { 0.922486 2.22708 }
+  }
+  <Vertex> 69 {
+    5.27143e-17 0.860919 0.121971
+    <UV> { 0 2.41057 }
+  }
+  <Vertex> 70 {
+    -0.329459 0.795385 0.121971
+    <UV> { -0.922486 2.22708 }
+  }
+  <Vertex> 71 {
+    -0.608761 0.608761 0.121971
+    <UV> { -1.70453 1.70453 }
+  }
+  <Vertex> 72 {
+    -0.795385 0.329459 0.121971
+    <UV> { -2.22708 0.922486 }
+  }
+  <Vertex> 73 {
+    -0.860919 1.05429e-16 0.121971
+    <UV> { -2.41057 0 }
+  }
+  <Vertex> 74 {
+    -0.795385 -0.329459 0.121971
+    <UV> { -2.22708 -0.922486 }
+  }
+  <Vertex> 75 {
+    -0.608761 -0.608761 0.121971
+    <UV> { -1.70453 -1.70453 }
+  }
+  <Vertex> 76 {
+    -0.329459 -0.795385 0.121971
+    <UV> { -0.922486 -2.22708 }
+  }
+  <Vertex> 77 {
+    -1.58143e-16 -0.860919 0.121971
+    <UV> { 0 -2.41057 }
+  }
+  <Vertex> 78 {
+    0.329459 -0.795385 0.121971
+    <UV> { 0.922486 -2.22708 }
+  }
+  <Vertex> 79 {
+    0.608761 -0.608761 0.121971
+    <UV> { 1.70453 -1.70453 }
+  }
+  <Vertex> 80 {
+    0.795385 -0.329459 0.121971
+    <UV> { 2.22708 -0.922486 }
+  }
+  <Vertex> 81 {
+    1 0 2.22045e-16
+    <UV> { 2.8 0 }
+  }
+  <Vertex> 82 {
+    0.92388 0.382683 2.22045e-16
+    <UV> { 2.58686 1.07151 }
+  }
+  <Vertex> 83 {
+    0.707107 0.707107 2.22045e-16
+    <UV> { 1.9799 1.9799 }
+  }
+  <Vertex> 84 {
+    0.382683 0.92388 2.22045e-16
+    <UV> { 1.07151 2.58686 }
+  }
+  <Vertex> 85 {
+    6.12303e-17 1 2.22045e-16
+    <UV> { 0 2.8 }
+  }
+  <Vertex> 86 {
+    -0.382683 0.92388 2.22045e-16
+    <UV> { -1.07151 2.58686 }
+  }
+  <Vertex> 87 {
+    -0.707107 0.707107 2.22045e-16
+    <UV> { -1.9799 1.9799 }
+  }
+  <Vertex> 88 {
+    -0.92388 0.382683 2.22045e-16
+    <UV> { -2.58686 1.07151 }
+  }
+  <Vertex> 89 {
+    -1 1.22461e-16 2.22045e-16
+    <UV> { -2.8 0 }
+  }
+  <Vertex> 90 {
+    -0.92388 -0.382683 2.22045e-16
+    <UV> { -2.58686 -1.07151 }
+  }
+  <Vertex> 91 {
+    -0.707107 -0.707107 2.22045e-16
+    <UV> { -1.9799 -1.9799 }
+  }
+  <Vertex> 92 {
+    -0.382683 -0.92388 2.22045e-16
+    <UV> { -1.07151 -2.58686 }
+  }
+  <Vertex> 93 {
+    -1.83691e-16 -1 2.22045e-16
+    <UV> { 0 -2.8 }
+  }
+  <Vertex> 94 {
+    0.382683 -0.92388 2.22045e-16
+    <UV> { 1.07151 -2.58686 }
+  }
+  <Vertex> 95 {
+    0.707107 -0.707107 2.22045e-16
+    <UV> { 1.9799 -1.9799 }
+  }
+  <Vertex> 96 {
+    0.92388 -0.382683 2.22045e-16
+    <UV> { 2.58686 -1.07151 }
+  }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 0 2 1 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 0 3 2 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 0 4 3 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 0 5 4 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 0 6 5 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 0 7 6 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 0 8 7 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 0 9 8 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 0 10 9 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 0 11 10 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 0 12 11 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 0 13 12 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 0 14 13 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 0 15 14 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 0 16 15 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 0 1 16 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 1 2 18 17 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 2 3 19 18 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 3 4 20 19 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 4 5 21 20 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 5 6 22 21 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 6 7 23 22 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 7 8 24 23 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 8 9 25 24 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 9 10 26 25 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 10 11 27 26 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 11 12 28 27 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 12 13 29 28 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 13 14 30 29 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 14 15 31 30 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 15 16 32 31 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 16 1 17 32 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 17 18 34 33 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 18 19 35 34 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 19 20 36 35 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 20 21 37 36 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 21 22 38 37 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 22 23 39 38 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 23 24 40 39 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 24 25 41 40 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 25 26 42 41 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 26 27 43 42 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 27 28 44 43 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 28 29 45 44 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 29 30 46 45 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 30 31 47 46 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 31 32 48 47 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 32 17 33 48 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 33 34 50 49 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 34 35 51 50 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 35 36 52 51 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 36 37 53 52 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 37 38 54 53 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 38 39 55 54 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 39 40 56 55 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 40 41 57 56 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 41 42 58 57 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 42 43 59 58 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 43 44 60 59 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 44 45 61 60 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 45 46 62 61 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 46 47 63 62 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 47 48 64 63 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 48 33 49 64 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 49 50 66 65 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 50 51 67 66 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 51 52 68 67 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 52 53 69 68 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 53 54 70 69 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 54 55 71 70 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 55 56 72 71 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 56 57 73 72 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 57 58 74 73 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 58 59 75 74 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 59 60 76 75 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 60 61 77 76 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 61 62 78 77 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 62 63 79 78 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 63 64 80 79 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 64 49 65 80 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 65 66 82 81 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 66 67 83 82 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 67 68 84 83 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 68 69 85 84 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 69 70 86 85 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 70 71 87 86 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 71 72 88 87 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 72 73 89 88 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 73 74 90 89 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 74 75 91 90 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 75 76 92 91 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 76 77 93 92 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 77 78 94 93 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 78 79 95 94 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 79 80 96 95 <Ref> { sky } }
+}
+<Polygon> {
+  <TRef> { clouds }
+  <VertexRef> { 80 65 81 96 <Ref> { sky } }
+}

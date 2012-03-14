@@ -75,12 +75,14 @@ class Main(ShowBase):
         render.setShaderAuto()
 
         # Let there be light!
-        dlight = DirectionalLight('dlight')
-        dlight.setColor(VBase4(1., 1., 1., 1))
-        #dlight.setShadowCaster(True, 512, 512)
-        dlnp = render.attachNewNode(dlight)
-        dlnp.setHpr(0, -60, 0)
-        render.setLight(dlnp)
+        base.setBackgroundColor(.67, .67, 1., 1.)
+
+        sunlight = DirectionalLight('sun')
+        sunlight.setPoint(Point3(0, 0, 100))
+        sunlightNp = render.attachNewNode(sunlight)
+        sunlightNp.setPos(0, 0, 100)
+        sunlightNp.setP(-90)
+        render.setLight(sunlightNp)
 
         amblight = AmbientLight('amblight')
         amblight.setColor(VBase4(0.4, 0.4, 0.4, 1))
@@ -88,6 +90,7 @@ class Main(ShowBase):
         render.setLight(amblightNp)
 
         # TODO Load the skybox
+        # Proper sky_box_ with face normals inside is missing
         #tex = loader.loadCubeMap(self.datadir + "tex/skyrender#.png")
         #skyboxNp = self.camera.attachNewNode(loader.loadModel("box").node())
         #skyboxNp.setBin("background", 0);
@@ -96,6 +99,16 @@ class Main(ShowBase):
         #skyboxNp.setTexture(tex)
         #skyboxNp.setLightOff()
         #skyboxNp.setShaderOff()
+
+        # skydome (from http://www.mygamefast.com/volume1/issue3/)
+        skydome = loader.loadModel(self.datadir + "sky.egg")
+        skydome.setEffect(CompassEffect.make(self.render))
+        skydome.setBin("background", 0);
+        skydome.setDepthWrite(False);
+        skydome.setLightOff()
+        skydome.setScale(200)
+        skydome.setZ(-65) # sink it
+        skydome.reparentTo(self.camera) # NOT render - we want it to always stay "far away"
 
         terrainFile = self.datadir + "tex/inclined.png"
 
