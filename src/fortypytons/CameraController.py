@@ -9,6 +9,7 @@ Created on 26.08.2011
 import math
 from panda3d.core import *
 from panda3d.bullet import *
+from Util import Util
 
 class ManualCameraController:
     """
@@ -67,7 +68,6 @@ class FollowerCameraController:
     distance = 15
     curHDiff = 0
 
-    i = 0
     error = Vec3(0,0,0)
 
     def __init__(self, world, camera, target):
@@ -76,15 +76,13 @@ class FollowerCameraController:
         self.cam = camera
         self.target = target
         self.cam.setPos(self.target, Vec3(0, -self.distance, self.height))
+        base.camLens.setFov(40)
+        base.camLens.setNearFar(1, 500)
 
     def update(self, task):
         # Calculate our desired position, then use a PID-controller to get there
         relTargetPos = Vec3(0, -self.distance, self.height)
-
-        tmp = self.cam.getPos()
-        self.cam.setPos(self.target, relTargetPos)
-        absTargetPos = self.cam.getPos()
-        self.cam.setPos(tmp)
+        absTargetPos = Util.getAbsolutePos(relTargetPos, self.target)
 
         # http://en.wikipedia.org/wiki/PID_controller
         # http://www.engin.umich.edu/group/ctm/PID/PID.html
