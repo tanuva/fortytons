@@ -6,6 +6,7 @@ Created on 11.07.2011
 @author: marcel
 '''
 
+import sys
 from Truck import Truck
 from XMLTruck import XMLTruck
 from XMLTrailer import XMLTrailer
@@ -30,7 +31,7 @@ class Main(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
         base.setFrameRateMeter(True)
-        base.disableMouse() # Dragging the mouse will make strange things happen otherwise
+        base.disableMouse() # Disable panda's default mouse control
         # Hide the cursor
         props = WindowProperties()
         props.setCursorHidden(True)
@@ -184,6 +185,9 @@ class Main(ShowBase):
         self.keyconf.setHook("switchCamera", self.switchCamera)
         self.accept("wheel_up", self.camcon.mwheelup)
         self.accept("wheel_down", self.camcon.mwheeldown)
+
+        self.accept('escape', sys.exit)
+        self.accept("i", base.bufferViewer.toggleEnable)
 
         # register the physics update task
         self.taskMgr.doMethodLater(1./60., self.physicsTask, "physicsTask", priority=5)
