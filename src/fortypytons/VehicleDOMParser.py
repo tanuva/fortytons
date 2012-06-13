@@ -97,7 +97,7 @@ class VehicleDOMParser:
 		else:
 			strPath += "%s('%s')" % (datatype, data)
 
-		print strPath # Print the path + the value we just read
+		#print strPath # Print the path + the value we just read
 		exec strPath
 		return True
 
