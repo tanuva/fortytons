@@ -1,9 +1,12 @@
 40tons.
+(space truckin')
 
 by Tanuva & Lowjack
 «the coder & the gfxman»
 
 ================================
+
+Although the commit stats might look a little sad this project needed and received a lot of brainwork for a new drivetrain. Parts of it work already, but I try to commit code that is actually playable. Besides, its not my only project anymore (no envy!).
 
 dependencies:
 Panda3D >= 1.8.0 built with bullet physics support.
