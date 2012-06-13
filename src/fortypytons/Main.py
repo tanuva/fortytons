@@ -171,7 +171,7 @@ class Main(ShowBase):
         # Register truck functions
         # Truck should do this by itself! (or advertise keys it wants to use? better approach...)
         self.keyconf = KeyConfig(self)
-        self.keyconf.loadConfig("neo2.conf")
+        self.keyconf.loadConfig("qwertz.conf")
         self.keyconf.setHook("gas", self.vehicles[0].setGas, [1.], [0.])
         self.keyconf.setHook("brake", self.vehicles[0].setBrake, [1.], [0.])
         self.keyconf.setHook("steerLeft", self.vehicles[0].steer, [1], [0])
