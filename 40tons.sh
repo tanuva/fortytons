@@ -1,5 +1,5 @@
 #!/bin/sh
 
 cd src/fortypytons
-python2 Main.py
+python Main.py
 cd ../..
