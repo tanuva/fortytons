@@ -37,9 +37,14 @@ by Tanuva
 			<gear id = "6"><!-- Fifth   --><ratio type = "float">0.79</ratio></gear>
 		</gears>
 		<torque>
-			<!-- These ranges must not overlap! (Would be a strange gearbox, wouldn't it?) -->
+			<!-- These ranges must not overlap! -->
+			<!--<range id = "0">
+				<lo type = "float">0</lo>
+				<hi type = "float">500</hi>
+				<function type = "func">0.</function>
+			</range>-->
 			<range id = "0">
-				<lo type = "float">600</lo>
+				<lo type = "float">0</lo>
 				<hi type = "float">1150</hi>
 				<function type = "func">(1.0/3.0) * rpm + 450.0</function>
 			</range>
@@ -114,7 +119,7 @@ by Tanuva
 		</constraint>
 	</constraints>
 
-	<!-- All wheels are created equal. -->
+	<!-- All wheels are created equal. Actually, they shouldn't. -->
 	<wheel>
 		<mesh type = "str">vehicles/atego/wheel.egg</mesh>
 		<weight type = "float">25.0</weight>

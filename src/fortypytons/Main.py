@@ -6,6 +6,21 @@ Created on 11.07.2011
 @author: marcel
 '''
 
+# =====================
+# Source: http://stackoverflow.com/questions/279237/import-a-module-from-a-relative-path
+import os, sys, inspect
+# realpath() with make your script run, even if you symlink it :)
+cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
+if cmd_folder not in sys.path:
+	sys.path.insert(0, cmd_folder)
+
+# use this if you want to include modules from a subfolder
+#cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0],"../pyserdisp")))
+cmd_subfolder = "/Developer/Panda3D"
+if cmd_subfolder not in sys.path:
+	sys.path.insert(0, cmd_subfolder)
+# ======================
+
 import sys
 from Truck import Truck
 from XMLTruck import XMLTruck
@@ -89,6 +104,9 @@ class Main(ShowBase):
         amblightNp = render.attachNewNode(amblight)
         render.setLight(amblightNp)
 
+        #print "[msg] Shader lighting commented out"
+        self.setupShaderLighting()
+
         # TODO Load the skybox
         # Proper sky_box_ with face normals inside is missing
         #tex = loader.loadCubeMap(self.datadir + "tex/skyrender#.png")
@@ -110,12 +128,12 @@ class Main(ShowBase):
         skydome.setZ(-65) # sink it
         skydome.reparentTo(self.camera) # NOT render - we want it to always stay "far away"
 
+        height = 10.0
         terrainFile = self.datadir + "tex/inclined.png"
 
         self.terBodyNp = render.attachNewNode(BulletRigidBodyNode("terrainBody"))
         img = PNMImage(Filename(terrainFile))
         offset = img.getXSize() / 2.0 - 0.5 # Used for the GeoMipTerrain
-        height = 10.0
         self.terBodyNp.node().addShape(BulletHeightfieldShape(img, height, ZUp))
         self.terBodyNp.node().setDebugEnabled(False)
         self.terBodyNp.setPos(0,0, height / 2.0)
@@ -124,16 +142,17 @@ class Main(ShowBase):
         # Set up the GeoMipTerrain
         self.terrain = GeoMipTerrain("terrainNode")
         self.terrain.setHeightfield(terrainFile)
-        self.terrain.setBlockSize(128)
-        #self.terrain.setNear(20)
-        #self.terrain.setFar(200)
-        #self.terrain.setFocalPoint(base.camera)
-        self.terrain.setBruteforce(True)
+        self.terrain.setBlockSize(32)
+        self.terrain.setNear(50)
+        self.terrain.setFar(300)
+        self.terrain.setFocalPoint(base.camera)
+        #self.terrain.setBruteforce(True)
         self.terrain.getRoot().reparentTo(self.terBodyNp)
 
         self.terrainNp = self.terrain.getRoot()
         self.terrainNp.setSz(height)
         self.terrainNp.setPos(-offset, -offset, -height / 2.0)
+        #self.terrainNp.setDepthOffset(1)
         # Generate it.
         self.terrain.generate()
 
@@ -165,7 +184,7 @@ class Main(ShowBase):
         #self.debug.show()
 
         self.vehicles.append(XMLTruck("vehicles/atego/vehicle.xml", self.datadir, Vec3(0,0,0), self.world))
-        self.vehicles.append(XMLTruck("vehicles/atego/vehicle.xml", self.datadir, Vec3(4,5,0), self.world))
+        #self.vehicles.append(XMLTruck("vehicles/atego/vehicle.xml", self.datadir, Vec3(4,5,0), self.world))
         self.vehicles.append(XMLTrailer("vehicles/dumper trailer/vehicle.xml", self.datadir, Vec3(0,-6,0), self.world))
 
         # Register truck functions
@@ -205,7 +224,7 @@ class Main(ShowBase):
         # register the physics update task
         self.taskMgr.doMethodLater(1./60., self.physicsTask, "physicsTask", priority=5)
         # register the render task
-        self.taskMgr.doMethodLater(0.1, self.renderTask, "renderTask", priority=9)
+        self.taskMgr.doMethodLater(1./60., self.renderTask, "renderTask", priority=9)
 
     def physicsTask(self, task):
         self.world.doPhysics(task.delayTime, 10, task.delayTime/10.)
@@ -259,6 +278,100 @@ class Main(ShowBase):
             taskMgr.add(self.camcon.update, 'CameraController', priority=10)
             self.accept("wheel_up", self.camcon.mwheelup)
             self.accept("wheel_down", self.camcon.mwheeldown)
+
+    def createFrustumNode(self, lightNodeNp):
+        gn = GeomNode("frustum")
+        gn.addGeom(lightNodeNp.node().getLens().makeGeometry())
+        gnnp = lightNodeNp.attachNewNode(gn)
+        gnnp.setPos(lightNodeNp.getPos())
+        gnnp.setHpr(lightNodeNp.getHpr())
+
+    def adjustPushBias(self,inc):
+        self.pushBias *= inc
+        render.setShaderInput('push',self.pushBias,self.pushBias,self.pushBias,0)
+
+    def setupShaderLighting(self):
+        loadPrcFileData("", "prefer-parasite-buffer #f")
+
+        # Preliminary capabilities check.
+        if (base.win.getGsg().getSupportsBasicShaders()==0):
+            print "[err] Video driver reports that shaders are not supported."
+            return
+        if (base.win.getGsg().getSupportsDepthTexture()==0):
+            print "[err] Video driver reports that depth textures are not supported."
+            return
+
+        # creating the offscreen buffer.
+        winprops = WindowProperties.size(2048,2048)
+        props = FrameBufferProperties()
+        props.setRgbColor(1)
+        props.setAlphaBits(1)
+        props.setDepthBits(1)
+        LBuffer = base.graphicsEngine.makeOutput(
+                 base.pipe, "offscreen buffer", -2,
+                 props, winprops,
+                 GraphicsPipe.BFRefuseWindow,
+                 base.win.getGsg(), base.win)
+
+        if (LBuffer == None):
+           print "[err] Video driver cannot create an offscreen buffer."
+           return
+
+        # Adding a color texture is totally unnecessary, but it helps with debugging.
+        Lcolormap = Texture()
+        LBuffer.addRenderTexture(Lcolormap, GraphicsOutput.RTMBindOrCopy, GraphicsOutput.RTPColor)
+
+        self.LCam = base.makeCamera(LBuffer)
+        self.LCam.reparentTo(render)
+        self.LCam.node().setScene(render)
+        self.LCam.node().getLens().setFov(30)
+        self.LCam.node().getLens().setNearFar(277, 305)
+        #self.LCam.node().getLens().setFilmSize(100, 100)
+        self.LCam.setPos(0, 0, 300)
+        self.LCam.setP(-90)
+        self.LCam.lookAt(0, 0, 0)
+        #self.createFrustumNode(self.LCam)
+
+        # default values
+        self.pushBias=0.50
+        self.ambient=0.20
+        self.cameraSelection = 0
+        self.lightSelection = 0
+
+        # Put a shader on the Main camera.
+        # Some video cards have special hardware for shadow maps.
+        # If the card has that, use it.  If not, use a different
+        # shader that does not require hardware support.
+
+        mci = NodePath(PandaNode("Main Camera Initializer"))
+        if (base.win.getGsg().getSupportsShadowFilter()):
+            mci.setShader(Shader.load(self.datadir + 'shaders/shadow.sha'))
+        else:
+            print "[wrn] No shadow shader support found, using shadow-nosupport.sha"
+            mci.setShader(Shader.load(self.datadir + 'shaders/shadow-nosupport.sha'))
+        base.cam.node().setInitialState(mci.getState())
+    
+        # setting up shader
+        render.setShaderInput('light',self.LCam)
+        render.setShaderInput('Ldepthmap',Lcolormap)
+        render.setShaderInput('ambient',self.ambient,0,0,1.0)
+        render.setShaderInput('texDisable',0,0,0,0)
+        render.setShaderInput('scale',1,1,1,1)
+
+        render.setShaderInput('push',0.20,0.20,0.20,0)
+
+        # Put a shader on the Light camera.
+        lci = NodePath(PandaNode("Light Camera Initializer"))
+        lci.setShader(Shader.load(self.datadir + 'shaders/caster.sha'))
+        self.LCam.node().setInitialState(lci.getState())
+
+        self.adjustPushBias(self.pushBias)
+
+    def shaderSupported(self):
+        return base.win.getGsg().getSupportsBasicShaders() and \
+               base.win.getGsg().getSupportsDepthTexture() and \
+               base.win.getGsg().getSupportsShadowFilter()
+
 
 if __name__ == '__main__':
     app = Main()

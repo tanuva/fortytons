@@ -118,6 +118,9 @@ class XMLVehicle(object):
 
 				self.wheels.append(VComponent([meshNp], wheelNp))
 
+	def update(self, dt):
+		pass
+
 	def getChassis(self):
 		return self.components[0]
 	def getSpeed(self):
@@ -126,3 +129,5 @@ class XMLVehicle(object):
 		return self.parser.getTrailerHitchPoint()
 	def getType(self):
 		return self.parser.getType()
+	def getMass(self):
+		return self.getChassis().getBodyNp().node().getMass()

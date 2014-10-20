@@ -150,7 +150,7 @@ class CockpitCameraController(object):
     Sits in the cab. Mostly.
     """
 
-    relTargetPos = Vec3(-.4, 2, .4) # relative to vehicle
+    relTargetPos = Vec3(-.5, 2, .4) # relative to vehicle
     relLookAtPos = Vec3(0, 1, 0) # relative to camera
     curHDiff = 0
 
@@ -176,9 +176,9 @@ class CockpitCameraController(object):
         # dt: the time difference
         # u = Kp * error + Ki * integrate(error, dt) + Kd * (de / dt)
 
-        Kp = 0.05
-        Ki = 0.08
-        Kd = .001
+        Kp = 1 #0.05
+        Ki = 0. #0.08
+        Kd = 0. #.001
         lastError = self.error
         self.error = absTargetPos - self.cam.getPos()
 
@@ -195,14 +195,18 @@ class CockpitCameraController(object):
         corrForce[1] = prop + intgr + derv
 
         # z axis
-        # more or less statically set as targetheight + our height offset
+        prop = Kp * self.error[2]
+        intgr = Ki * self.error[2] * globalClock.getDt()
+        derv = Kd * (lastError[2] - self.error[2]) / globalClock.getDt()
+        corrForce[2] = prop + intgr + derv
+
         newCamPos = self.cam.getPos() + corrForce
-        newCamPos[2] = self.target.getPos()[2] + self.relTargetPos[2]
 
         #print self.cam.getPos(self.target) # prints correct relative coordinates, just FYI
         self.cam.setPos(newCamPos)
         relToTarget = Util.getAbsolutePos(self.relLookAtPos, self.cam)
         self.cam.lookAt(Util.getAbsolutePos(relToTarget, self.target))
+        self.cam.setR(self.target.getR())
         return task.cont
 
     def mwheelup(self):

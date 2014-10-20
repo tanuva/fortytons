@@ -8,7 +8,7 @@ Created on 16.10.2011
 from panda3d.core import *
 from panda3d.bullet import *
 from XMLVehicle import XMLVehicle
-from Drivetrain import AutomaticDt
+from Drivetrain import AutomaticDt, Drivetrain
 from SoundController import SoundController
 from Util import Util
 
@@ -34,7 +34,8 @@ class XMLTruck(XMLVehicle):
 
 		# ===== Select a drivetrain =====
 		if p.getDrivetrainType() == "automatic":
-			self.drivetrain = AutomaticDt(self.vehicle, self.parser)
+			#self.drivetrain = AutomaticDt(self.vehicle, self.parser)
+			self.drivetrain = Drivetrain(self.vehicle, self.parser)
 		else:
 			print "[WRN] The selected drivetrain type is unknown, choosing automatic!"
 			self.drivetrain = AutomaticDt(self.vehicle, self.parser)
@@ -101,6 +102,7 @@ class XMLTruck(XMLVehicle):
 				self.curAngle = 0.0
 
 	def update(self, dt):
+		super(XMLTruck, self).update(dt)
 		self._steer()
 		self.drivetrain.update(dt)
 		self._applyAirDrag()
